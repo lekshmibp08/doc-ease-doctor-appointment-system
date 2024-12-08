@@ -51,7 +51,7 @@ export const doctorController = {
         }
     },
 
-  // User Login
+  // Doctor Login
   login: async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;

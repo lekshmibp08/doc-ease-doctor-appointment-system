@@ -4,7 +4,8 @@ import cors from 'cors';
 
 import connectDB from "./infrastructure/database/connection";
 import userRoutes from "./infrastructure/web/routes/UserRoutes";
-import doctorRoutes from "./infrastructure/web/routes/doctorRoutes"
+import doctorRoutes from "./infrastructure/web/routes/DoctorRoutes"
+import adminRoutes from "./infrastructure/web/routes/AdminRoutes"
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/doctors", doctorRoutes);
+app.use("/api/admin", adminRoutes);
 
 
 connectDB();
