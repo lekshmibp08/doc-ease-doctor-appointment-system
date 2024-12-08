@@ -3,10 +3,11 @@ import { sendOtpForSignup } from "../../../application/useCases/user/sendOtpForS
 import { verifyOtpAndRegister } from "../../../application/useCases/user/verifyOtpAndRegisterUser";
 import { createOtpRepository } from "../../database/repositories/OtpRepository";
 import { createUserRepository } from "../../database/repositories/UserRepository";
+import { loginUser } from "../../../application/useCases/user/loginUser";
 
 export const userController = {
   // Send OTP during signup
-  register: async (req: Request, res: Response, next: NextFunction) => {
+  register: async (req: Request, res: Response) => {
     const { email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
@@ -48,5 +49,35 @@ export const userController = {
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
-  }
+  },
+
+  // User Login
+  login: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email, password } = req.body;
+
+      // Validate input
+      if (!email || !password) {
+        res.status(400).json({ message: "Email and Password are required" });
+        return;
+      }
+
+      const userRepository = createUserRepository();
+
+      // Call the login use case
+      const { token, role } = await loginUser(userRepository, { email, password });
+
+      // Respond with token and role
+      res.status(200).json({ message: "Login successful", token, role });
+    } catch (error: any) {
+      res.status(401).json({ message: error.message });
+    }
+  },
+
+
+
+
+
+
+
 };

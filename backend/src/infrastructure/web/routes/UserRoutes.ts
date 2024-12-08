@@ -9,4 +9,7 @@ router.post("/send-otp", userController.register);
 // Verify OTP and register user
 router.post("/verify-otp-and-register", userController.verifyOtpAndRegisterUser);
 
+// Login route
+router.post("/login", userController.login);
+
 export default router;

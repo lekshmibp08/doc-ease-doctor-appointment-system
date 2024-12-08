@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import cors from 'cors';
 
 import connectDB from "./infrastructure/database/connection";
-import userRoutes from "./infrastructure/web/routes/UserRoutes";
+import userRoutes from "./infrastructure/web/routes/userRoutes";
 
 dotenv.config();
 

@@ -3,5 +3,6 @@ export type User = {
     email: string;
     mobileNumber: string;
     password: string;
+    role: "user" | "doctor" | "admin";
   };
   
