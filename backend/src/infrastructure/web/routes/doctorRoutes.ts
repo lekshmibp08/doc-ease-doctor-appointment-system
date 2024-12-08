@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/send-otp", doctorController.register);
 
 // Verify OTP and register user
-//router.post("/verify-otp-and-register", doctorController.verifyOtpAndRegisterUser);
+router.post("/verify-otp-and-register", doctorController.verifyOtpAndRegisterUser);
 
 // Login route
 //router.post("/login", doctorController.login);

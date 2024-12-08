@@ -12,6 +12,7 @@ export const createDoctorRepository = (): IDoctorRepository => ({
           password: doctorDoc.password,
           role: doctorDoc.role,
           registerNumber: doctorDoc.registerNumber,
+          isApproved: doctorDoc.isApproved
         }
       : null;
   },
@@ -24,6 +25,7 @@ export const createDoctorRepository = (): IDoctorRepository => ({
       password: doctorDoc.password,
       role: doctorDoc.role,
       registerNumber: doctorDoc.registerNumber,
+      isApproved: doctorDoc.isApproved
     };
   },
 });

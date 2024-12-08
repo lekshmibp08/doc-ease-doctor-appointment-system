@@ -5,4 +5,5 @@ export type Doctor = {
   registerNumber: string;
   password: string;
   role: "doctor";
+  isApproved: boolean;
 };
