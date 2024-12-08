@@ -3,6 +3,7 @@ import { createOtpRepository } from "../../database/repositories/OtpRepository";
 import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
 import { sendOtpForSignup } from "../../../application/useCases/user/sendOtpForSignup";
 import { verifyOtpAndRegisterDoc } from "../../../application/useCases/doctor/verifyOtpAndRegisterDoc";
+import { loginDoctor } from "../../../application/useCases/doctor/loginDoctor";
 
 export const doctorController = {
     // Send OTP during signup
@@ -44,12 +45,33 @@ export const doctorController = {
             doctorRepository,
             { email, otp, fullName, mobileNumber, registerNumber, password }
           );
-          res.status(201).json({ message: "OTP verified and User registered successfully, You can now log in..!", doctor });
+          res.status(201).json({ message: "OTP verified and Doctor registered successfully, You can now log in and update profile..!", doctor });
         } catch (error: any) {
           res.status(400).json({ message: error.message });
         }
     },
 
+  // User Login
+  login: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email, password } = req.body;
 
+      // Validate input
+      if (!email || !password) {
+        res.status(400).json({ message: "Email and Password are required" });
+        return;
+      }
+
+      const doctorRepository = createDoctorRepository();
+
+      // Call the login use case
+      const { docToken, role } = await loginDoctor(doctorRepository, { email, password });
+
+      // Respond with token and role
+      res.status(200).json({ message: "Login successful", docToken, role });
+    } catch (error: any) {
+      res.status(401).json({ message: error.message });
+    }
+  },
 
 };

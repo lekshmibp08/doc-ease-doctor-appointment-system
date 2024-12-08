@@ -9,6 +9,6 @@ router.post("/send-otp", doctorController.register);
 router.post("/verify-otp-and-register", doctorController.verifyOtpAndRegisterUser);
 
 // Login route
-//router.post("/login", doctorController.login);
+router.post("/login", doctorController.login);
 
 export default router;
