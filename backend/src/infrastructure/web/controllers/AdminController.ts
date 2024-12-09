@@ -18,7 +18,7 @@ export const adminController = {
       // Call the login use case
       const { adminToken, role } = await loginAdmin(userRepository, { email, password });
 
-      // Respond with token and role
+      res.cookie("auth_token", adminToken, { httpOnly: true, maxAge: 86400000 });
       res.status(200).json({ message: "Login successful", adminToken, role });
     } catch (error: any) {
       res.status(401).json({ message: error.message });

@@ -4,6 +4,7 @@ import { User } from "../../../domain/entities/User";
 interface IUserDocument extends Document, User {
   createdAt: Date;
   updatedAt: Date;
+  isBlocked: Boolean;
 }
 
 const UserSchema = new Schema<IUserDocument>({
@@ -30,6 +31,10 @@ const UserSchema = new Schema<IUserDocument>({
       default: "user", 
       required: true 
     },
+    isBlocked: {
+      type: Boolean,
+      default: false
+    }
 },
 {
   timestamps: true, 

@@ -68,6 +68,7 @@ export const userController = {
       const { token, role } = await loginUser(userRepository, { email, password });
 
       // Respond with token and role
+      res.cookie("auth_token", token, { httpOnly: true, maxAge: 86400000 });
       res.status(200).json({ message: "Login successful", token, role });
     } catch (error: any) {
       res.status(401).json({ message: error.message });

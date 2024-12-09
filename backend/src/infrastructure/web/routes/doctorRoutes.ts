@@ -1,5 +1,6 @@
 import express from "express";
 import { doctorController } from "../controllers/DoctorController";
+import { authController } from "../controllers/AuthController";
 const router = express.Router();
 
 // Send OTP during signup
@@ -10,5 +11,8 @@ router.post("/verify-otp-and-register", doctorController.verifyOtpAndRegisterUse
 
 // Login route
 router.post("/login", doctorController.login);
+
+// Logout route
+router.post("/logout", authController.logout);
 
 export default router;

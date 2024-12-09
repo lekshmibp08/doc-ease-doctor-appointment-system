@@ -1,5 +1,6 @@
 import express from "express";
 import { userController } from "../controllers/UserController";
+import { authController } from "../controllers/AuthController";
 
 const router = express.Router();
 
@@ -11,5 +12,9 @@ router.post("/verify-otp-and-register", userController.verifyOtpAndRegisterUser)
 
 // Login route
 router.post("/login", userController.login);
+
+// Logout route
+router.post("/logout", authController.logout);
+
 
 export default router;

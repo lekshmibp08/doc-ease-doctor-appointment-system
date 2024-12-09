@@ -56,7 +56,6 @@ export const doctorController = {
     try {
       const { email, password } = req.body;
 
-      // Validate input
       if (!email || !password) {
         res.status(400).json({ message: "Email and Password are required" });
         return;
@@ -64,14 +63,14 @@ export const doctorController = {
 
       const doctorRepository = createDoctorRepository();
 
-      // Call the login use case
       const { docToken, role } = await loginDoctor(doctorRepository, { email, password });
 
-      // Respond with token and role
+      res.cookie("auth_token", docToken, { httpOnly: true, maxAge: 86400000 });
       res.status(200).json({ message: "Login successful", docToken, role });
     } catch (error: any) {
       res.status(401).json({ message: error.message });
     }
   },
+
 
 };

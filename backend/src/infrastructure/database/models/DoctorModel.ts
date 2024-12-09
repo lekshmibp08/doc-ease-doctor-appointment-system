@@ -4,6 +4,7 @@ import { Doctor } from "../../../domain/entities/Doctor";
 interface IDoctorDocument extends Document, Doctor {
   createdAt: Date;
   updatedAt: Date;
+  isBlocked: Boolean;
 }
 
 const DoctorSchema = new Schema<IDoctorDocument>(
@@ -36,6 +37,10 @@ const DoctorSchema = new Schema<IDoctorDocument>(
       required: true 
     },
     isApproved: {
+      type: Boolean,
+      default: false,
+    },
+    isBlocked: {
       type: Boolean,
       default: false,
     }
