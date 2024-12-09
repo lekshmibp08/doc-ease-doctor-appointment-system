@@ -1,13 +1,18 @@
 import { Request, Response, NextFunction} from "express";
 import { createUserRepository } from "../../database/repositories/UserRepository";
 import { loginAdmin } from "../../../application/useCases/admin/loginAdmin";
+import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
+import { listDoctors } from "../../../application/useCases/admin/listDoctors";
+
+
+
+
 export const adminController = {
   // Admin Login
   login: async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
 
-      // Validate input
       if (!email || !password) {
         res.status(400).json({ message: "Email and Password are required" });
         return;
@@ -15,7 +20,6 @@ export const adminController = {
 
       const userRepository = createUserRepository();
 
-      // Call the login use case
       const { adminToken, role } = await loginAdmin(userRepository, { email, password });
 
       res.cookie("auth_token", adminToken, { httpOnly: true, maxAge: 86400000 });
@@ -25,6 +29,17 @@ export const adminController = {
     }
   },
 
+  // List all doctors
+  getDoctors: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const doctorRepository = createDoctorRepository();
+      const doctors = await listDoctors(doctorRepository);
+
+      res.status(200).json({ doctors });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to fetch doctors", error: error.message });
+    }
+  },
 
 
 

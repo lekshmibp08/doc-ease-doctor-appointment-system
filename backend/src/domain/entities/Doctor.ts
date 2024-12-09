@@ -6,4 +6,5 @@ export type Doctor = {
   password: string;
   role: "doctor";
   isApproved: boolean;
+  isBlocked: boolean;
 };

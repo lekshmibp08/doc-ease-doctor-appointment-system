@@ -12,7 +12,8 @@ export const createDoctorRepository = (): IDoctorRepository => ({
           password: doctorDoc.password,
           role: doctorDoc.role,
           registerNumber: doctorDoc.registerNumber,
-          isApproved: doctorDoc.isApproved
+          isApproved: doctorDoc.isApproved,
+          isBlocked: doctorDoc.isBlocked
         }
       : null;
   },
@@ -25,7 +26,11 @@ export const createDoctorRepository = (): IDoctorRepository => ({
       password: doctorDoc.password,
       role: doctorDoc.role,
       registerNumber: doctorDoc.registerNumber,
-      isApproved: doctorDoc.isApproved
+      isApproved: doctorDoc.isApproved,
+      isBlocked: doctorDoc.isBlocked
     };
+  },
+  getAllDoctors: async () => {
+    return await DoctorModel.find({}, "-password"); // Exclude password field
   },
 });
