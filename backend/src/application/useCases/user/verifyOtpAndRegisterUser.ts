@@ -23,6 +23,6 @@ export const verifyOtpAndRegister = async (
   const hashedPassword = await bcrypt.hash(password, 10);
 
   // Create a new user
-  const user: User = { fullName, email, mobileNumber, password: hashedPassword, role: "user" };
+  const user: User = { fullName, email, mobileNumber, password: hashedPassword, role: "user", isBlocked: false };
   return await userRepository.create(user);
 };

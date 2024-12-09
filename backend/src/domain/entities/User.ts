@@ -4,5 +4,6 @@ export type User = {
     mobileNumber: string;
     password: string;
     role: "user" | "doctor" | "admin";
+    isBlocked: Boolean
   };
   

@@ -3,6 +3,7 @@ import { createUserRepository } from "../../database/repositories/UserRepository
 import { loginAdmin } from "../../../application/useCases/admin/loginAdmin";
 import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
 import { listDoctors } from "../../../application/useCases/admin/listDoctors";
+import { listUsers } from "../../../application/useCases/admin/listUsers";
 
 
 
@@ -40,7 +41,18 @@ export const adminController = {
       res.status(500).json({ message: "Failed to fetch doctors", error: error.message });
     }
   },
+  
+  // List all users
+  getAllUsers: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userRepository = createUserRepository();
+      const users = await listUsers(userRepository);
 
+      res.status(200).json({ users });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to fetch users", error: error.message });
+    }
+  },
 
 
 
