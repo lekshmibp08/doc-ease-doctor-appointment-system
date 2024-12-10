@@ -4,6 +4,8 @@ export const authController = {
   // Logout for all roles (User, Doctor, Admin)
   logout: (req: Request, res: Response): void => {
     try {
+      console.log("BACKEND LOGOUT");
+      
       // Clear the auth token cookie
       res.clearCookie("auth_token", { httpOnly: true });
       res.status(200).json({ message: "Logout successful" });

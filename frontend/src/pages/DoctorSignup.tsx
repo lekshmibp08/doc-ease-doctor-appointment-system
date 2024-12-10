@@ -14,14 +14,14 @@ const DoctorSignup = () => {
 
         <div className="mt-8">
           <img
-            src="/public/background-2.png"
+            src="/background-2.png"
             alt="Illustration"
             className="max-w-full h-auto"
           />
         </div>
       </div>
 
-      <div className="w-full md:w-1/2 bg-blue-100 p-8 rounded-md">
+      <div className="w-full md:w-1/2 bg-blue-100 p-8 rounded-md mr-14">
         <h2 className="text-3xl font-semibold text-center text-customTeal mb-6">
           CREATE AN ACCOUNT
         </h2>
