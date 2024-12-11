@@ -6,6 +6,7 @@ import DoctorLogin from './pages/DoctorLogin';
 import DoctorSignup from './pages/DoctorSignup';
 import DoctorDashboard from './pages/DoctorDashboard';
 import AdminLogin from './pages/adminPages/AdminLogin';
+import AdminDashboard from './pages/adminPages/AdminDashboard';
 
 
 const App: React.FC = () => {
@@ -24,6 +25,12 @@ const App: React.FC = () => {
           element={
           <RoleBasedRoute allowedRole={'doctor'}>
             <DoctorDashboard />
+          </RoleBasedRoute>} 
+        />
+        <Route path="/admin/dashboard" 
+          element={
+          <RoleBasedRoute allowedRole={'admin'}>
+            <AdminDashboard />
           </RoleBasedRoute>} 
         />
 

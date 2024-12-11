@@ -13,6 +13,8 @@ const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({ allowedRole, children }
   const { token, role } = useSelector((state: RootState) => state.auth)
   console.log("allowedRole: ", allowedRole);
   console.log("Role: ", role);
+  console.log("TOKEN :", token);
+  
   
   
 

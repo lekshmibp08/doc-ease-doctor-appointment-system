@@ -37,11 +37,13 @@ const AdminLogin = () => {
         dispatch(clearAuth());
         const response = await axios.post('/api/admin/login', formData);
   
-        const { docToken: token, role } = response.data;
-  
+        const { adminToken: token, role } = response.data;
+        
         dispatch(setAuth({ token, role }));
-  
+        
+        console.log("TOKEN received: ", token);
         console.log('Login Successful:', response);
+        
         navigate('/admin/dashboard', { replace: true });
   
       } catch (error: any) {
