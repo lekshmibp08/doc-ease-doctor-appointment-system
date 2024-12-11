@@ -51,6 +51,7 @@ const DoctorLoginPage = () => {
         console.error('backendMessage:', backendMessage);
       } else {
         console.error('Error:', error.message || 'Network Error');
+        setError(error.message || 'Network Error')
       }
     }
   };
