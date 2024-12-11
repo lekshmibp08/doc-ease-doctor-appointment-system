@@ -7,6 +7,7 @@ import DoctorSignup from './pages/DoctorSignup';
 import DoctorDashboard from './pages/DoctorDashboard';
 import AdminLogin from './pages/adminPages/AdminLogin';
 import AdminDashboard from './pages/adminPages/AdminDashboard';
+import UserLogin from './pages/userPages/UserLogin';
 
 
 const App: React.FC = () => {
@@ -17,6 +18,7 @@ const App: React.FC = () => {
         <Route path="/doctor/login" element={<DoctorLogin/>} />
         <Route path="/doctor/signup" element={<DoctorSignup />} />
         <Route path="/admin/login" element={<AdminLogin/>} />
+        <Route path="/user/login" element={<UserLogin/>} />
         
         
         {/* User-Specific Pages */}

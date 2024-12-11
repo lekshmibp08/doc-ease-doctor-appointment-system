@@ -9,26 +9,27 @@ interface RoleBasedRouteProps {
 }
 
 const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({ allowedRole, children }) => {
+  const { token, role } = useSelector((state: RootState) => state.auth);
 
-  const { token, role } = useSelector((state: RootState) => state.auth)
-  console.log("allowedRole: ", allowedRole);
-  console.log("Role: ", role);
-  console.log("TOKEN :", token);
-  
-  
-  
+  // Log details only in development
+    console.log("allowedRole: ", allowedRole);
+    console.log("Role: ", role);
+    console.log("TOKEN: ", token);
 
-  if (!token) {
-    // If no token, redirect to login
-    return <Navigate to="/doctor/login" replace />;
+  // Redirect to the appropriate login page if token is missing
+  if (!token || token.trim() === "") {
+    const loginPath = allowedRole === 'admin' ? '/admin/login' : allowedRole === 'doctor' ? '/doctor/login' : '/user/login';
+    console.log("LOGIN PATH: ", loginPath);
+    
+    return <Navigate to={loginPath} replace />;
   }
 
-  if (allowedRole !== role) {
-    // If role is not allowed, redirect to an unauthorized page or login
+  // Redirect to unauthorized page if the role is not allowed
+  if (!role || allowedRole !== role) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  // Render the page if role is allowed
+  // Render the child component if the role matches
   return children;
 };
 
