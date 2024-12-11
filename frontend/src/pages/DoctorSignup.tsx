@@ -35,7 +35,7 @@ const DoctorSignup = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let interval;
+    let interval: any;
     if (step === 2) {
       interval = setInterval(() => {
         setTimer((prevTimer) => {
@@ -57,27 +57,27 @@ const DoctorSignup = () => {
   };
 
   // Step 1: Register and Request OTP
-  const handleRegister = async (values) => {
+  const handleRegister = async (values: any) => {
     setError('');
     try {
       const response = await axios.post('/api/doctors/send-otp', { email: values.email });
       setMessage(response.data.message);
       setStep(2); // Move to Step 2
       setTimer(120); // Reset timer for 2 minutes
-    } catch (err) {
+    } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to register. Please try again.');
     }
   };
 
   // Step 2: Verify OTP
-  const handleVerifyOtp = async (values) => {
+  const handleVerifyOtp = async (values: any) => {
     setError('');
     setMessage('');
     try {
       const response = await axios.post('/api/doctors/verify-otp-and-register', values);
       setMessage(response.data.message);
       navigate('/doctor/login'); // Redirect to login after successful registration
-    } catch (err) {
+    } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to verify OTP. Please try again.');
     }
   };
