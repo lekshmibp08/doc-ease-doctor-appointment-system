@@ -97,7 +97,7 @@ const DoctorSignup = () => {
     <div className="min-h-screen flex flex-col md:flex-row items-center bg-white">
       <div className="w-full md:w-1/2 flex flex-col items-center justify-center p-8">
         <div className="text-customTeal font-bold text-4xl flex items-center space-x-2 mb-4">
-          <span>DocEase</span>
+          <span style={{ fontFamily: "'Lobster', cursive" }}>DocEase</span>
           <i className="fas fa-stethoscope text-customTeal text-3xl"></i>
         </div>
         <p className="text-customTeal text-lg text-center">Connect and Manage Your Patients Here</p>
