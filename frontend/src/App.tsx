@@ -5,6 +5,7 @@ import RoleBasedRoute from './components/RoleBasedRoute';
 import DoctorLogin from './pages/DoctorLogin';
 import DoctorSignup from './pages/DoctorSignup';
 import DoctorDashboard from './pages/DoctorDashboard';
+import AdminLogin from './pages/adminPages/AdminLogin';
 
 
 const App: React.FC = () => {
@@ -14,6 +15,7 @@ const App: React.FC = () => {
         {/* Public Pages */}
         <Route path="/doctor/login" element={<DoctorLogin/>} />
         <Route path="/doctor/signup" element={<DoctorSignup />} />
+        <Route path="/admin/login" element={<AdminLogin/>} />
         
         
         {/* User-Specific Pages */}
