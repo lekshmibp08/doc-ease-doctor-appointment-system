@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useSelector } from 'react-redux';
+import { RootState } from '../Redux/store';
 
 // Validation schema for the first step (Registration)
 const step1ValidationSchema = Yup.object().shape({
@@ -28,11 +30,20 @@ const step1ValidationSchema = Yup.object().shape({
 });
 
 const DoctorSignup = () => {
+
+  const token = useSelector((state: RootState) => state.auth.token )
+
   const [step, setStep] = useState(1);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [timer, setTimer] = useState(120); // Timer in seconds
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      navigate('/doctor/dashboard', { replace: true });
+    }
+  }, [token, navigate]); // Runs whenever the token or navigate changes
 
   useEffect(() => {
     let interval: any;
@@ -76,7 +87,7 @@ const DoctorSignup = () => {
     try {
       const response = await axios.post('/api/doctors/verify-otp-and-register', values);
       setMessage(response.data.message);
-      navigate('/doctor/login'); // Redirect to login after successful registration
+      navigate('/doctor/login'); 
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to verify OTP. Please try again.');
     }
