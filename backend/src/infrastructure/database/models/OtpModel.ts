@@ -15,7 +15,7 @@ const OtpSchema = new Schema<IOtpDocument>({
     expiresAt: { 
         type: Date, 
         required: true,
-        index: { expires: '5m' } 
+        index: { expires: '2m' } 
     },
 });
 

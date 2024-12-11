@@ -1,18 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import OAuth from '../components/OAuth';
 import { setAuth, clearAuth } from '../Redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../Redux/store';
 
 const DoctorLoginPage = () => {
+
   const [formData, setFormData] = useState({});
   const [error, setError] = useState('');
 
+  const token = useSelector((state: RootState) => state.auth.token )
+
   const dispatch = useDispatch();
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (token) {
+      navigate('/doctor/dashboard', { replace: true });
+    }
+  }, [token, navigate]); // Runs whenever the token or navigate changes
+
 
   const handleChange = (e: any) => {
     setFormData({...formData, [e.target.id]: e.target.value})
