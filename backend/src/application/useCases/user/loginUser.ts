@@ -8,7 +8,9 @@ export const loginUser = async (
 ): Promise<{ token: string; role: string }> => {
   const { email, password } = data;
 
+  
   const user = await userRepository.findByEmail(email);
+  console.log("USER: : ", user);  
   if (!user) {
     throw new Error("Invalid email or password");
   }

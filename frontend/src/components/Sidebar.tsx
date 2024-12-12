@@ -3,12 +3,12 @@ import { NavLink } from 'react-router-dom';
 
 const Sidebar: React.FC = () => {
   return (
-    <aside className="bg-teal-700 text-white w-64 min-h-screen p-6">
+    <aside className="bg-customBgLight text-black font-bold w-64 min-h-screen p-6">
       <nav className="flex flex-col gap-4">
         <NavLink
           to="/dashboard"
           className={({ isActive }) =>
-            `py-2 px-4 rounded ${isActive ? 'bg-teal-500' : 'hover:bg-teal-600'}`
+            `py-2 px-4 rounded bg-white ${isActive ? 'bg-customTeal text-white' : 'hover:bg-teal-600'}`
           }
         >
           Dashboard
@@ -16,7 +16,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/appointments"
           className={({ isActive }) =>
-            `py-2 px-4 rounded ${isActive ? 'bg-teal-500' : 'hover:bg-teal-600'}`
+            `py-2 px-4 rounded bg-white ${isActive ? 'bg-customTeal text-white' : 'hover:bg-teal-600'}`
           }
         >
           Appointments
@@ -24,7 +24,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/reports"
           className={({ isActive }) =>
-            `py-2 px-4 rounded ${isActive ? 'bg-teal-500' : 'hover:bg-teal-600'}`
+            `py-2 px-4 rounded bg-white ${isActive ? 'bg-customTeal text-white' : 'hover:bg-teal-600'}`
           }
         >
           Reports

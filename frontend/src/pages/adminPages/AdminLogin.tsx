@@ -64,7 +64,7 @@ const AdminLogin = () => {
 
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-custombg">
+    <div className="min-h-screen flex flex-col items-center bg-customBgLight">
       {/* Header Section */}
       
       <AdminHeader/>

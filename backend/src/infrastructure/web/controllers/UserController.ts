@@ -62,7 +62,7 @@ export const userController = {
         return;
       }
 
-      const userRepository = createUserRepository();
+      const userRepository = createUserRepository();      
 
       // Call the login use case
       const { token, role } = await loginUser(userRepository, { email, password });

@@ -105,6 +105,12 @@ const DoctorLoginPage = () => {
             >
               Login
             </button>
+
+            <div className="flex items-center justify-center mb-4">
+              <hr className="flex-grow border-gray-300" />
+              <span className="text-sm text-gray-500 px-4">Or</span>
+              <hr className="flex-grow border-gray-300" />
+            </div>
             <OAuth/>
           </form>
         </div>
