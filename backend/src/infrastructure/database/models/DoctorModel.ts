@@ -19,11 +19,9 @@ const DoctorSchema = new Schema<IDoctorDocument>(
     },
     mobileNumber: { 
       type: String, 
-      required: true 
     },
     password: { 
       type: String, 
-      required: true 
     },
     role: { 
       type: String, 
@@ -33,7 +31,6 @@ const DoctorSchema = new Schema<IDoctorDocument>(
     },
     registerNumber: { 
       type: String, 
-      required: true 
     },
     isApproved: {
       type: Boolean,
