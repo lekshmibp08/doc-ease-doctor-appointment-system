@@ -3,7 +3,7 @@ import axios from 'axios';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import OAuth from '../../components/OAuth';
-import { setAuth, clearAuth } from '../../Redux/slices/authSlice';
+import { setUserToken, clearUserToken } from '../../Redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
@@ -13,10 +13,16 @@ const UserLogin = () => {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState('');
 
-  const token = useSelector((state: RootState) => state.auth.token )
+  const token = useSelector((state: RootState) => state.userAuth.token )
 
   const dispatch = useDispatch();
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (token) {
+      navigate('/', { replace: true });
+    }
+  }, [token, navigate]);
 
 
   const handleChange = (e: any) => {
@@ -28,15 +34,15 @@ const UserLogin = () => {
     setError('');
     
     try {
-      dispatch(clearAuth());
+      dispatch(clearUserToken())
       const response = await axios.post('/api/users/login', formData);
 
-      const { docToken: token, role } = response.data;
+      const { token, role } = response.data;
 
-      dispatch(setAuth({ token, role }));
+      dispatch(setUserToken(token));
 
       console.log('Login Successful:', response);
-      navigate('/user/home', { replace: true });
+      navigate('/user/doctors', { replace: true });
 
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {

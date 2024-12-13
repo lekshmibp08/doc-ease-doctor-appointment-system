@@ -9,6 +9,8 @@ import AdminLogin from './pages/adminPages/AdminLogin';
 import AdminDashboard from './pages/adminPages/AdminDashboard';
 import UserLogin from './pages/userPages/UserLogin';
 import Home from './pages/userPages/Home';
+import DoctorList from './pages/userPages/DoctorList';
+import UserSignup from './pages/userPages/UserSignup';
 
 
 const App: React.FC = () => {
@@ -16,11 +18,12 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         {/* Public Pages */}
+        <Route path="/admin/login" element={<AdminLogin/>} />
         <Route path="/doctor/login" element={<DoctorLogin/>} />
         <Route path="/doctor/signup" element={<DoctorSignup />} />
-        <Route path="/admin/login" element={<AdminLogin/>} />
+        <Route path="/user/signup" element={<UserSignup />} />
         <Route path="/user/login" element={<UserLogin/>} />
-        <Route path="/user/home" element={<Home/>} />
+        <Route path="/" element={<Home/>} />
         
         
         {/* User-Specific Pages */}
@@ -35,6 +38,12 @@ const App: React.FC = () => {
           element={
           <RoleBasedRoute allowedRole={'admin'}>
             <AdminDashboard />
+          </RoleBasedRoute>} 
+        />
+        <Route path="/doctors" 
+          element={
+          <RoleBasedRoute allowedRole={'user'}>
+            <DoctorList />
           </RoleBasedRoute>} 
         />
 

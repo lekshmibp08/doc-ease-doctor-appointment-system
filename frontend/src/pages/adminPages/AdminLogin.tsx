@@ -6,14 +6,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
 import { useNavigate } from 'react-router-dom';
 import { setAuth, clearAuth } from '../../Redux/slices/authSlice';
-
+import { setAdminToken, clearAdminToken } from '../../Redux/slices/adminSlice';
 
 const AdminLogin = () => {
 
     const [formData, setFormData] = useState({});
     const [error, setError] = useState('');
   
-    const token = useSelector((state: RootState) => state.auth.token )
+    const token = useSelector((state: RootState) => state.adminAuth.token )
   
     const dispatch = useDispatch();
     const navigate = useNavigate()
@@ -34,14 +34,13 @@ const AdminLogin = () => {
       setError('');
       
       try {
-        dispatch(clearAuth());
+        dispatch(clearAdminToken());
         const response = await axios.post('/api/admin/login', formData);
   
         const { adminToken: token, role } = response.data;
         
-        dispatch(setAuth({ token, role }));
+        dispatch(setAdminToken(token));
         
-        console.log("TOKEN received: ", token);
         console.log('Login Successful:', response);
         
         navigate('/admin/dashboard', { replace: true });
@@ -58,9 +57,6 @@ const AdminLogin = () => {
       }
     };
   
-
-
-
 
 
   return (

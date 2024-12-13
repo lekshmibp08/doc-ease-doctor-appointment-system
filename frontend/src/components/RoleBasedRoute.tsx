@@ -4,32 +4,39 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 
 interface RoleBasedRouteProps {
-  allowedRole: string;
+  allowedRole: 'user' | 'doctor' | 'admin'; // Explicitly define allowed roles
   children: JSX.Element;
 }
 
 const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({ allowedRole, children }) => {
-  const { token, role } = useSelector((state: RootState) => state.auth);
+  // Fetch the token based on the role
+  const userToken = useSelector((state: RootState) => state.userAuth.token);
+  const doctorToken = useSelector((state: RootState) => state.doctorAuth.token);
+  const adminToken = useSelector((state: RootState) => state.adminAuth.token);
 
-  // Log details only in development
-    console.log("allowedRole: ", allowedRole);
-    console.log("Role: ", role);
-    console.log("TOKEN: ", token);
+  // Determine the token to validate based on the allowedRole
+  let token = null;
+  if (allowedRole === 'user') token = userToken;
+  if (allowedRole === 'doctor') token = doctorToken;
+  if (allowedRole === 'admin') token = adminToken;
 
-  // Redirect to the appropriate login page if token is missing
+  console.log("Allowed Role: ", allowedRole);
+  console.log("Token: ", token);
+
+  // Redirect to the appropriate login page if the token is missing
   if (!token || token.trim() === "") {
-    const loginPath = allowedRole === 'admin' ? '/admin/login' : allowedRole === 'doctor' ? '/doctor/login' : '/user/login';
-    console.log("LOGIN PATH: ", loginPath);
-    
+    const loginPath =
+      allowedRole === 'admin'
+        ? '/admin/login'
+        : allowedRole === 'doctor'
+        ? '/doctor/login'
+        : '/user/login';
+
+    console.log("Redirecting to login path:", loginPath);
     return <Navigate to={loginPath} replace />;
   }
 
-  // Redirect to unauthorized page if the role is not allowed
-  if (!role || allowedRole !== role) {
-    return <Navigate to="/unauthorized" replace />;
-  }
-
-  // Render the child component if the role matches
+  // Render the child component if the token is valid
   return children;
 };
 

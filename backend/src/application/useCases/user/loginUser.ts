@@ -10,7 +10,6 @@ export const loginUser = async (
 
   
   const user = await userRepository.findByEmail(email);
-  console.log("USER: : ", user);  
   if (!user) {
     throw new Error("Invalid email or password");
   }

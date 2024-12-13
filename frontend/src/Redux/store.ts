@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from "./slices/authSlice";
+import { combineReducers } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { combineReducers } from 'redux';
+import userAuthReducer from './slices/userSlice';
+import doctorAuthReducer from './slices/doctorSlice';
+import adminAuthReducer from './slices/adminSlice';
 import {
   FLUSH,
   REHYDRATE,
@@ -12,27 +14,29 @@ import {
   REGISTER,
 } from 'redux-persist';
 
-// Combine reducers
+// Combine reducers for different roles
 const rootReducer = combineReducers({
-  auth: authReducer,
+  userAuth: userAuthReducer,
+  doctorAuth: doctorAuthReducer,
+  adminAuth: adminAuthReducer,
 });
 
 // Persist configuration
 const persistConfig = {
   key: 'root',
   storage,
+  whitelist: ['userAuth', 'doctorAuth', 'adminAuth'], // Only persist these slices
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+// Configure store
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore redux-persist action types
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        // Ignore non-serializable paths in state
         ignoredPaths: ['_persist'],
       },
     }),
@@ -40,6 +44,6 @@ export const store = configureStore({
 
 export const persistor = persistStore(store);
 
-// TypeScript types for store
-export type RootState = ReturnType<typeof store.getState>;
+// TypeScript types
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;

@@ -3,7 +3,7 @@ import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import OAuth from '../components/OAuth';
-import { setAuth, clearAuth } from '../Redux/slices/authSlice';
+import { setDoctorToken, clearDoctorToken } from '../Redux/slices/doctorSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
@@ -13,7 +13,7 @@ const DoctorLoginPage = () => {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState('');
 
-  const token = useSelector((state: RootState) => state.auth.token )
+  const token = useSelector((state: RootState) => state.doctorAuth.token )
 
   const dispatch = useDispatch();
   const navigate = useNavigate()
@@ -34,12 +34,12 @@ const DoctorLoginPage = () => {
     setError('');
     
     try {
-      dispatch(clearAuth());
+      clearDoctorToken();
       const response = await axios.post('/api/doctors/login', formData);
 
       const { docToken: token, role } = response.data;
 
-      dispatch(setAuth({ token, role }));
+      dispatch(setDoctorToken(token));
 
       console.log('Login Successful:', response);
       navigate('/doctor/dashboard', { replace: true });

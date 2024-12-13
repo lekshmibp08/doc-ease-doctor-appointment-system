@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
-import { RootState } from '../Redux/store';
+import { RootState } from '../../Redux/store'; 
 
 // Validation schema for the first step (Registration)
 const step1ValidationSchema = Yup.object().shape({
@@ -15,9 +15,6 @@ const step1ValidationSchema = Yup.object().shape({
   mobileNumber: Yup.string()
     .matches(/^\d{10}$/, 'Mobile Number must be 10 digits')
     .required('Mobile Number is required'),
-  registerNumber: Yup.string()
-    .matches(/^DOC\d{5}$/, 'Register Number must follow the format DOC12345')
-    .required('Register Number is required'),
   password: Yup.string()
     .matches(
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
@@ -29,9 +26,9 @@ const step1ValidationSchema = Yup.object().shape({
     .required('Confirm Password is required'),
 });
 
-const DoctorSignup = () => {
+const UserSignup = () => {
 
-  const token = useSelector((state: RootState) => state.doctorAuth.token )
+  const token = useSelector((state: RootState) => state.userAuth.token )
 
   const [step, setStep] = useState(1);
   const [message, setMessage] = useState('');
@@ -41,7 +38,7 @@ const DoctorSignup = () => {
 
   useEffect(() => {
     if (token) {
-      navigate('/doctor/dashboard', { replace: true });
+      navigate('/', { replace: true });
     }
   }, [token, navigate]); // Runs whenever the token or navigate changes
 
@@ -71,7 +68,7 @@ const DoctorSignup = () => {
   const handleRegister = async (values: any) => {
     setError('');
     try {
-      const response = await axios.post('/api/doctors/send-otp', { email: values.email });
+      const response = await axios.post('/api/users/send-otp', { email: values.email });
       setMessage(response.data.message);
       setStep(2); // Move to Step 2
       setTimer(120); // Reset timer for 2 minutes
@@ -85,9 +82,9 @@ const DoctorSignup = () => {
     setError('');
     setMessage('');
     try {
-      const response = await axios.post('/api/doctors/verify-otp-and-register', values);
+      const response = await axios.post('/api/users/verify-otp-and-register', values);
       setMessage(response.data.message);
-      navigate('/doctor/login'); 
+      navigate('/user/login'); 
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to verify OTP. Please try again.');
     }
@@ -101,7 +98,7 @@ const DoctorSignup = () => {
           <span style={{ fontFamily: "'Lobster', cursive" }}>DocEase</span>
           <i className="fas fa-stethoscope text-customTeal text-3xl"></i>
         </div>
-        <p className="text-customTeal text-lg text-center">Connect and Manage Your Patients Here</p>
+        <p className="text-customTeal text-lg text-center">Search for a <span className="font-semibold">DOCTOR</span> who suits your needs</p>
         <div className="mt-8">
           <img src="/background-2.png" alt="Illustration" className="max-w-full h-auto" />
         </div>
@@ -122,7 +119,6 @@ const DoctorSignup = () => {
               fullName: '',
               email: '',
               mobileNumber: '',
-              registerNumber: '',
               password: '',
               confirmPassword: '',
             }}
@@ -140,6 +136,7 @@ const DoctorSignup = () => {
                   />
                   <ErrorMessage name="fullName" component="div" className="text-red-600 text-sm" />
                 </div>
+                
                 <div>
                   <Field
                     type="email"
@@ -149,6 +146,7 @@ const DoctorSignup = () => {
                   />
                   <ErrorMessage name="email" component="div" className="text-red-600 text-sm" />
                 </div>
+                
                 <div>
                   <Field
                     type="text"
@@ -157,16 +155,8 @@ const DoctorSignup = () => {
                     className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-customTeal"
                   />
                   <ErrorMessage name="mobileNumber" component="div" className="text-red-600 text-sm" />
-                </div>
-                <div>
-                  <Field
-                    type="text"
-                    name="registerNumber"
-                    placeholder="Register Number"
-                    className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-customTeal"
-                  />
-                  <ErrorMessage name="registerNumber" component="div" className="text-red-600 text-sm" />
-                </div>
+                </div>            
+                
                 <div>
                   <Field
                     type="password"
@@ -176,6 +166,7 @@ const DoctorSignup = () => {
                   />
                   <ErrorMessage name="password" component="div" className="text-red-600 text-sm" />
                 </div>
+                
                 <div>
                   <Field
                     type="password"
@@ -185,6 +176,7 @@ const DoctorSignup = () => {
                   />
                   <ErrorMessage name="confirmPassword" component="div" className="text-red-600 text-sm" />
                 </div>
+                
                 <button
                   type="submit"
                   className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
@@ -228,7 +220,7 @@ const DoctorSignup = () => {
           {step === 1 ? (
             <>
               Already have an account?{' '}
-              <a href="/doctor/login" className="text-blue-600 hover:underline">
+              <a href="/user/login" className="text-blue-600 hover:underline">
                 Back to Log In
               </a>
             </>
@@ -256,4 +248,4 @@ const DoctorSignup = () => {
   );
 };
 
-export default DoctorSignup;
+export default UserSignup;
