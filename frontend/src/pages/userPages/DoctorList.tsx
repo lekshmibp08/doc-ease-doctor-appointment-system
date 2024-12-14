@@ -1,9 +1,14 @@
+import Doctors from "../../components/Doctors"
+import Footer from "../../components/Footer"
+import UserHeader from "../../components/UserHeader"
 
 const DoctorList = () => {
   return (
-    <div>
-      DOCTORS LIST
-    </div>
+    <>
+      <UserHeader/>
+      <Doctors/>
+      <Footer/>
+    </>
   )
 }
 
