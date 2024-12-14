@@ -2,7 +2,13 @@ import mongoose, { Schema, model } from "mongoose";
 import { User } from "../../../domain/entities/User";
 
 interface IUserDocument extends Document, Omit<User, "_id"> {
-    _id: mongoose.Types.ObjectId; // Mongoose ObjectId for the _id field
+    _id: mongoose.Types.ObjectId; 
+    profilePicture: string;
+    gender: string;
+    age: string;
+    addressline: string;
+    city: string;
+    state: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -30,6 +36,30 @@ const UserSchema = new Schema<IUserDocument>(
             enum: ["user", "doctor", "admin"],
             default: "user",
             required: true,
+        },
+        profilePicture: {
+          type: String,
+          default: 'https://www.pngkit.com/png/detail/126-1262807_instagram-default-profile-picture-png.png',
+        },
+        gender: {
+          type: String,
+          default: "",
+        },
+        age: {
+          type: String,
+          default: "",
+        },
+        addressline: {
+          type: String,
+          default: "",
+        },
+        city: {
+          type: String,
+          default: "",
+        },
+        state: {
+          type: String,
+          default: "",
         },
         isBlocked: {
             type: Boolean,
