@@ -1,21 +1,22 @@
-import React from 'react';
 import { Menu } from '@headlessui/react';
 import useLogout from '../hooks/useLogout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
+import { useNavigate } from 'react-router-dom';
 
-const UserHeader = ({ userName = 'Lekshmi' }) => {
+const UserHeader = () => {
 
   const { token, currentUser } = useSelector((state: RootState) => state.userAuth )
+  const navigate = useNavigate();
 
     const handleSignOut = useLogout()
 
   return (
-    <header className="bg-teal-700 text-white px-4">
+    <header className="bg-customTeal text-white px-4">
       <div className="flex flex-wrap items-center justify-between gap-4 px-10">
         
         {/* Left Section: Logo and Tagline */}
-        <div className="bg-teal-700 text-white flex flex-col items-center py-6">
+        <div className="bg-customTeal text-white flex flex-col items-center py-6">
           {/* Logo */}
           <div className="flex items-center">
             <h1
@@ -87,8 +88,10 @@ const UserHeader = ({ userName = 'Lekshmi' }) => {
               </button>
             </div>
           ) : (
-            <button className="bg-teal-100 text-teal-700 px-4 py-2 rounded-md hover:bg-teal-200 transition whitespace-nowrap">
-              Login / Register
+            <button 
+              onClick={() => navigate('/user/login')}
+              className="bg-[#9fc7cf] text-teal-700 px-4 py-2 rounded-md hover:bg-teal-200 transition whitespace-nowrap">
+                Login / Register
             </button>
           )}
         </div>
