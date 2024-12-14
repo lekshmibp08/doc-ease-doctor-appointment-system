@@ -37,7 +37,8 @@ const useLogout = () => {
             navigate('/user/login', { replace: true });
             break;
           default:
-            navigate('/'); // Fallback route
+            dispatch(clearUserToken());
+            navigate('/user/login', { replace: true });
             break;
         }          
       } catch (error) {
