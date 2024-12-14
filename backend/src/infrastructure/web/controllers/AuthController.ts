@@ -27,7 +27,9 @@ export const authController = {
         return;
       }
 
-      const { authToken, role: userRole } = await googleOAuthLogin(fullname, email, role);      
+      const { authToken, role: userRole } = await googleOAuthLogin(fullname, email, role);   
+      
+      res.cookie("auth_token", authToken, { httpOnly: true, maxAge: 86400000 });
       res.status(200).json({ token: authToken, role: userRole });
 
     } catch (error: any) {
