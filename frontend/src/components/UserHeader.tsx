@@ -1,8 +1,12 @@
 import React from 'react';
 import { Menu } from '@headlessui/react';
 import useLogout from '../hooks/useLogout';
+import { useSelector } from 'react-redux';
+import { RootState } from '../Redux/store';
 
-const UserHeader = ({ loggedIn = true, userName = 'Lekshmi' }) => {
+const UserHeader = ({ userName = 'Lekshmi' }) => {
+
+  const { token, currentUser } = useSelector((state: RootState) => state.userAuth )
 
     const handleSignOut = useLogout()
 
@@ -31,7 +35,7 @@ const UserHeader = ({ loggedIn = true, userName = 'Lekshmi' }) => {
 
         {/* Right Section: User Info or Login/Register */}
         <div className="flex items-center gap-4 ml-auto">
-          {loggedIn ? (
+          {token ? (
             <div className="flex items-center gap-4 relative">
               {/* User avatar */}
               <Menu as="div" className="relative">
@@ -75,7 +79,7 @@ const UserHeader = ({ loggedIn = true, userName = 'Lekshmi' }) => {
 
               {/* Greeting */}
               <span className="font-semibold whitespace-nowrap">
-                Hi {userName}
+                Hi {currentUser}
               </span>
               {/* Notification (bell) icon */}
               <button className="text-white hover:opacity-80">
