@@ -17,6 +17,16 @@ const Header: React.FC = () => {
     }
   };
 
+  // Determine the signup path dynamically
+  const determineSignupPath = () => {
+    if (location.pathname === '/doctor/login') {
+      return '/doctor/signup';
+    }
+    if (location.pathname === '/user/login') {
+      return '/user/signup';
+    }
+  };
+
   return (
     <header className="w-full bg-customTeal flex items-center justify-between p-4">
       <div>
@@ -28,7 +38,7 @@ const Header: React.FC = () => {
         </div>
         {renderSubtitle()}
       </div>
-      <Link to="/doctor/signup">
+      <Link to={determineSignupPath()}>
         <button className="bg-[#9fc7cf] text-black font-semibold px-4 py-2 rounded-md hover:opacity-90 transition">
           Create An Account
         </button>
