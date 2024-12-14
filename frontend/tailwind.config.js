@@ -8,7 +8,8 @@ export default {
     extend: {
       colors: {
         customTeal: '#1C7787', 
-        customBgLight: '#B5D3E0'
+        customBgLight: '#B5D3E0',
+        customTealLight: '#62A6B2'
       },
     },
   },
