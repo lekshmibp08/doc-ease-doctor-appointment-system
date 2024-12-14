@@ -5,6 +5,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
+import OAuth from '../components/OAuth';
 
 // Validation schema for the first step (Registration)
 const step1ValidationSchema = Yup.object().shape({
@@ -191,6 +192,14 @@ const DoctorSignup = () => {
                 >
                   Register
                 </button>
+
+                <div className="flex items-center justify-center mb-4">
+                  <hr className="flex-grow border-gray-300" />
+                  <span className="text-sm text-gray-500 px-4">Or</span>
+                  <hr className="flex-grow border-gray-300" />
+                </div>
+                <OAuth/>  
+
               </Form>
             )}
           </Formik>
@@ -251,6 +260,7 @@ const DoctorSignup = () => {
             </>
           )}
         </p>
+
       </div>
     </div>
   );
