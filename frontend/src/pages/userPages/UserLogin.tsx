@@ -21,7 +21,7 @@ const UserLogin = () => {
 
   useEffect(() => {
     if (token) {
-      navigate('/', { replace: true });
+      navigate('/doctors', { replace: true });
     }
   }, [token, navigate]);
 
@@ -45,7 +45,7 @@ const UserLogin = () => {
       dispatch(setUserToken({token, currentUser: fullName}));
 
       console.log('Login Successful:', response);
-      navigate('/user/doctors', { replace: true });
+      navigate('/doctors', { replace: true });
 
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
