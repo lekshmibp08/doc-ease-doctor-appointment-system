@@ -1,0 +1,96 @@
+import React from 'react';
+import { Menu } from '@headlessui/react';
+import useLogout from '../hooks/useLogout';
+
+const UserHeader = ({ loggedIn = true, userName = 'Lekshmi' }) => {
+
+    const handleSignOut = useLogout()
+
+  return (
+    <header className="bg-teal-700 text-white px-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 px-10">
+        
+        {/* Left Section: Logo and Tagline */}
+        <div className="bg-teal-700 text-white flex flex-col items-center py-6">
+          {/* Logo */}
+          <div className="flex items-center">
+            <h1
+              className="text-4xl"
+              style={{ fontFamily: "'Lobster', cursive" }}
+            >
+              DocEase
+            </h1>
+            <i className="fas fa-stethoscope text-white text-4xl ml-2"></i>
+          </div>
+
+          {/* Tagline */}
+          <p className="text-sm mt-2 font-semibold">
+            Search for a DOCTOR who suits your needs
+          </p>
+        </div>
+
+        {/* Right Section: User Info or Login/Register */}
+        <div className="flex items-center gap-4 ml-auto">
+          {loggedIn ? (
+            <div className="flex items-center gap-4 relative">
+              {/* User avatar */}
+              <Menu as="div" className="relative">
+                <Menu.Button className="flex items-center bg-white text-teal-700 rounded-full h-10 w-10 cursor-pointer">
+                  <img
+                    src="/public/background-1.png"
+                    alt="profile"
+                    referrerPolicy="no-referrer"
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                </Menu.Button>
+
+                {/* Dropdown Menu */}
+                <Menu.Items className="absolute top-12 right-0 bg-white text-teal-700 rounded shadow-md z-10">
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? 'bg-teal-100' : ''
+                        } block w-full px-4 py-2 text-left cursor-pointer`}
+                        onClick={() => console.log('Profile clicked')}
+                      >
+                        Profile
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? 'bg-teal-100' : ''
+                        } block w-full px-4 py-2 text-left cursor-pointer`}
+                        onClick={handleSignOut}
+                      >
+                        SignOut
+                      </button>
+                    )}
+                  </Menu.Item>
+                </Menu.Items>
+              </Menu>
+
+              {/* Greeting */}
+              <span className="font-semibold whitespace-nowrap">
+                Hi {userName}
+              </span>
+              {/* Notification (bell) icon */}
+              <button className="text-white hover:opacity-80">
+                <i className="fas fa-bell text-xl"></i>
+              </button>
+            </div>
+          ) : (
+            <button className="bg-teal-100 text-teal-700 px-4 py-2 rounded-md hover:bg-teal-200 transition whitespace-nowrap">
+              Login / Register
+            </button>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default UserHeader;
