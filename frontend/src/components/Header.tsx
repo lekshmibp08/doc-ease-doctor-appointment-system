@@ -22,7 +22,7 @@ const Header: React.FC = () => {
     if (location.pathname === '/doctor/login') {
       return '/doctor/signup';
     }
-    if (location.pathname === '/user/login') {
+    else {
       return '/user/signup';
     }
   };
