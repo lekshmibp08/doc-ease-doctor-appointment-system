@@ -3,6 +3,19 @@ import { Doctor } from "../../../domain/entities/Doctor";
 
 interface IDoctorDocument extends Document, Doctor {
   _id: mongoose.Types.ObjectId;
+  profilePicture: string;
+  specialization: string;
+  qualification: string;
+  fee: number;
+  gender: string;
+  experience: string;
+  modesOfConsultation: string[];
+  gallery: string[];
+  locationCoordinates?: {
+    latitude: number;
+    longitude: number;
+  } | null; 
+  addressLine: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -40,7 +53,53 @@ const DoctorSchema = new Schema<IDoctorDocument>(
     isBlocked: {
       type: Boolean,
       default: false,
-    }
+    },
+    profilePicture: {
+      type: String,
+      default: 'https://www.pngkit.com/png/detail/126-1262807_instagram-default-profile-picture-png.png',
+    },
+    specialization: {
+      type: String,
+      default: "",
+    },
+    qualification: {
+      type: String,
+      default: "",
+    },
+    fee: {
+      type: Number,
+      default: 0,
+    },
+    gender: {
+      type: String,
+      default: "",
+    },
+    experience: {
+      type: String,
+      default: "",
+    },
+    modesOfConsultation: {
+      type: [String],
+      enum: ["Video", "Clinic"],
+      default: [],
+    },
+    gallery: {
+      type: [String],
+      default: [],
+    },
+    addressLine: {
+      type: String,
+      default: "",
+    },
+    locationCoordinates: {
+      latitude: {
+        type: Number,
+      },
+      longitude: {
+        type: Number,
+      },
+    },
+
   },
   {
     timestamps: true,
