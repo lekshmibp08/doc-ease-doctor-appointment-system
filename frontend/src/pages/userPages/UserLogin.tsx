@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -13,7 +14,7 @@ const UserLogin = () => {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState('');
 
-  const token = useSelector((state: RootState) => state.userAuth.token )
+  const { token } = useSelector((state: RootState) => state.userAuth )
 
   const dispatch = useDispatch();
   const navigate = useNavigate()
@@ -37,9 +38,11 @@ const UserLogin = () => {
       dispatch(clearUserToken())
       const response = await axios.post('/api/users/login', formData);
 
-      const { token, role } = response.data;
+      const { token } = response.data;
 
-      dispatch(setUserToken(token));
+      const {fullName} = jwtDecode<any>(token);
+
+      dispatch(setUserToken({token, currentUser: fullName}));
 
       console.log('Login Successful:', response);
       navigate('/user/doctors', { replace: true });

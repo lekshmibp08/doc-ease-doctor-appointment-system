@@ -45,7 +45,7 @@ export const googleOAuthLogin = async (
 
   // Generate JWT token
   const authToken = jwt.sign(
-    { id: entity.email, role: entity.role },
+    { id: entity._id, email: entity.email, fullName: entity.fullName, role: entity.role },
     process.env.JWT_SECRET as string,
     { expiresIn: "1h" }
   );

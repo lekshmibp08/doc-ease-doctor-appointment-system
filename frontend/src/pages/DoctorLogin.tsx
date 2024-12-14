@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -39,7 +40,9 @@ const DoctorLoginPage = () => {
 
       const { docToken: token } = response.data;
 
-      dispatch(setDoctorToken(token));
+      const {fullName} = jwtDecode<any>(token);
+      
+      dispatch(setDoctorToken({token, currentUser: fullName}));
 
       console.log('Login Successful:', response);
       navigate('/doctor/dashboard', { replace: true });

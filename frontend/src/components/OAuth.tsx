@@ -4,6 +4,7 @@ import {
   getAuth 
 } from "firebase/auth";
 import { app } from "../firebase";
+import { jwtDecode } from 'jwt-decode';
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -34,10 +35,12 @@ const OAuth = () => {
           console.log("FINAL RESPONSE: ", res);
           
           const { token } = res.data;
+          const {fullName} = jwtDecode<any>(token);
+
           if (role === "doctor") {
-            dispatch(setDoctorToken(token));
+            dispatch(setDoctorToken({token, currentUser: fullName}));
           } else {
-            dispatch(setUserToken(token));
+            dispatch(setUserToken({token, currentUser: fullName}));
           }
     
           console.log("Google login successful for role:", role);            

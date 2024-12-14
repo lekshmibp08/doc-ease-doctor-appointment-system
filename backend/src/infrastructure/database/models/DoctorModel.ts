@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 import { Doctor } from "../../../domain/entities/Doctor";
 
 interface IDoctorDocument extends Document, Doctor {
+  _id: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }

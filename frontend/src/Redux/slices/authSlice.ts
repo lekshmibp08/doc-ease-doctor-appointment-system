@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface AuthState {
   token: string | null;
   role: string | null;
+  currentUser: string | null;
 }
 
 const initialState: AuthState = {
   token: null,
   role: null,
+  currentUser: null,
 };
 
 const authSlice = createSlice({
@@ -15,7 +17,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     // Action to set the token and role
-    setAuth: (state, action: PayloadAction<{ token: string; role: string }>) => {
+    setAuth: (state, action: PayloadAction<{ token: string; role: string; currentUser: string }>) => {
       state.token = action.payload.token;
       state.role = action.payload.role;
     },
@@ -23,6 +25,7 @@ const authSlice = createSlice({
     clearAuth: (state) => {
       state.token = null;
       state.role = null;
+      state.currentUser = null;
     },
   },
 });

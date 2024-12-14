@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import Footer from '../../components/Footer';
 import AdminHeader from '../../components/AdminHeader';
@@ -37,11 +38,13 @@ const AdminLogin = () => {
         dispatch(clearAdminToken());
         const response = await axios.post('/api/admin/login', formData);
   
-        const { adminToken: token, role } = response.data;
+        const { adminToken: token } = response.data;
+
+        const {fullName} = jwtDecode<any>(token);
         
-        dispatch(setAdminToken(token));
+        dispatch(setAdminToken({token, currentUser: fullName}));
         
-        console.log('Login Successful:', response);
+        console.log('Admin Login Successful:', response);
         
         navigate('/admin/dashboard', { replace: true });
   

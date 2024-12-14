@@ -1,4 +1,7 @@
+import { Types } from "mongoose";
+
 export type Doctor = {
+  _id?: Types.ObjectId;
   fullName: string;
   email: string;
   mobileNumber: string;

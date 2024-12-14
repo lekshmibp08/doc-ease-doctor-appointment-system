@@ -24,7 +24,7 @@ export const loginDoctor = async (
   }
 
   const docToken = jwt.sign(
-    { id: doctor.email, role: doctor.role }, 
+    { id: doctor._id, email: doctor.email, fullName: doctor.fullName, role: doctor.role }, 
     process.env.JWT_SECRET as string, 
     { expiresIn: "1h" } 
   );
