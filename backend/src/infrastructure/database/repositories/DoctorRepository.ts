@@ -33,4 +33,7 @@ export const createDoctorRepository = (): IDoctorRepository => ({
   getAllDoctors: async () => {
     return await DoctorModel.find({}, "-password"); // Exclude password field
   },
+  getAllApprovedDoctors: async () => {
+    return await DoctorModel.find({isApproved: true}, "-password");
+  }
 });

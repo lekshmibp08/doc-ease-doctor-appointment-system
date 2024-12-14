@@ -3,7 +3,9 @@ import { sendOtpForSignup } from "../../../application/useCases/user/sendOtpForS
 import { verifyOtpAndRegister } from "../../../application/useCases/user/verifyOtpAndRegisterUser";
 import { createOtpRepository } from "../../database/repositories/OtpRepository";
 import { createUserRepository } from "../../database/repositories/UserRepository";
+import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
 import { loginUser } from "../../../application/useCases/user/loginUser";
+import { listApprovedDoctors } from "../../../application/useCases/user/listApprovedDoctors";
 
 export const userController = {
   // Send OTP during signup
@@ -72,6 +74,18 @@ export const userController = {
       res.status(200).json({ message: "Login successful", token, role });
     } catch (error: any) {
       res.status(401).json({ message: error.message });
+    }
+  },
+
+  // List all approved doctors
+  getDoctors: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const doctorRepository = createDoctorRepository();
+      const doctors = await listApprovedDoctors(doctorRepository);
+
+      res.status(200).json({ doctors });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to fetch doctors", error: error.message });
     }
   },
 

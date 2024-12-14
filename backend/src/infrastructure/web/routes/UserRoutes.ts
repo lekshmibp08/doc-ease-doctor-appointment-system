@@ -13,6 +13,9 @@ router.post("/verify-otp-and-register", userController.verifyOtpAndRegisterUser)
 // Login route
 router.post("/login", userController.login);
 
+// Get all Approved doctors
+router.get("/doctors", userController.getDoctors);
+
 // Logout route
 router.post("/logout", authController.logout);
 
