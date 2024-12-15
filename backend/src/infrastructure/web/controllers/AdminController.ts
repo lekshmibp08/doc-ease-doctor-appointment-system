@@ -4,7 +4,7 @@ import { loginAdmin } from "../../../application/useCases/admin/loginAdmin";
 import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
 import { listDoctors } from "../../../application/useCases/admin/listDoctors";
 import { listUsers } from "../../../application/useCases/admin/listUsers";
-
+import { toggleApproval } from "../../../application/useCases/admin/toggleDoctorApproval";
 
 
 
@@ -33,10 +33,16 @@ export const adminController = {
   // List all doctors
   getDoctors: async (req: Request, res: Response): Promise<void> => {
     try {
-      const doctorRepository = createDoctorRepository();
-      const doctors = await listDoctors(doctorRepository);
+      const { page, size, search } = req.query; // default to page 1 and size 10
+      const pageNumber = parseInt(page as string);
+      const pageSize = parseInt(size as string);
+      const searchQuery = search ? String(search) : '';
 
-      res.status(200).json({ doctors });
+
+      const doctorRepository = createDoctorRepository();
+      const { doctors, totalDoctors, totalPages } = await listDoctors(doctorRepository, pageNumber, pageSize, searchQuery);
+
+      res.status(200).json({ doctors, totalDoctors, totalPages, currentPage: pageNumber });
     } catch (error: any) {
       res.status(500).json({ message: "Failed to fetch doctors", error: error.message });
     }
@@ -53,6 +59,23 @@ export const adminController = {
       res.status(500).json({ message: "Failed to fetch users", error: error.message });
     }
   },
+
+  //Handle Doctor Approval
+  doctorApproval: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const doctorRepository = createDoctorRepository();
+
+      const result = await toggleApproval(doctorRepository, id);
+
+      res.status(200).json(result);
+      
+    } catch (error: any) {
+      console.error('Error toggling doctor block status:', error.message);
+      res.status(500).json({ message: error.message || 'Internal server error' });
+
+    }
+  }
 
 
 

@@ -11,6 +11,9 @@ router.post("/login", adminController.login);
 // Doctors Listing
 router.get("/doctors", adminController.getDoctors);
 
+//Doctor Approval
+router.patch("/doctors/approve/:id", adminController.doctorApproval);
+
 // Users Listing
 router.get("/users", adminController.getAllUsers);
 
