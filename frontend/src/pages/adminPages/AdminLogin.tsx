@@ -6,7 +6,6 @@ import AdminHeader from '../../components/AdminHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
 import { useNavigate } from 'react-router-dom';
-import { setAuth, clearAuth } from '../../Redux/slices/authSlice';
 import { setAdminToken, clearAdminToken } from '../../Redux/slices/adminSlice';
 
 const AdminLogin = () => {
