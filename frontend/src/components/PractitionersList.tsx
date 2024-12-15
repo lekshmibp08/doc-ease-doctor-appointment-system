@@ -1,38 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 interface Practitioner {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  isBlocked: boolean;
+    _id: string;
+    registerNumber: string;
+    fullName: string;
+    email: string;
+    mobileNumber: string;
+    isBlocked: boolean;
+    isApproved: boolean;
 }
 
 const PractitionersList: React.FC = () => {
-  // Sample data for practitioners
-  const [practitioners, setPractitioners] = useState<Practitioner[]>([
-    { id: 'UP12345', name: 'Dr. Varun', email: 'varun72@gmail.com', phone: '9746731172', isBlocked: true },
-    { id: 'UP12346', name: 'Dr. Anoop', email: 'anoop91@gmail.com', phone: '9809762096', isBlocked: false },
-  ]);
-
+  const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
 
-  const handleApprove = (id: string) => {
-    console.log(`Updates approved for practitioner: ${id}`);
-    alert(`Updates approved for ${id}`);
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get('/api/admin/doctors', {
+          params: {
+            page: currentPage,
+            size: 8,
+            search: search || "",
+          },
+        });
+
+        setPractitioners(response.data.doctors);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error('Error fetching doctors:', error);
+      }
+    };
+
+    fetchDoctors();
+  }, [currentPage, search]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setCurrentPage(1); // Reset to page 1 on new search
   };
 
-  const handleBlockToggle = (id: string) => {
-    setPractitioners((prev) =>
-      prev.map((practitioner) =>
-        practitioner.id === id ? { ...practitioner, isBlocked: !practitioner.isBlocked } : practitioner
-      )
-    );
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
-  const filteredPractitioners = practitioners.filter((practitioner) =>
-    practitioner.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleApproval = async (id: string) => {
+    try {
+        const response = await axios.patch(`/api/admin/doctors/approve/${id}`);
+        const { isApproved } = response.data;
+
+        setPractitioners((prev) =>
+            prev.map((doctor) =>
+              doctor._id === id ? { ...doctor, isApproved } : doctor
+            )
+          );        
+        
+    } catch (error: any) {
+        console.error('Error blocking/unblocking doctor:', error);
+    }
+  }
 
   return (
     <div className="p-6 bg-customBgLight">
@@ -42,7 +71,7 @@ const PractitionersList: React.FC = () => {
           type="text"
           placeholder="Search..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={handleSearch}
           className="px-4 py-2 border rounded-lg w-64"
         />
       </div>
@@ -56,32 +85,22 @@ const PractitionersList: React.FC = () => {
               <th className="p-3 text-left border">Email</th>
               <th className="p-3 text-left border">Phone</th>
               <th className="p-3 text-center border">Approve Updates</th>
-              <th className="p-3 text-center border">Block</th>
             </tr>
           </thead>
           <tbody>
-            {filteredPractitioners.map((practitioner) => (
-              <tr key={practitioner.id} className="hover:bg-gray-100">
-                <td className="p-3 border">{practitioner.id}</td>
-                <td className="p-3 border">{practitioner.name}</td>
+            {practitioners.map((practitioner) => (
+              <tr key={practitioner._id} className="hover:bg-gray-100">
+                <td className="p-3 border">{practitioner.registerNumber}</td>
+                <td className="p-3 border">{practitioner.fullName}</td>
                 <td className="p-3 border">{practitioner.email}</td>
-                <td className="p-3 border font-semibold">{practitioner.phone}</td>
+                <td className="p-3 border font-semibold">{practitioner.mobileNumber}</td>
                 <td className="p-3 text-center border">
-                  <button
-                    onClick={() => handleApprove(practitioner.id)}
-                    className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition"
-                  >
-                    Approve
-                  </button>
-                </td>
-                <td className="p-3 text-center border">
-                  <button
-                    onClick={() => handleBlockToggle(practitioner.id)}
+                  <button onClick={() => handleApproval(practitioner._id)}
                     className={`${
-                      practitioner.isBlocked ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-red-500 hover:bg-red-600'
+                      practitioner.isApproved ? 'bg-red-500 hover:bg-red-600' : 'bg-green-600 hover:bg-green-700'
                     } text-white px-4 py-1 rounded transition`}
                   >
-                    {practitioner.isBlocked ? 'Unblock' : 'Block'}
+                    {practitioner.isApproved ? 'Block' : 'Approve'}
                   </button>
                 </td>
               </tr>
@@ -93,23 +112,31 @@ const PractitionersList: React.FC = () => {
       {/* Pagination */}
       <div className="flex justify-center items-center mt-4">
         <nav className="flex space-x-2 text-sm font-semibold">
-          <a href="#" className="text-customTeal hover:underline">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="text-customTeal hover:underline"
+          >
             Previous
-          </a>
-          {[1, 2, 3, 4, 5, 6].map((page) => (
-            <a
-              key={page}
-              href="#"
+          </button>
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index}
+              onClick={() => handlePageChange(index + 1)}
               className={`px-3 py-1 rounded text-customTeal ${
-                page === 6 ? 'bg-customTeal text-white' : 'hover:bg-gray-200'
+                currentPage === index + 1 ? 'bg-customTeal text-white' : 'hover:bg-gray-200'
               } transition`}
             >
-              {page}
-            </a>
+              {index + 1}
+            </button>
           ))}
-          <a href="#" className="text-customTeal hover:underline">
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="text-customTeal hover:underline"
+          >
             Next
-          </a>
+          </button>
         </nav>
       </div>
     </div>
