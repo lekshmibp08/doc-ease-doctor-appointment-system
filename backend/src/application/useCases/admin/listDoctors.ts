@@ -6,7 +6,12 @@ export const listDoctors = async (doctorRepository: IDoctorRepository, page: num
   const limit = size;
 
   const query = search
-    ? { $or: [{ fullName: { $regex: search, $options: "i" } }, { email: { $regex: search, $options: "i" } }] }
+    ? { $or: [
+        { fullName: { $regex: search, $options: "i" } }, 
+        { email: { $regex: search, $options: "i" } }, 
+        { mobileNumber: { $regex: search, $options: "i" } },
+        { registerNumber: { $regex: search, $options: "i" } }
+    ] }
     : {};
 
   const doctors = await doctorRepository.getDoctorsWithPagination(skip, limit, query);
