@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Pagination from './Pagination';
 
 interface Practitioner {
     _id: string;
@@ -38,14 +39,13 @@ const PractitionersList: React.FC = () => {
     fetchDoctors();
   }, [currentPage, search]);
 
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
     setCurrentPage(1); // Reset to page 1 on new search
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+ 
 
   const handleApproval = async (id: string) => {
     try {
@@ -110,35 +110,12 @@ const PractitionersList: React.FC = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-center items-center mt-4">
-        <nav className="flex space-x-2 text-sm font-semibold">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="text-customTeal hover:underline"
-          >
-            Previous
-          </button>
-          {[...Array(totalPages)].map((_, index) => (
-            <button
-              key={index}
-              onClick={() => handlePageChange(index + 1)}
-              className={`px-3 py-1 rounded text-customTeal ${
-                currentPage === index + 1 ? 'bg-customTeal text-white' : 'hover:bg-gray-200'
-              } transition`}
-            >
-              {index + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="text-customTeal hover:underline"
-          >
-            Next
-          </button>
-        </nav>
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+            
     </div>
   );
 };
