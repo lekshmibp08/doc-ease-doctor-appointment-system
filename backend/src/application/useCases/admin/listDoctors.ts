@@ -1,13 +1,21 @@
+// application/usecases/admin/listDoctors.ts
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 
-export const listDoctors = async (doctorRepository: IDoctorRepository) => {
-  const doctors = await doctorRepository.getAllDoctors();
-  return doctors.map((doctor) => ({
-    fullName: doctor.fullName,
-    email: doctor.email,
-    mobileNumber: doctor.mobileNumber,
-    registerNumber: doctor.registerNumber,
-    isApproved: doctor.isApproved,
-    isBlocked: doctor.isBlocked,
-  }));
+export const listDoctors = async (doctorRepository: IDoctorRepository, page: number, size: number, search: string) => {
+  const skip = (page - 1) * size;
+  const limit = size;
+
+  const query = search
+    ? { $or: [{ fullName: { $regex: search, $options: "i" } }, { email: { $regex: search, $options: "i" } }] }
+    : {};
+
+  const doctors = await doctorRepository.getDoctorsWithPagination(skip, limit, query);
+  const totalDoctors = await doctorRepository.countDoctors(query);
+  const totalPages = Math.ceil(totalDoctors / size);
+
+  return {
+    doctors,
+    totalDoctors,
+    totalPages,
+  };
 };
