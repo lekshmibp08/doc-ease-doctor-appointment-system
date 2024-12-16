@@ -17,6 +17,8 @@ router.patch("/doctors/approve/:id", adminController.doctorApproval);
 // Users Listing
 router.get("/users", adminController.getAllUsers);
 
+//Block and unblock User
+router.patch("/users/block/:id", adminController.blockAndUnblockUser);
 
 // Logout route
 router.post("/logout", authController.logout);

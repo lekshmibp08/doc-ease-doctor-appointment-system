@@ -5,6 +5,7 @@ import { createDoctorRepository } from "../../database/repositories/DoctorReposi
 import { listDoctors } from "../../../application/useCases/admin/listDoctors";
 import { listUsers } from "../../../application/useCases/admin/listUsers";
 import { toggleApproval } from "../../../application/useCases/admin/toggleDoctorApproval";
+import { toggleBlockUser } from "../../../application/useCases/admin/toggleBlockUser";
 
 
 
@@ -33,7 +34,7 @@ export const adminController = {
   // List all doctors
   getDoctors: async (req: Request, res: Response): Promise<void> => {
     try {
-      const { page, size, search } = req.query; // default to page 1 and size 10
+      const { page, size, search } = req.query; 
       const pageNumber = parseInt(page as string);
       const pageSize = parseInt(size as string);
       const searchQuery = search ? String(search) : '';
@@ -51,10 +52,17 @@ export const adminController = {
   // List all users
   getAllUsers: async (req: Request, res: Response): Promise<void> => {
     try {
-      const userRepository = createUserRepository();
-      const users = await listUsers(userRepository);
+      const { page, size, search } = req.query;
+      console.log(req.query);
+      
+      const pageNumber = parseInt(page as string);
+      const pageSize = parseInt(size as string);
+      const searchQuery = search ? String(search) : '';
 
-      res.status(200).json({ users });
+      const userRepository = createUserRepository();
+      const { users, totalUsers, totalPages } = await listUsers(userRepository, pageNumber, pageSize, searchQuery);
+
+      res.status(200).json({ users, totalUsers, totalPages, currentPage: pageNumber });
     } catch (error: any) {
       res.status(500).json({ message: "Failed to fetch users", error: error.message });
     }
@@ -72,6 +80,23 @@ export const adminController = {
       
     } catch (error: any) {
       console.error('Error toggling doctor block status:', error.message);
+      res.status(500).json({ message: error.message || 'Internal server error' });
+
+    }
+  },
+
+  //Handle Block and unblock User
+  blockAndUnblockUser: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const userRepository = createUserRepository();
+
+      const result = await toggleBlockUser(userRepository, id);
+
+      res.status(200).json(result);
+      
+    } catch (error: any) {
+      console.error('Error toggling user block status:', error.message);
       res.status(500).json({ message: error.message || 'Internal server error' });
 
     }

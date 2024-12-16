@@ -34,11 +34,11 @@ export const createDoctorRepository = (): IDoctorRepository => ({
   },
 
   getAllDoctors: async () => {
-    return await DoctorModel.find({}, "-password"); // Exclude password field
+    return await DoctorModel.find({}, "-password"); 
   },
 
   getDoctorsWithPagination: async (skip: number, limit: number, query: any) => {
-    return await DoctorModel.find(query, "-password").skip(skip).limit(limit); // Paginate the results
+    return await DoctorModel.find(query, "-password").skip(skip).limit(limit); 
   },
 
   countDoctors: async (query: any) => {

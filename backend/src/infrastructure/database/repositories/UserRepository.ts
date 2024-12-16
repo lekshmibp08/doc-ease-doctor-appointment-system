@@ -12,5 +12,19 @@ export const createUserRepository = (): IUserRepository => ({
   },
   getAllUsers: async () => {
     return await UserModel.find({ role: "user" }, "-password"); 
+  },
+  getUsersWithPagination: async (skip, limit, query) => {
+    return await UserModel.find(query, "-password").skip(skip).limit(limit); 
+  },
+
+  countUsers: async (query) => {
+    return await UserModel.countDocuments(query); // Get total count of doctors
+  },  
+  findUserById: async (id) => {
+    return await UserModel.findById(id);
+  },
+  updateUser: async (id, updates) => {
+    const updatedDoctor = await UserModel.findByIdAndUpdate(id, updates, { new: true});
+    return updatedDoctor;
   }
 });
