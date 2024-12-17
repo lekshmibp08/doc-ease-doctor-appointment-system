@@ -1,12 +1,33 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const DoctorsPage = () => {
-  const doctors = Array(6).fill({
-    name: 'MBBS , MD (MEDICINE)',
-    specialization: 'Consultant physician',
-    image: '/public/background-1.png', // Replace with the actual image path
-    rating: 4.5,
-  });
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Fetch doctors where isApproved = true
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        // Fetch doctors from API
+        const response = await axios.get('/api/users/doctors', {});
+        console.log("DOCTOR LIST: ", response.data.doctors);
+        
+
+        // Set doctors state
+        setDoctors(response.data.doctors);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load doctors.');
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   return (
     <div className="bg-customBgLight min-h-screen">
@@ -58,9 +79,9 @@ const DoctorsPage = () => {
       {/* Sidebar and Main Content */}
       <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
         {/* Sidebar Filters */}
-        <aside className="bg-customTealLight text-white shadow-md rounded-lg p-4 w-full md:w-1/5"> {/* Reduced width */}
+        <aside className="bg-customTealLight text-white shadow-md rounded-lg p-4 w-full md:w-1/5">
           <h2 className="text-lg font-bold mb-4">Filters</h2>
-          <div className="flex flex-col gap-4 ">
+          <div className="flex flex-col gap-4">
             <select className="rounded px-3 py-2 bg-customTeal">
               <option>Gender</option>
               <option>Male</option>
@@ -95,52 +116,65 @@ const DoctorsPage = () => {
 
         {/* Main Content */}
         <main className="flex-1">
-          {/* Doctors Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {doctors.map((doctor, index) => (
-              <div
-                key={index}
-                className="bg-customTeal shadow-md rounded-lg p-4 flex flex-col items-center text-center"
-              >
-                {/* Doctor Image */}
-                <img
-                  src={doctor.image}
-                  alt={doctor.name}
-                  className="rounded-lg w-24 h-24 object-cover mb-4"
-                />
-                {/* Doctor Details */}
-                <h3 className="font-bold text-white">{doctor.name}</h3>
-                <p className="text-sm text-white">{doctor.specialization}</p>
-                {/* Rating */}
-                <div className="flex items-center justify-center mt-2 text-yellow-500">
-                  {Array(Math.floor(doctor.rating))
-                    .fill(null)
-                    .map((_, i) => (
-                      <i key={i} className="fas fa-star"></i>
-                    ))}
-                  {doctor.rating % 1 !== 0 && <i className="fas fa-star-half-alt"></i>}
-                </div>
+          {loading ? (
+            <p className="text-center text-teal-700">Loading...</p>
+          ) : error ? (
+            <p className="text-center text-red-500">{error}</p>
+          ) : doctors.length > 0 ? (
+            <>
+              {/* Doctors Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {doctors.map((doctor: any, index) => (
+                  <div
+                    key={index}
+                    className="bg-customTeal shadow-md rounded-lg p-4 flex flex-col items-center text-center"
+                  >
+                    {/* Doctor Image */}
+                    <img
+                      src={doctor.profilePicture || '/public/default-doctor.png'}
+                      alt={doctor.name}
+                      className="rounded-lg w-24 h-24 object-cover mb-4"
+                    />
+                    <p>{doctor.profilePicture || 'null'}</p>
+                    {/* Doctor Details */}
+                    <h3 className="font-bold text-white">{doctor.fullName}</h3>
+                    <p className="text-sm text-white">doctor.specialization</p>
+                    {/* Rating */}
+                    {/*
+                    <div className="flex items-center justify-center mt-2 text-yellow-500">
+                      {Array(Math.floor(doctor.rating))
+                        .fill(null)
+                        .map((_, i) => (
+                          <i key={i} className="fas fa-star"></i>
+                        ))}
+                      {doctor.rating % 1 !== 0 && <i className="fas fa-star-half-alt"></i>}
+                    </div>
+                    */}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Pagination */}
-          <div className="flex justify-center items-center gap-2 mt-6">
-            <button className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300">
-              Previous
-            </button>
-            {[1, 2, 3, 4, 5, 6].map((page) => (
-              <button
-                key={page}
-                className="px-3 py-2 rounded bg-white shadow-md hover:bg-gray-100"
-              >
-                {page}
-              </button>
-            ))}
-            <button className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300">
-              Next
-            </button>
-          </div>
+              {/* Pagination */}
+              <div className="flex justify-center items-center gap-2 mt-6">
+                <button className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300">
+                  Previous
+                </button>
+                {[1, 2, 3, 4, 5, 6].map((page) => (
+                  <button
+                    key={page}
+                    className="px-3 py-2 rounded bg-white shadow-md hover:bg-gray-100"
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300">
+                  Next
+                </button>
+              </div>
+            </>
+          ) : (
+            <p className="text-center text-teal-700">No doctors found.</p>
+          )}
         </main>
       </div>
     </div>

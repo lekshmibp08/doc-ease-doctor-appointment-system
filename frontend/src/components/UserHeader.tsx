@@ -6,10 +6,13 @@ import { useNavigate } from 'react-router-dom';
 
 const UserHeader = () => {
 
-  const { token, currentUser } = useSelector((state: RootState) => state.userAuth )
   const navigate = useNavigate();
+  const { token, currentUser } = useSelector((state: RootState) => state.userAuth )
 
-    const handleSignOut = useLogout()
+  console.log(currentUser.profilePicture);
+  
+  
+  const handleSignOut = useLogout()
 
   return (
     <header className="bg-customTeal text-white px-4">
@@ -42,7 +45,7 @@ const UserHeader = () => {
               <Menu as="div" className="relative">
                 <Menu.Button className="flex items-center bg-white text-teal-700 rounded-full h-10 w-10 cursor-pointer">
                   <img
-                    src="/public/background-1.png"
+                    src={currentUser.profilePicture}
                     alt="profile"
                     referrerPolicy="no-referrer"
                     className="w-10 h-10 rounded-full object-cover"
@@ -57,7 +60,7 @@ const UserHeader = () => {
                         className={`${
                           active ? 'bg-teal-100' : ''
                         } block w-full px-4 py-2 text-left cursor-pointer`}
-                        onClick={() => console.log('Profile clicked')}
+                        onClick={() => navigate('/profile')}
                       >
                         Profile
                       </button>
@@ -80,7 +83,7 @@ const UserHeader = () => {
 
               {/* Greeting */}
               <span className="font-semibold whitespace-nowrap">
-                Hi {currentUser}
+                Hi {currentUser.fullName}
               </span>
               {/* Notification (bell) icon */}
               <button className="text-white hover:opacity-80">

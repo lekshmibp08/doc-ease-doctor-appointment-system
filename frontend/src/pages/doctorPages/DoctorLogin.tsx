@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import OAuth from '../components/OAuth';
-import { setDoctorToken, clearDoctorToken } from '../Redux/slices/doctorSlice';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
+import OAuth from '../../components/OAuth';
+import { setDoctorToken, clearDoctorToken } from '../../Redux/slices/doctorSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../Redux/store';
+import { RootState } from '../../Redux/store';
 
 const DoctorLoginPage = () => {
 
@@ -38,13 +38,13 @@ const DoctorLoginPage = () => {
       clearDoctorToken();
       const response = await axios.post('/api/doctors/login', formData);
 
-      const { docToken: token } = response.data;
+      const { docToken: token, userData } = response.data;
 
-      const {fullName} = jwtDecode<any>(token);
+      console.log(userData);
       
-      dispatch(setDoctorToken({token, currentUser: fullName}));
+      dispatch(setDoctorToken({token, currentUser: userData}));
 
-      console.log('Login Successful:', response);
+      console.log('Login Successful:', userData);
       navigate('/doctor/dashboard', { replace: true });
 
     } catch (error: any) {

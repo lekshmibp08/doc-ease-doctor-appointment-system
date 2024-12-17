@@ -1,10 +1,5 @@
-import { 
-  GoogleAuthProvider, 
-  signInWithPopup,
-  getAuth 
-} from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { app } from "../firebase";
-import { jwtDecode } from 'jwt-decode';
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -29,18 +24,19 @@ const OAuth = () => {
           const res = await axios.post("/api/auth/google", {
             fullname: result.user.displayName,
             email: result.user.email,
+            profilePicture: result.user.photoURL,
             role: role,
           })
 
-          console.log("FINAL RESPONSE: ", res);
           
-          const { token } = res.data;
-          const {fullName} = jwtDecode<any>(token);
+          const { token, userData } = res.data;
+
+          
 
           if (role === "doctor") {
-            dispatch(setDoctorToken({token, currentUser: fullName}));
+            dispatch(setDoctorToken({token, currentUser: userData}));
           } else {
-            dispatch(setUserToken({token, currentUser: fullName}));
+            dispatch(setUserToken({token, currentUser: userData}));
           }
     
           console.log("Google login successful for role:", role);            

@@ -1,11 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-interface SidebarProps {
+interface ISidebarProps {
   isOpen: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
+const Sidebar = ({ isOpen }: ISidebarProps) => {
   return (
     <aside
       className={`bg-customBgLight text-black font-bold w-64 min-h-screen p-6 fixed top-0 left-0 transform transition-transform duration-300 md:relative ${

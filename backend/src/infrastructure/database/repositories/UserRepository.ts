@@ -4,11 +4,11 @@ import UserModel from "../models/UserModel";
 export const createUserRepository = (): IUserRepository => ({
   findByEmail: async (email) => {
     const userDoc = await UserModel.findOne({ email });
-    return userDoc ? { fullName: userDoc.fullName, email: userDoc.email, mobileNumber: userDoc.mobileNumber, password: userDoc.password, role: userDoc.role, isBlocked: false } : null;
+    return userDoc;
   },
   create: async (user) => {
     const userDoc = await UserModel.create(user);
-    return { fullName: userDoc.fullName, email: userDoc.email, mobileNumber: userDoc.mobileNumber, password: userDoc.password, role: userDoc.role, isBlocked: false };
+    return userDoc;
   },
   getAllUsers: async () => {
     return await UserModel.find({ role: "user" }, "-password"); 
@@ -24,7 +24,7 @@ export const createUserRepository = (): IUserRepository => ({
     return await UserModel.findById(id);
   },
   updateUser: async (id, updates) => {
-    const updatedDoctor = await UserModel.findByIdAndUpdate(id, updates, { new: true});
-    return updatedDoctor;
+    const updatedUser = await UserModel.findByIdAndUpdate(id, updates, { new: true});
+    return updatedUser;
   }
 });

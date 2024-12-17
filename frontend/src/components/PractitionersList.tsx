@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Pagination from './Pagination';
+import { IPractitioner } from '../types/interfaces';
 
-interface Practitioner {
-    _id: string;
-    registerNumber: string;
-    fullName: string;
-    email: string;
-    mobileNumber: string;
-    isBlocked: boolean;
-    isApproved: boolean;
-}
 
-const PractitionersList: React.FC = () => {
-  const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
+const PractitionersList = () => {
+  const [practitioners, setPractitioners] = useState<IPractitioner[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');

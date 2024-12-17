@@ -4,6 +4,7 @@ export type Doctor = {
   _id?: Types.ObjectId;
   fullName: string;
   email: string;
+  profilePicture?: string;
   mobileNumber: string;
   registerNumber: string;
   password: string;

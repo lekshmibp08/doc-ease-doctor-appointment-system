@@ -13,11 +13,15 @@ router.post("/verify-otp-and-register", userController.verifyOtpAndRegisterUser)
 // Login route
 router.post("/login", userController.login);
 
+// Logout route
+router.post("/logout", authController.logout);
+
 // Get all Approved doctors
 router.get("/doctors", userController.getDoctors);
 
-// Logout route
-router.post("/logout", authController.logout);
+// update user profile
+router.patch("/profile/update/:id", userController.updateUserProfile);
+
 
 
 export default router;

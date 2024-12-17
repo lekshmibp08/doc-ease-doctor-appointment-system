@@ -66,10 +66,12 @@ export const doctorController = {
 
       const doctorRepository = createDoctorRepository();
 
-      const { docToken, role } = await loginDoctor(doctorRepository, { email, password });
+      const { docToken, role, doctor } = await loginDoctor(doctorRepository, { email, password });
+      
+      const userData = doctor._doc;
 
       res.cookie("auth_token", docToken, { httpOnly: true, maxAge: 86400000 })
-      .status(200).json({ message: "Login successful", docToken, role });
+      .status(200).json({ message: "Login successful", docToken, role, userData });
     } catch (error: any) {
       res.status(401).json({ message: error.message });
     }

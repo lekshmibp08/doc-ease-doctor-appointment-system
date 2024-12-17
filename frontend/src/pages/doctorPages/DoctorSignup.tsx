@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
-import { RootState } from '../Redux/store';
-import OAuth from '../components/OAuth';
+import { RootState } from '../../Redux/store';
+import OAuth from '../../components/OAuth';
 
 // Validation schema for the first step (Registration)
 const step1ValidationSchema = Yup.object().shape({

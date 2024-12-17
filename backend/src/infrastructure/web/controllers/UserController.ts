@@ -6,6 +6,7 @@ import { createUserRepository } from "../../database/repositories/UserRepository
 import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
 import { loginUser } from "../../../application/useCases/user/loginUser";
 import { listApprovedDoctors } from "../../../application/useCases/user/listApprovedDoctors";
+import { updateUser } from "../../../application/useCases/user/updateUser";
 
 export const userController = {
   // Send OTP during signup
@@ -56,7 +57,7 @@ export const userController = {
   // User Login
   login: async (req: Request, res: Response): Promise<void> => {
     try {
-      const { email, password } = req.body;
+      const { email, password } = req.body;      
 
       // Validate input
       if (!email || !password) {
@@ -67,11 +68,14 @@ export const userController = {
       const userRepository = createUserRepository();      
 
       // Call the login use case
-      const { token, role } = await loginUser(userRepository, { email, password });
+      const { token, role, user  } = await loginUser(userRepository, { email, password });
+
+      const userData = user._doc;
+      
 
       // Respond with token and role
       res.cookie("auth_token", token, { httpOnly: true, maxAge: 86400000 });
-      res.status(200).json({ message: "Login successful", token, role });
+      res.status(200).json({ message: "Login successful", token, role, userData });
     } catch (error: any) {
       res.status(401).json({ message: error.message });
     }
@@ -88,6 +92,22 @@ export const userController = {
       res.status(500).json({ message: "Failed to fetch doctors", error: error.message });
     }
   },
+
+  //Update User profile
+  updateUserProfile: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const updatedData = req.body;
+      
+      const userRepository = createUserRepository();
+      const updatedUser = await updateUser(userRepository, id, updatedData);      
+
+      res.status(200).json({message: "User Profile Updated Successfully..!", updatedUser});
+      
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to update profile", error: error.message });
+    }
+  }
 
 
 

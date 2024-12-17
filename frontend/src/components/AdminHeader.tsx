@@ -1,4 +1,3 @@
-import React from 'react';
 import useLogout from '../hooks/useLogout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
@@ -8,7 +7,7 @@ interface AdminHeaderProps {
   toggleSidebar?: () => void;
 }
 
-const AdminHeader: React.FC<AdminHeaderProps> = ({ toggleSidebar }) => {
+const AdminHeader = ({ toggleSidebar }: AdminHeaderProps) => {
 
   const token = useSelector((state: RootState) => state.adminAuth.token )
 

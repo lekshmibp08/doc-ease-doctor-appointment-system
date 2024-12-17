@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 export const loginUser = async (
   userRepository: IUserRepository,
   data: { email: string; password: string }
-): Promise<{ token: string; role: string }> => {
+): Promise<{ token: string; role: string; user: Record<string, any> }> => {
   const { email, password } = data;
 
   
@@ -23,11 +23,13 @@ export const loginUser = async (
     throw new Error("Access denied: only users can log in");
   }
 
+  const { password: _, ... rest} = user
+
   const token = jwt.sign(
     { id: user._id, email: user.email, fullName: user.fullName, role: user.role }, 
     process.env.JWT_SECRET as string, 
     { expiresIn: "1h" } 
   );
 
-  return { token, role: user.role };
+  return { token, role: user.role, user: rest };
 };

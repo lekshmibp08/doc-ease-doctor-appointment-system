@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface UserAuthState {
   token: string | null;
-  currentUser: string | null;
+  currentUser: any;
 }
 
 const initialState: UserAuthState = {
@@ -16,7 +16,7 @@ const userSlice = createSlice({
   reducers: {
     setUserToken: (
       state,
-      action: PayloadAction<{ token: string; currentUser: string }>
+      action: PayloadAction<{ token: string; currentUser: any }>
     ) => {
       state.token = action.payload.token;
       state.currentUser = action.payload.currentUser;

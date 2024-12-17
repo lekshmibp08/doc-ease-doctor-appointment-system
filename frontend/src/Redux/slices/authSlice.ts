@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface AuthState {
   token: string | null;
   role: string | null;
-  currentUser: string | null;
+  currentUser: any;
 }
 
 const initialState: AuthState = {

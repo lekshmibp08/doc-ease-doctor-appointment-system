@@ -1,12 +1,7 @@
-import React from "react";
+import { IPaginationProps } from "../types/interfaces";
 
-interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}
 
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+const Pagination = ({ currentPage, totalPages, onPageChange }: IPaginationProps) => {
   const handlePageClick = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       onPageChange(page); // Trigger the parent component's page change handler

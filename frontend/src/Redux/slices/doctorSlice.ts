@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface DoctorAuthState {
   token: string | null;
-  currentUser: string | null;
+  currentUser: any;
 }
 
 const initialState: DoctorAuthState = {

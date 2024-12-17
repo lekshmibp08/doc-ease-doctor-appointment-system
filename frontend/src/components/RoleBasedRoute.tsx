@@ -3,12 +3,12 @@ import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 
-interface RoleBasedRouteProps {
+interface IRoleBasedRouteProps {
   allowedRole: 'user' | 'doctor' | 'admin'; // Explicitly define allowed roles
   children: JSX.Element;
 }
 
-const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({ allowedRole, children }) => {
+const RoleBasedRoute = ({ allowedRole, children }: IRoleBasedRouteProps) => {
   // Fetch the token based on the role
   const userToken = useSelector((state: RootState) => state.userAuth.token);
   const doctorToken = useSelector((state: RootState) => state.doctorAuth.token);

@@ -39,7 +39,7 @@ const UserSchema = new Schema<IUserDocument>(
         },
         profilePicture: {
           type: String,
-          default: 'https://www.pngkit.com/png/detail/126-1262807_instagram-default-profile-picture-png.png',
+          default: 'https://www.pngkit.com/png/detail/126-1262807_instagram-default-profile-picture-png.png',          
         },
         gender: {
           type: String,

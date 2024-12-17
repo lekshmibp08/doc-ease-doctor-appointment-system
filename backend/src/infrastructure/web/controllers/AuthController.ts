@@ -17,9 +17,7 @@ export const authController = {
 
   googleLogin: async (req: Request, res: Response): Promise<void> => {
     try {
-      const { fullname, email, role } = req.body;
-
-      console.log("REQ BODY: ", req.body.fullname);
+      const { fullname, email, role, profilePicture } = req.body;      
       
 
       if (!email || !role) {
@@ -27,10 +25,14 @@ export const authController = {
         return;
       }
 
-      const { authToken, role: userRole } = await googleOAuthLogin(fullname, email, role);   
+      const { authToken, role: userRole, user } = await googleOAuthLogin(fullname, email, profilePicture, role);   
+
+      //console.log("USER USER AUTH: ", user);
+      const userData = user._doc;
+      
       
       res.cookie("auth_token", authToken, { httpOnly: true, maxAge: 86400000 });
-      res.status(200).json({ token: authToken, role: userRole });
+      res.status(200).json({ token: authToken, userData, role: userRole });
 
     } catch (error: any) {
       console.error("Google OAuth Error:", error);

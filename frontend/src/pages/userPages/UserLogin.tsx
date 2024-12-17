@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
+//import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
@@ -38,13 +38,13 @@ const UserLogin = () => {
       dispatch(clearUserToken())
       const response = await axios.post('/api/users/login', formData);
 
-      const { token } = response.data;
+      const { token, userData } = response.data;
 
-      const {fullName} = jwtDecode<any>(token);
+      //const {fullName} = jwtDecode<any>(token);
+      console.log('Login Successful:', response.data);
 
-      dispatch(setUserToken({token, currentUser: fullName}));
+      dispatch(setUserToken({token, currentUser: userData}));
 
-      console.log('Login Successful:', response);
       navigate('/doctors', { replace: true });
 
     } catch (error: any) {
