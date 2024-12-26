@@ -110,10 +110,11 @@ const UserAccountDetails = () => {
           confirmPassword: "" } });      
       Swal.fire("Updated!", "Profile updated successfully!", "success");      
   
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating profile:", error);
-      Swal.fire("Error!", "Failed to update profile. Please try again.", "error");      
 
+      const errorMessage = error.response?.data?.message || "Failed to update profile. Please try again.";
+      Swal.fire("Error!", errorMessage, "error");
     }
   };
 
