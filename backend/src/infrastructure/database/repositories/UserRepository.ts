@@ -24,7 +24,10 @@ export const createUserRepository = (): IUserRepository => ({
     return await UserModel.findById(id);
   },
   updateUser: async (id, updates) => {
-    const updatedUser = await UserModel.findByIdAndUpdate(id, updates, { new: true});
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      id, updates, 
+      { new: true}
+    ).select('-password');
     return updatedUser;
   }
 });
