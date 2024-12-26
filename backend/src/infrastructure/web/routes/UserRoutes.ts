@@ -18,10 +18,10 @@ router.post("/login", userController.login);
 router.post("/logout", authController.logout);
 
 // Get all Approved doctors
-router.get("/doctors", authenticateUser(["user"]), userController.getDoctors);
+router.get("/doctors", userController.getDoctors);
 
 // update user profile
-router.patch("/profile/update/:id", authenticateUser(["user"]), userController.updateUserProfile);
+router.patch("/profile/update/:id", userController.updateUserProfile);
 
 //send OTP for forget password
 router.post("/forget-password/send-otp", userController.sendOtpForForgetPassword);

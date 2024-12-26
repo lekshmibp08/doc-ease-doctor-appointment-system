@@ -6,6 +6,10 @@ import Swal from "sweetalert2";
 import { useState } from "react";
 import { setDoctorToken } from "../Redux/slices/doctorSlice";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_API_URL = import.meta.env.VITE_CLOUDINARY_API_URL;
+
 
 
 const mapContainerStyle = {
@@ -31,6 +35,7 @@ const DoctorProfileDetails = () => {
     registerNumber: currentUser?.registerNumber || "",
     gallery: currentUser?.gallery || [],
     locationCoordinates: currentUser?.locationCoordinates || null,
+    documents: currentUser?.documents || [],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -98,6 +103,55 @@ const DoctorProfileDetails = () => {
     setFormData({ ...formData, modesOfConsultation: updatedModes });
   };
 
+  // New function to handle document uploads
+  const handleDocumentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const fileArray = Array.from(files);
+
+    // Filter to ensure only allowed formats are uploaded
+    const allowedFormats = ["image/jpeg", "image/jpg", "image/png"];
+    const invalidFiles = fileArray.filter((file) => !allowedFormats.includes(file.type));
+    if (invalidFiles.length > 0) {
+      Swal.fire("Error!", "Only .jpg, .jpeg, or .png files are allowed.", "error");
+      return;
+    }
+
+    if (formData.documents.length + fileArray.length > 10) {
+      Swal.fire("Error!", "You can only upload up to 10 images.", "error");
+      return;
+    }
+
+    try {
+      const uploadedDocuments = await Promise.all(
+        fileArray.map(async (file) => {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+          formData.append("cloud_name", CLOUDINARY_CLOUD_NAME);
+
+          const response = await axios.post(
+            CLOUDINARY_API_URL,
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } }
+          );
+
+          return response.data.secure_url;
+        })
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        documents: [...prev.documents, ...uploadedDocuments],
+      }));
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      Swal.fire("Error!", "Failed to upload images. Please try again.", "error");
+    }
+  };
+
+
 // Gallery Upload Logic
 const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const files = e.target.files;
@@ -114,11 +168,11 @@ const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
       fileArray.map(async (file) => {
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("upload_preset", "DocEase");
-        formData.append("cloud_name", "dgpy8wkiw");
+        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        formData.append("cloud_name", CLOUDINARY_CLOUD_NAME);
 
         const response = await axios.post(
-          "https://api.cloudinary.com/v1_1/dgpy8wkiw/image/upload",
+          CLOUDINARY_API_URL,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -312,6 +366,71 @@ const handleMapClick = (event: google.maps.MapMouseEvent) => {
             {errors.experience && <div className="text-red-600">{errors.experience}</div>}
           </div>
 
+          {/* Modes of Consultation */}
+          <div>
+            <label className="block text-gray-600 mb-1">Modes of Consultation</label>
+            <div className="flex items-center gap-4 mt-3">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  value="Video"
+                  checked={formData.modesOfConsultation.includes("Video")}
+                  onChange={handleCheckboxChange}
+                  className="mr-2"
+                />
+                Video
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  value="Clinic"
+                  checked={formData.modesOfConsultation.includes("Clinic")}
+                  onChange={handleCheckboxChange}
+                  className="mr-2"
+                />
+                Clinic
+              </label>
+            </div>
+            {errors.modesOfConsultation && (
+              <div className="text-red-600">{errors.modesOfConsultation}</div>
+            )}
+          </div>
+
+          {/* Document Upload Section */}
+          <div className="col-span-2">
+            <label className="block text-gray-600 mb-1">Documents of Proof (Max 10)</label>
+            <input
+              type="file"
+              multiple
+              accept=".jpg,.jpeg,.png" // Restrict to allowed formats
+              onChange={handleDocumentUpload}
+              className="block w-full mb-2"
+            />
+            <div className="grid grid-cols-3 gap-4">
+              {formData.documents.map((url, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={url}
+                    alt={`Document ${index + 1}`}
+                    className="w-full h-24 object-cover rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        documents: prev.documents.filter((_, i) => i !== index),
+                      }))
+                    }
+                    className="absolute top-0 right-0 bg-red-600 text-white p-1 rounded-full"
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>          
+
           {/* Location Section */}
           <div className="col-span-2">
             <label className="block text-gray-600 mb-1">Location Coordinates</label>
@@ -373,35 +492,6 @@ const handleMapClick = (event: google.maps.MapMouseEvent) => {
             </div>
           </div>          
 
-          {/* Modes of Consultation */}
-          <div className="col-span-2">
-            <label className="block text-gray-600 mb-1">Modes of Consultation</label>
-            <div className="flex items-center gap-4">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  value="Video"
-                  checked={formData.modesOfConsultation.includes("Video")}
-                  onChange={handleCheckboxChange}
-                  className="mr-2"
-                />
-                Video
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  value="Clinic"
-                  checked={formData.modesOfConsultation.includes("Clinic")}
-                  onChange={handleCheckboxChange}
-                  className="mr-2"
-                />
-                Clinic
-              </label>
-            </div>
-            {errors.modesOfConsultation && (
-              <div className="text-red-600">{errors.modesOfConsultation}</div>
-            )}
-          </div>
         </div>
 
         {/* Submit Button */}

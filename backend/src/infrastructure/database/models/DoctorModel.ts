@@ -11,6 +11,7 @@ interface IDoctorDocument extends Document, Doctor {
   experience: string;
   modesOfConsultation: string[];
   gallery: string[];
+  documents: string[],
   locationCoordinates?: {
     latitude: number;
     longitude: number;
@@ -84,6 +85,10 @@ const DoctorSchema = new Schema<IDoctorDocument>(
       default: [],
     },
     gallery: {
+      type: [String],
+      default: [],
+    },
+    documents: {
       type: [String],
       default: [],
     },

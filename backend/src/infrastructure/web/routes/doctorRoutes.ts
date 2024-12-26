@@ -23,7 +23,7 @@ router.patch("/forget-password/verify-and-reset", doctorController.verifyAndRese
 router.post("/logout", authController.logout);
 
 // update user profile
-router.patch("/profile/update/:id", authenticateUser(["doctor"]), doctorController.updateDoctorProfile);
+router.patch("/profile/update/:id", doctorController.updateDoctorProfile);
 
 
 export default router;

@@ -15,6 +15,7 @@ export interface IPractitioner {
     experience: string;
     modesOfConsultation: string[];
     gallery: string[];
+    documents: string[],
     locationCoordinates?: {
       latitude: number;
       longitude: number;
