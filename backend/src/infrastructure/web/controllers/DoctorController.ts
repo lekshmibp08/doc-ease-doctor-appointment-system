@@ -127,9 +127,12 @@ export const doctorController = {
       
       try {
         const { id } = req.params;
-        console.log("PARAMS: ", id);
+        console.log("Body: ", req.body);
         
         const updatedData = req.body;
+
+        console.log(updatedData);
+        
         
         const doctorRepository = createDoctorRepository();
         const updatedDocProfile = await updateDocProfile(doctorRepository, id, updatedData);  
@@ -140,7 +143,20 @@ export const doctorController = {
         res.status(200).json({message: "User Profile Updated Successfully..!", updatedDocProfile});
         
       } catch (error: any) {
-        res.status(500).json({ message: "Failed to update profile", error: error.message });
+        console.error("Error in updateDoctorProfile:", error.message);
+
+        if (error.message === "Doctor not found") {
+          res.status(404).json({ message: "Doctor not found" });
+          return;
+        }
+    
+        if (error.message === "Current password is incorrect") {
+          res.status(400).json({ message: "Current password is incorrect" });
+          return;
+        }
+    
+        res.status(500).json({ message: "Failed to update profile", error: error.message }); 
+        return;     
       }
     },
 

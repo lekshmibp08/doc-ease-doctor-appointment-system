@@ -10,8 +10,23 @@ export const updateDocProfile = async (
 
     console.log("USECASE ID: ", id);
     console.log("USECASE data: ", updatedData);
-    
 
+    const existingDoctor = await doctorRepository.findDoctorById(id);
+    if(!existingDoctor) {
+      throw new Error("Doctor not found");
+    }
+
+    if (updatedData.currentPassword) {
+      const isPasswordCorrect = await bcrypt.compare(
+        updatedData.currentPassword,
+        existingDoctor.password
+      );
+  
+      if (!isPasswordCorrect) {
+        throw new Error("Current password is incorrect");
+      }
+    }    
+    
     if(updatedData.password) {
         const hashedPassword = await bcrypt.hash(updatedData.password, 10);
         updatedData.password = hashedPassword;
