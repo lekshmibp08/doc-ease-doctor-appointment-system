@@ -7,6 +7,8 @@ import { createDoctorRepository } from "../../database/repositories/DoctorReposi
 import { loginUser } from "../../../application/useCases/user/loginUser";
 import { listApprovedDoctors } from "../../../application/useCases/user/listApprovedDoctors";
 import { updateUser } from "../../../application/useCases/user/updateUser";
+import { sendOtpForResetPassword } from "../../../application/useCases/user/sendOtpForResetPassword";
+import { verifyOtpAndResetPassword } from "../../../application/useCases/user/verifyOtpAndResetPassword";
 
 export const userController = {
   // Send OTP during signup
@@ -74,7 +76,9 @@ export const userController = {
       
 
       // Respond with token and role
-      res.cookie("auth_token", token, { httpOnly: true, maxAge: 86400000 });
+      res.cookie("auth_token", token, { 
+        httpOnly: true, maxAge: 86400000 
+      });
       res.status(200).json({ message: "Login successful", token, role, userData });
     } catch (error: any) {
       res.status(401).json({ message: error.message });
@@ -82,19 +86,35 @@ export const userController = {
   },
 
   // List all approved doctors
-  getDoctors: async (req: Request, res: Response): Promise<void> => {
+  getDoctors: async (req: Request, res: Response) => {
     try {
+      const { page = 1, size = 8, search, location, gender, experience, availability, fees, department, sort } = req.query;
+  
       const doctorRepository = createDoctorRepository();
-      const doctors = await listApprovedDoctors(doctorRepository);
 
-      res.status(200).json({ doctors });
-    } catch (error: any) {
-      res.status(500).json({ message: "Failed to fetch doctors", error: error.message });
+      const result = await listApprovedDoctors(doctorRepository, {
+        page: Number(page),
+        size: Number(size),
+        search: search as string,
+        location: location as string,
+        gender: gender as string,
+        experience: experience as string,
+        availability: availability as string,
+        fees: fees as string,
+        department: department as string,
+        sort: sort as string,
+      });
+  
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch doctors", error });
     }
   },
 
   //Update User profile
   updateUserProfile: async (req: Request, res: Response): Promise<void> => {
+    console.log("ENTERED UPDATION");
+    
     try {
       const { id } = req.params;
       const updatedData = req.body;
@@ -107,12 +127,49 @@ export const userController = {
     } catch (error: any) {
       res.status(500).json({ message: "Failed to update profile", error: error.message });
     }
-  }
+  },
 
+  //Send OTP for forget Password
+  sendOtpForForgetPassword: async (req: Request, res: Response): Promise<void> => {
 
+    const {email} = req.body;
+    
+    console.log(email);
+    
+    const otpRepository = createOtpRepository();
+    const userRepository = createUserRepository();
 
+    try {
+      const existingUser = await userRepository.findByEmail(email);
+      if(!existingUser) {
+        res.status(400).json({ message: "Please enter valid Email id" })
+        return;
+      }
+      await sendOtpForResetPassword(otpRepository, email);
+      res.status(200).json({ message: "OTP sent successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
 
+  },
 
+  //Verify the OTP and reset password
+  verifyAndResetPassword: async (req: Request, res: Response) => {
+    const {email, newPassword, otp} = req.body;
+    const otpRepository = createOtpRepository();
+    const userRepository = createUserRepository();
+
+    try {
+      const user = await verifyOtpAndResetPassword(
+        otpRepository,
+        userRepository,
+        { email, newPassword, otp }
+      );
+      res.status(200).json({ message: "Password changed successfully, You can now log in..!"});
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }    
+  },
 
 
 };

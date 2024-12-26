@@ -4,20 +4,21 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 import { useNavigate } from 'react-router-dom';
 
-const UserHeader = () => {
+interface UserHeaderProps {
+  role: 'user' | 'doctor'; // Add a role prop to differentiate between user and doctor
+}
 
+const UserHeader: React.FC<UserHeaderProps> = ({ role }) => {
   const navigate = useNavigate();
-  const { token, currentUser } = useSelector((state: RootState) => state.userAuth )
+  const { token, currentUser } = useSelector((state: RootState) =>
+    role === 'user' ? state.userAuth : state.doctorAuth
+  );
 
-  console.log(currentUser.profilePicture);
-  
-  
-  const handleSignOut = useLogout()
+  const handleSignOut = useLogout();
 
   return (
     <header className="bg-customTeal text-white px-4">
       <div className="flex flex-wrap items-center justify-between gap-4 px-10">
-        
         {/* Left Section: Logo and Tagline */}
         <div className="bg-customTeal text-white flex flex-col items-center py-6">
           {/* Logo */}
@@ -33,23 +34,27 @@ const UserHeader = () => {
 
           {/* Tagline */}
           <p className="text-sm mt-2 font-semibold">
-            Search for a DOCTOR who suits your needs
+            {role === 'user'
+              ? 'Search for a DOCTOR who suits your needs'
+              : 'Connect and Manage Your Patients Here'}
           </p>
         </div>
 
         {/* Right Section: User Info or Login/Register */}
         <div className="flex items-center gap-4 ml-auto">
-          {token ? (
+          {currentUser ? (
             <div className="flex items-center gap-4 relative">
               {/* User avatar */}
               <Menu as="div" className="relative">
                 <Menu.Button className="flex items-center bg-white text-teal-700 rounded-full h-10 w-10 cursor-pointer">
-                  <img
-                    src={currentUser.profilePicture}
-                    alt="profile"
-                    referrerPolicy="no-referrer"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
+                  {currentUser?.profilePicture && (
+                    <img
+                      src={currentUser?.profilePicture}
+                      alt="profile"
+                      referrerPolicy="no-referrer"
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  )}
                 </Menu.Button>
 
                 {/* Dropdown Menu */}
@@ -60,7 +65,11 @@ const UserHeader = () => {
                         className={`${
                           active ? 'bg-teal-100' : ''
                         } block w-full px-4 py-2 text-left cursor-pointer`}
-                        onClick={() => navigate('/profile')}
+                        onClick={() =>
+                          navigate(
+                            role === 'user' ? '/profile' : '/doctor/profile'
+                          )
+                        }
                       >
                         Profile
                       </button>
@@ -83,7 +92,7 @@ const UserHeader = () => {
 
               {/* Greeting */}
               <span className="font-semibold whitespace-nowrap">
-                Hi {currentUser.fullName}
+                Hi {currentUser?.fullName}
               </span>
               {/* Notification (bell) icon */}
               <button className="text-white hover:opacity-80">
@@ -91,10 +100,13 @@ const UserHeader = () => {
               </button>
             </div>
           ) : (
-            <button 
-              onClick={() => navigate('/user/login')}
-              className="bg-[#9fc7cf] text-teal-700 px-4 py-2 rounded-md hover:bg-teal-200 transition whitespace-nowrap">
-                Login / Register
+            <button
+              onClick={() =>
+                navigate(role === 'user' ? '/user/login' : '/doctor/login')
+              }
+              className="bg-[#9fc7cf] text-teal-700 px-4 py-2 rounded-md hover:bg-teal-200 transition whitespace-nowrap"
+            >
+              Login / Register
             </button>
           )}
         </div>

@@ -5,18 +5,35 @@ export interface IPractitioner {
     fullName: string;
     email: string;
     mobileNumber: string;
+    profilePicture: string;
     isBlocked: boolean;
     isApproved: boolean;
-}
+    specialization: string;
+    qualification: string;
+    fee: number;
+    gender: string;
+    experience: string;
+    modesOfConsultation: string[];
+    gallery: string[];
+    locationCoordinates?: {
+      latitude: number;
+      longitude: number;
+    } | null;
+    addressLine: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }
+  
+  
 
 // User Interface
-export interface IUser {
-    _id: string;
-    fullName: string;
-    email: string;
-    mobileNumber: string;
-    isBlocked: boolean;
-}
+//export interface IUser {
+//    _id: string;
+//    fullName: string;
+//    email: string;
+//    mobileNumber: string;
+//    isBlocked: boolean;
+//}
 
 // Pagination Props Interface
 export interface IPaginationProps {
@@ -32,31 +49,33 @@ export interface ISearchParams {
     size: number;
 }
 // Interface for form data structure
-export interface IUserFormData {
+export interface IUser {
+    _id: string;
     email: string;
     fullName: string;
     gender: string;
     age: string;
-    mobile: string;
+    mobileNumber: string;
     pincode: string;
-    addressLine1: string;
+    addressline: string;
     city: string;
     state: string;
     profilePicture?: string; 
+    isBlocked: boolean;
 }
 
 // Props for UserAccountDetails component
-export interface IUserAccountDetailsProps {
-    formData: IUserFormData;
-    setImage: (file: File) => void;
-    fileRef: React.RefObject<HTMLInputElement>;
-    handleUpdateProfile: () => void;
-}
+//export interface IUserAccountDetailsProps {
+//    formData: IUserFormData;
+//    setImage: (file: File) => void;
+//    fileRef: React.RefObject<HTMLInputElement>;
+//    handleUpdateProfile: () => void;
+//}
 
 // Props for UserProfileDetails component
-export interface IUserProfileDetailsProps {
-    formData: IUserFormData;
-    handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    handleUpdateDetails: () => void;
-}
+//export interface IUserProfileDetailsProps {
+//    formData: IUserFormData;
+//    handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+//    handleUpdateDetails: () => void;
+//}
   

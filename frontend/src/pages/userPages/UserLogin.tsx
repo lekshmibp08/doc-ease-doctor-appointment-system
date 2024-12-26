@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
-//import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
+import axios from '../../services/axiosConfig';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import OAuth from '../../components/OAuth';
+import ForgetPasswordModal from '../../components/ForgetPasswordModal';
 import { setUserToken, clearUserToken } from '../../Redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
 
 const UserLogin = () => {
-
   const [formData, setFormData] = useState({});
   const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
-  const { token } = useSelector((state: RootState) => state.userAuth )
+  const { token } = useSelector((state: RootState) => state.userAuth);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
@@ -25,37 +25,54 @@ const UserLogin = () => {
     }
   }, [token, navigate]);
 
-
   const handleChange = (e: any) => {
-    setFormData({...formData, [e.target.id]: e.target.value})
-  }
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
     setError('');
-    
+
     try {
-      dispatch(clearUserToken())
+      dispatch(clearUserToken());
       const response = await axios.post('/api/users/login', formData);
 
       const { token, userData } = response.data;
-
-      //const {fullName} = jwtDecode<any>(token);
       console.log('Login Successful:', response.data);
 
-      dispatch(setUserToken({token, currentUser: userData}));
+      dispatch(setUserToken({ token, currentUser: userData }));
 
       navigate('/doctors', { replace: true });
-
     } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response) {
-        const backendMessage = error.response.data?.message || 'Something went wrong!';
-        setError(backendMessage)
-        console.error('backendMessage:', backendMessage);
-      } else {
+      
         console.error('Error:', error.message || 'Network Error');
-        setError(error.message || 'Network Error')
-      }
+        setError(error.message || 'Network Error');
+    }
+  };
+
+  const handleSendOTP = async (email: string): Promise<string> => {
+    try {
+      const response = await axios.post('/api/users/forget-password/send-otp', { email });
+      return response.data.message || 'OTP sent successfully.';
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || 'Failed to send OTP. Please try again.'
+      );
+    }
+  };
+
+  const handleResetPassword = async (data: {
+    email: string;
+    newPassword: string;
+    otp: string;
+  }): Promise<string> => {
+    try {
+      const response = await axios.patch('/api/users/forget-password/verify-and-reset', data);
+      return response.data.message || 'Password reset successful!';
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || 'Failed to reset password. Please try again.'
+      );
     }
   };
 
@@ -66,7 +83,6 @@ const UserLogin = () => {
         className="flex-1 flex items-center justify-center relative bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/public/background-1.png')" }}
       >
-      
         <div className="max-w-sm w-full bg-customTeal bg-opacity-50 text-white rounded-lg shadow-lg p-6">
           <h3 className="text-2xl font-bold mb-6 text-white text-center">Login</h3>
 
@@ -97,10 +113,15 @@ const UserLogin = () => {
                 placeholder="Enter your password"
               />
             </div>
+            
             <div className="text-right">
-              <a href="#" className="text-red-600 text-sm hover:underline">
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="text-red-600 text-sm hover:underline"
+              >
                 Forgot Password?
-              </a>
+              </button>
             </div>
             <button
               type="submit"
@@ -114,10 +135,20 @@ const UserLogin = () => {
               <span className="text-sm text-gray-500 px-4">Or</span>
               <hr className="flex-grow border-gray-300" />
             </div>
-            <OAuth/>
+            <OAuth />
           </form>
         </div>
       </main>
+
+      {showModal && (
+        <ForgetPasswordModal
+          onClose={() => setShowModal(false)}
+          title="User Password Reset"
+          onSendOTP={handleSendOTP}
+          onResetPassword={handleResetPassword}
+        />
+      )}
+
       <Footer />
     </div>
   );

@@ -6,6 +6,7 @@ import { setUserToken } from "../Redux/slices/userSlice";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
+import { setDoctorToken } from "../Redux/slices/doctorSlice";
 
 // Form validation schema with Yup
 const validationSchema = Yup.object({
@@ -22,8 +23,8 @@ const validationSchema = Yup.object({
     .notRequired(), // confirmPassword is optional for updates
 });
 
-const UserAccountDetails = () => {
-  const { token, currentUser } = useSelector((state: RootState) => state.userAuth);
+const DoctorAccountDetails = () => {
+  const { token, currentUser } = useSelector((state: RootState) => state.doctorAuth);
   const dispatch = useDispatch();
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -63,7 +64,6 @@ const UserAccountDetails = () => {
       return secure_url;
     } catch (error) {
       setImageError(true);
-      Swal.fire("Error!", "Error uploading image", "error");      
       console.error("Error uploading image:", error);
       return null; // If the upload fails, return null
     }
@@ -82,15 +82,18 @@ const UserAccountDetails = () => {
     }
   
     try {
+        console.log("STARTED HANDLE SUBMIT");
+        console.log(currentUser?._id);
+        
       const res = await axios.patch(
-        `/api/users/profile/update/${currentUser?._id}`,
+        `/api/doctors/profile/update/${currentUser?._id}`,
         updatedData
       );
       
-      const updatedUserData = res.data.updatedUser;
-      console.log("Profile updated:", updatedUserData);
+      const updatedUserData = res.data.updatedDocProfile;
+      console.log("Profile updated:", res);
   
-      dispatch(setUserToken({
+      dispatch(setDoctorToken({
         token: token ?? "", 
         currentUser: updatedUserData
       }));  
@@ -98,11 +101,11 @@ const UserAccountDetails = () => {
       setImagePercent(0);
       setFieldValue("profilePicture", updatedUserData.profilePicture);
       resetForm({ values: { profilePicture: updatedUserData.profilePicture, password: "", confirmPassword: "" } });      
-      Swal.fire("Updated!", "Profile updated successfully!", "success");      
-  
+      Swal.fire("Updated!", "Profile updated successfully!", "success");
+        
     } catch (error) {
       console.error("Error updating profile:", error);
-      Swal.fire("Error!", "Failed to update profile. Please try again.", "error");      
+      Swal.fire("Error!", "Failed to update profile. Please try again.", "error");
 
     }
   };
@@ -209,4 +212,4 @@ const UserAccountDetails = () => {
   );
 };
 
-export default UserAccountDetails;
+export default DoctorAccountDetails;

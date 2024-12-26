@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../services/axiosConfig';
+import Swal from "sweetalert2";
 import Pagination from './Pagination';
 import { IPractitioner } from '../types/interfaces';
 
@@ -34,26 +35,112 @@ const PractitionersList = () => {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    setCurrentPage(1); // Reset to page 1 on new search
+    setCurrentPage(1); 
   };
 
- 
+  const handleBlock = async (id: string, isBlocked: boolean) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: isBlocked ? "Yes, Unblock it!" : "Yes, Block it!",
+    });
 
-  const handleApproval = async (id: string) => {
-    try {
-        const response = await axios.patch(`/api/admin/doctors/approve/${id}`);
-        const { isApproved } = response.data;
-
+    if (result.isConfirmed){
+      try {
+        const response = await axios.patch(`/api/admin/doctors/block/${id}`);
+        const { isBlocked } = response.data;
+  
         setPractitioners((prev) =>
-            prev.map((doctor) =>
-              doctor._id === id ? { ...doctor, isApproved } : doctor
-            )
-          );        
-        
-    } catch (error: any) {
-        console.error('Error blocking/unblocking doctor:', error);
+          prev.map((doctor) =>
+            doctor._id === id ? { ...doctor, isBlocked } : doctor
+          )
+        );   
+        if (isBlocked) {
+          Swal.fire("Approved!", response.data.message, "success");
+        } else {
+          Swal.fire("Rejected!", response.data.message, "success");
+        }
+      } catch (error) {
+        console.error("Error processing request:", error);
+        Swal.fire("Error!", "An error occurred. Please try again.", "error");
+      }        
+
     }
   }
+
+
+const handleApproval = async (id: string, isApproved: boolean) => {
+  if (isApproved) {
+    // Open a SweetAlert2 modal with a text input for the rejection reason
+    const { value: reason } = await Swal.fire({
+      title: "Reject Practitioner",
+      input: "textarea",
+      inputPlaceholder: "Enter the reason for rejection...",
+      inputAttributes: { "aria-label": "Rejection reason" },
+      showCancelButton: true,
+      confirmButtonText: "Submit",
+      cancelButtonText: "Cancel",
+      preConfirm: (input) => {
+        if (!input || input.trim() === "") {
+          Swal.showValidationMessage("Rejection reason is required");
+        }
+        return input;
+      },
+    });    
+
+    console.log(reason);
+    
+
+    if (!reason) return; 
+
+    try {
+      
+      const response = await axios.patch(`/api/admin/doctors/approve/${id}`, {reason});
+
+      
+      setPractitioners((prev) =>
+        prev.map((doctor) =>
+          doctor._id === id ? { ...doctor, isApproved: false } : doctor
+        )
+      );
+
+      Swal.fire("Rejected!", "The doctor has been rejected successfully.", "success");
+    } catch (error) {
+      console.error("Error rejecting doctor:", error);
+      Swal.fire("Error!", "An error occurred. Please try again.", "error");
+    }
+  } else {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Approve it!",
+    });
+
+    if (result.isConfirmed){
+      try {
+        const response = await axios.patch(`/api/admin/doctors/approve/${id}`, {
+        });
+  
+        setPractitioners((prev) =>
+          prev.map((doctor) =>
+            doctor._id === id ? { ...doctor, isApproved: true } : doctor
+          )
+        );
+  
+        Swal.fire("Approved!", "The doctor has been approved successfully.", "success");
+      } catch (error) {
+        console.error("Error approving doctor:", error);
+        Swal.fire("Error!", "An error occurred. Please try again.", "error");
+      }
+    }
+  }
+    
+};
+
 
   return (
     <div className="p-6 bg-customBgLight">
@@ -77,6 +164,7 @@ const PractitionersList = () => {
               <th className="p-3 text-left border">Email</th>
               <th className="p-3 text-left border">Phone</th>
               <th className="p-3 text-center border">Approve Updates</th>
+              <th className="p-3 text-center border">Block / Unblock</th>
             </tr>
           </thead>
           <tbody>
@@ -87,12 +175,21 @@ const PractitionersList = () => {
                 <td className="p-3 border">{practitioner.email}</td>
                 <td className="p-3 border font-semibold">{practitioner.mobileNumber}</td>
                 <td className="p-3 text-center border">
-                  <button onClick={() => handleApproval(practitioner._id)}
+                  <button onClick={() => handleApproval(practitioner._id, practitioner.isApproved)}
                     className={`${
                       practitioner.isApproved ? 'bg-red-500 hover:bg-red-600' : 'bg-green-600 hover:bg-green-700'
                     } text-white px-4 py-1 rounded transition`}
                   >
-                    {practitioner.isApproved ? 'Block' : 'Approve'}
+                    {practitioner.isApproved ? 'Reject' : 'Approve'}
+                  </button>
+                </td>
+                <td className="p-3 text-center border">
+                  <button onClick={() => handleBlock(practitioner._id, practitioner.isBlocked)}
+                    className={`${
+                      practitioner.isBlocked ? 'bg-yellow-600 hover:bg-yellow-800' : 'bg-red-600 hover:bg-red-800'
+                    } text-white px-4 py-1 rounded transition`}
+                  >
+                    {practitioner.isBlocked ? 'Unblock' : 'Block'}
                   </button>
                 </td>
               </tr>

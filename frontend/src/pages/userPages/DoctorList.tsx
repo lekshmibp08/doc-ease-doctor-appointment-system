@@ -5,7 +5,7 @@ import UserHeader from "../../components/UserHeader"
 const DoctorList = () => {
   return (
     <>
-      <UserHeader/>
+      <UserHeader role="user"/>
       <Doctors/>
       <Footer/>
     </>

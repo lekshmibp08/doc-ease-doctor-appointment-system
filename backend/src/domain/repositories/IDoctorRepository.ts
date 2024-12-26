@@ -10,5 +10,17 @@ export type IDoctorRepository = {
   countDoctors: (query: any) => Promise<number>;
   findDoctorById: (id: string) => Promise<Doctor | null>;
   updateDoctor: (id: string, updates: any) => Promise<Doctor | null>;
+  getDoctorsByCriteria(criteria: {
+    page: number;
+    size: number;
+    search?: string;
+    location?: string;
+    gender?: string;
+    experience?: string;
+    availability?: string;
+    fees?: string;
+    department?: string;
+    sort?: string;
+  }): Promise<{ doctors: any[]; totalPages: number }>;
 
 };

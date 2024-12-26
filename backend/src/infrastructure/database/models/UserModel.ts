@@ -9,6 +9,7 @@ interface IUserDocument extends Document, Omit<User, "_id"> {
     addressline: string;
     city: string;
     state: string;
+    pincode: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -58,6 +59,10 @@ const UserSchema = new Schema<IUserDocument>(
           default: "",
         },
         state: {
+          type: String,
+          default: "",
+        },
+        pincode: {
           type: String,
           default: "",
         },

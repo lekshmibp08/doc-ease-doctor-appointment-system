@@ -5,7 +5,7 @@ import Footer from '../../components/Footer'
 const ProfilePage = () => {
   return (
     <>
-        <UserHeader/>
+        <UserHeader role="user"/>
         <UserProfile/>
         <Footer/>
       

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
+import axios from '../../services/axiosConfig';
 import Footer from '../../components/Footer';
 import AdminHeader from '../../components/AdminHeader';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,15 +47,9 @@ const AdminLogin = () => {
         
         navigate('/admin/dashboard', { replace: true });
   
-      } catch (error: any) {
-        if (axios.isAxiosError(error) && error.response) {
-          const backendMessage = error.response.data?.message || 'Something went wrong!';
-          setError(backendMessage)
-          console.error('backendMessage:', backendMessage);
-        } else {
+      } catch (error: any) {       
           setError(error.message || 'Network Error');
           console.error('Error:', error.message || 'Network Error');
-        }
       }
     };
   

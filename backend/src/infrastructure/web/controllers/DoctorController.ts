@@ -4,6 +4,9 @@ import { createDoctorRepository } from "../../database/repositories/DoctorReposi
 import { sendOtpForSignup } from "../../../application/useCases/user/sendOtpForSignup";
 import { verifyOtpAndRegisterDoc } from "../../../application/useCases/doctor/verifyOtpAndRegisterDoc";
 import { loginDoctor } from "../../../application/useCases/doctor/loginDoctor";
+import { sendOtpForResetPassword } from "../../../application/useCases/user/sendOtpForResetPassword";
+import { verifyOtpAndResetDoctorPassword } from "../../../application/useCases/doctor/verifyOtpAndResetDoctorPassword";
+import { updateDocProfile } from "../../../application/useCases/doctor/updateDocProfile";
 
 export const doctorController = {
     // Send OTP during signup
@@ -76,6 +79,70 @@ export const doctorController = {
       res.status(401).json({ message: error.message });
     }
   },
+
+  //Send OTP for forget Password
+  sendOtpForForgetPassword: async (req: Request, res: Response): Promise<void> => {
+    const {email} = req.body;
+    
+    console.log(email);
+    
+    const otpRepository = createOtpRepository();
+    const doctorRepository = createDoctorRepository();
+
+    try {
+      const existingUser = await doctorRepository.findByEmail(email);
+      if(!existingUser) {
+        res.status(400).json({ message: "Please enter valid Email id" })
+        return;
+      }
+      await sendOtpForResetPassword(otpRepository, email);
+      res.status(200).json({ message: "OTP sent successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  },
+
+  //Verify the OTP and reset password verifyOtpAndResetDoctorPassword
+  verifyAndResetPassword: async (req: Request, res: Response): Promise<void> => {
+    const {email, newPassword, otp} = req.body;
+    const otpRepository = createOtpRepository();
+    const doctorRepository = createDoctorRepository();
+
+    try {
+      const user = await verifyOtpAndResetDoctorPassword(
+        otpRepository,
+        doctorRepository,
+        { email, newPassword, otp }
+      );
+      res.status(200).json({ message: "Password changed successfully, You can now log in..!"});
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    } 
+  },
+
+
+    //Update Doctor profile
+    updateDoctorProfile: async (req: Request, res: Response): Promise<void> => {
+      console.log("ENTERED UPDATION");
+      
+      try {
+        const { id } = req.params;
+        console.log("PARAMS: ", id);
+        
+        const updatedData = req.body;
+        
+        const doctorRepository = createDoctorRepository();
+        const updatedDocProfile = await updateDocProfile(doctorRepository, id, updatedData);  
+        
+        console.log("CONTROLLER UPDATED DOC: ", updatedDocProfile);
+        
+  
+        res.status(200).json({message: "User Profile Updated Successfully..!", updatedDocProfile});
+        
+      } catch (error: any) {
+        res.status(500).json({ message: "Failed to update profile", error: error.message });
+      }
+    },
 
 
 };

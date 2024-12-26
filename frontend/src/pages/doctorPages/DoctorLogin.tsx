@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import axios from 'axios';
+import axios from '../../services/axiosConfig';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import OAuth from '../../components/OAuth';
+import ForgetPasswordModal from '../../components/ForgetPasswordModal';
 import { setDoctorToken, clearDoctorToken } from '../../Redux/slices/doctorSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +13,7 @@ const DoctorLoginPage = () => {
 
   const [formData, setFormData] = useState({});
   const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
   const token = useSelector((state: RootState) => state.doctorAuth.token )
 
@@ -47,17 +48,38 @@ const DoctorLoginPage = () => {
       console.log('Login Successful:', userData);
       navigate('/doctor/dashboard', { replace: true });
 
-    } catch (error: any) {
-      if (axios.isAxiosError(error) && error.response) {
-        const backendMessage = error.response.data?.message || 'Something went wrong!';
-        setError(backendMessage)
-        console.error('backendMessage:', backendMessage);
-      } else {
+    } catch (error: any) {  
         console.error('Error:', error.message || 'Network Error');
         setError(error.message || 'Network Error')
-      }
     }
   };
+
+  const handleSendOTP = async (email: string): Promise<string> => {
+    try {
+      const response = await axios.post('/api/doctors/forget-password/send-otp', { email });
+      return response.data.message || 'OTP sent successfully.';
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || 'Failed to send OTP. Please try again.'
+      );
+    }
+  };
+
+  const handleResetPassword = async (data: {
+    email: string;
+    newPassword: string;
+    otp: string;
+  }): Promise<string> => {
+    try {
+      const response = await axios.patch('/api/doctors/forget-password/verify-and-reset', data);
+      return response.data.message || 'Password reset successful!';
+    } catch (error: any) {
+      throw new Error(
+        error.response?.data?.message || 'Failed to reset password. Please try again.'
+      );
+    }
+  };
+
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-white">
@@ -97,10 +119,15 @@ const DoctorLoginPage = () => {
                 placeholder="Enter your password"
               />
             </div>
+
             <div className="text-right">
-              <a href="#" className="text-red-600 text-sm hover:underline">
+              <button
+                type='button'
+                onClick={() => setShowModal(true)}
+                className='text-red-600 text-sm hover:underline'
+              >
                 Forgot Password?
-              </a>
+              </button>
             </div>
             <button
               type="submit"
@@ -118,6 +145,14 @@ const DoctorLoginPage = () => {
           </form>
         </div>
       </main>
+      {showModal && (
+        <ForgetPasswordModal
+          onClose={() => setShowModal(false)}
+          title="User Password Reset"
+          onSendOTP={handleSendOTP}
+          onResetPassword={handleResetPassword}
+        />
+      )}
       <Footer />
     </div>
   );

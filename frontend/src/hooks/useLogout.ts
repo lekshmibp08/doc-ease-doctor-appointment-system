@@ -14,13 +14,11 @@ const useLogout = () => {
     try {
         await axios.post('/api/auth/logout', {},);
 
-        // Determine the base path (admin, doctor, or patient)
-        const basePath = location.pathname.split('/')[1]; // Extract the first part of the path
+        const basePath = location.pathname.split('/')[1]; 
 
         console.log("BASE PATH: ", basePath);
         
 
-        // Redirect based on the base path
         switch (basePath) {
           case 'admin':
             dispatch(clearAdminToken());

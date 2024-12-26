@@ -6,6 +6,7 @@ import { listDoctors } from "../../../application/useCases/admin/listDoctors";
 import { listUsers } from "../../../application/useCases/admin/listUsers";
 import { toggleApproval } from "../../../application/useCases/admin/toggleDoctorApproval";
 import { toggleBlockUser } from "../../../application/useCases/admin/toggleBlockUser";
+import { toggleBlockDoctor } from "../../../application/useCases/admin/toggleBlockDoctor";
 
 
 
@@ -72,9 +73,14 @@ export const adminController = {
   doctorApproval: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
+      const reason = req.body.reason;
+
+      console.log(reason);
+      
+      
       const doctorRepository = createDoctorRepository();
 
-      const result = await toggleApproval(doctorRepository, id);
+      const result = await toggleApproval(doctorRepository, id, reason);
 
       res.status(200).json(result);
       
@@ -84,6 +90,24 @@ export const adminController = {
 
     }
   },
+
+  //Handle Block and unblock Doctor
+  blockAndUnblockDoctor: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const doctorRepository = createDoctorRepository()
+
+      const result = await toggleBlockDoctor(doctorRepository, id);
+
+      res.status(200).json(result);
+      
+    } catch (error: any) {
+      console.error('Error toggling doctor block status:', error.message);
+      res.status(500).json({ message: error.message || 'Internal server error' });
+
+    }
+  },
+
 
   //Handle Block and unblock User
   blockAndUnblockUser: async (req: Request, res: Response): Promise<void> => {

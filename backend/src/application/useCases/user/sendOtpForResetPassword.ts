@@ -2,7 +2,7 @@ import { IOtpRepository } from "../../../domain/repositories/IOtpRepository";
 import { Otp } from "../../../domain/entities/Otp";
 import { sendEmail } from "../../../infrastructure/web/services/EmailService";
 
-export const sendOtpForSignup = async (
+export const sendOtpForResetPassword = async (
   otpRepository: IOtpRepository,
   email: string
 ): Promise<void> => {
@@ -13,7 +13,7 @@ export const sendOtpForSignup = async (
   const otpEntity: Otp = {
     email,
     otp,
-    expiresAt: new Date(Date.now() + 5 * 60 * 1000), // OTP expires in 15 minutes
+    expiresAt: new Date(Date.now() + 2 * 60 * 1000), 
   };
 
   await otpRepository.saveOtp(otpEntity);
@@ -21,7 +21,7 @@ export const sendOtpForSignup = async (
 
   await sendEmail(
     email,
-    "Your OTP for Signup Verification",
-    `Your OTP is ${otp}. It expires in 2 minutes.`
+    "DocEase: OTP for Reset Password",
+    `Your OTP for resetting the password is ${otp}. It expires in 2 minutes.`
   );
 };

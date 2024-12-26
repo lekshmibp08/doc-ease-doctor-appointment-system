@@ -1,6 +1,7 @@
 import express from "express";
 import { userController } from "../controllers/UserController";
 import { authController } from "../controllers/AuthController";
+import { authenticateUser } from "../../middlewares/AuthMiddleware";
 
 const router = express.Router();
 
@@ -17,10 +18,16 @@ router.post("/login", userController.login);
 router.post("/logout", authController.logout);
 
 // Get all Approved doctors
-router.get("/doctors", userController.getDoctors);
+router.get("/doctors", authenticateUser(["user"]), userController.getDoctors);
 
 // update user profile
-router.patch("/profile/update/:id", userController.updateUserProfile);
+router.patch("/profile/update/:id", authenticateUser(["user"]), userController.updateUserProfile);
+
+//send OTP for forget password
+router.post("/forget-password/send-otp", userController.sendOtpForForgetPassword);
+
+//verify OTP and reset password
+router.patch("/forget-password/verify-and-reset", userController.verifyAndResetPassword);
 
 
 

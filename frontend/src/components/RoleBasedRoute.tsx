@@ -1,4 +1,3 @@
-import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
@@ -9,12 +8,11 @@ interface IRoleBasedRouteProps {
 }
 
 const RoleBasedRoute = ({ allowedRole, children }: IRoleBasedRouteProps) => {
-  // Fetch the token based on the role
+
   const userToken = useSelector((state: RootState) => state.userAuth.token);
   const doctorToken = useSelector((state: RootState) => state.doctorAuth.token);
   const adminToken = useSelector((state: RootState) => state.adminAuth.token);
 
-  // Determine the token to validate based on the allowedRole
   let token = null;
   if (allowedRole === 'user') token = userToken;
   if (allowedRole === 'doctor') token = doctorToken;
@@ -23,7 +21,6 @@ const RoleBasedRoute = ({ allowedRole, children }: IRoleBasedRouteProps) => {
   console.log("Allowed Role: ", allowedRole);
   console.log("Token: ", token);
 
-  // Redirect to the appropriate login page if the token is missing
   if (!token || token.trim() === "") {
     const loginPath =
       allowedRole === 'admin'

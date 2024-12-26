@@ -1,10 +1,29 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { IPractitioner } from '../types/interfaces';
+import axios from '../services/axiosConfig';
+import Pagination from './Pagination';
 
 const DoctorsPage = () => {
-  const [doctors, setDoctors] = useState([]);
+
+  const [doctors, setDoctors] = useState<IPractitioner[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState({
+    location: '',
+    gender: '',
+    experience: '',
+    availability: '',
+    fees: '',
+    department: '',
+  });
+  const [sort, setSort] = useState('relevance');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+
+
+
 
   // Fetch doctors where isApproved = true
   useEffect(() => {
@@ -12,22 +31,40 @@ const DoctorsPage = () => {
       try {
         setLoading(true);
         setError('');
-        // Fetch doctors from API
-        const response = await axios.get('/api/users/doctors', {});
-        console.log("DOCTOR LIST: ", response.data.doctors);
-        
-
-        // Set doctors state
+        const response = await axios.get('/api/users/doctors', {
+          params: {
+            page: currentPage,
+            size: 8,
+            search: search || "",
+            location: filters.location,
+            gender: filters.gender,
+            experience: filters.experience,
+            availability: filters.availability,
+            fees: filters.fees,
+            department: filters.department,
+            sort: sort,
+          },
+        });
         setDoctors(response.data.doctors);
+        setTotalPages(response.data.totalPages);
         setLoading(false);
       } catch (err) {
         setError('Failed to load doctors.');
         setLoading(false);
       }
     };
-
+  
     fetchDoctors();
-  }, []);
+  }, [currentPage, search, filters, sort]);
+
+  const handleFilterChange = (e: any) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+  
+  const handleSortChange = (e: any) => {
+    setSort(e.target.value);
+  };
 
   return (
     <div className="bg-customBgLight min-h-screen">
@@ -35,20 +72,12 @@ const DoctorsPage = () => {
       <div className="bg-customTealLight text-white py-4 px-4">
         <div className="container mx-auto flex flex-wrap justify-between items-center gap-4">
           {/* Location Dropdown */}
-          <div className="flex items-center gap-2">
-            <label htmlFor="location" className="font-semibold">
-              Location
-            </label>
-            <select
-              id="location"
-              className="rounded px-3 py-2 text-teal-700 bg-white"
-            >
-              <option>Location</option>
-              <option>New York</option>
-              <option>Los Angeles</option>
-              <option>Chicago</option>
-            </select>
-          </div>
+          <select name="location" onChange={handleFilterChange} value={filters.location} className="rounded px-3 py-2 bg-customTeal">
+            <option value="">Location</option>
+            <option value="New York">New York</option>
+            <option value="Los Angeles">Los Angeles</option>
+            <option value="Chicago">Chicago</option>
+          </select>
 
           {/* Search Input */}
           <div className="flex-grow">
@@ -64,13 +93,10 @@ const DoctorsPage = () => {
             <label htmlFor="sort" className="font-semibold">
               Sort By
             </label>
-            <select
-              id="sort"
-              className="rounded px-3 py-2 text-teal-700 bg-white"
-            >
-              <option>Relevance</option>
-              <option>Experience</option>
-              <option>Fees</option>
+            <select onChange={handleSortChange} value={sort} className="rounded px-3 py-2 text-teal-700 bg-white">
+              <option value="relevance">Relevance</option>
+              <option value="experience">Experience</option>
+              <option value="fees">Fees</option>
             </select>
           </div>
         </div>
@@ -82,29 +108,27 @@ const DoctorsPage = () => {
         <aside className="bg-customTealLight text-white shadow-md rounded-lg p-4 w-full md:w-1/5">
           <h2 className="text-lg font-bold mb-4">Filters</h2>
           <div className="flex flex-col gap-4">
-            <select className="rounded px-3 py-2 bg-customTeal">
-              <option>Gender</option>
-              <option>Male</option>
-              <option>Female</option>
-            </select>
-            <select className="rounded px-3 py-2 bg-customTeal">
-              <option>Experience</option>
-              <option>1-5 years</option>
-              <option>6-10 years</option>
-              <option>10+ years</option>
-            </select>
-            <select className="rounded px-3 py-2 bg-customTeal">
-              <option>Availability</option>
-              <option>Morning</option>
-              <option>Afternoon</option>
-              <option>Evening</option>
-            </select>
-            <select className="rounded px-3 py-2 bg-customTeal">
-              <option>Fees</option>
-              <option>Below $50</option>
-              <option>$50-$100</option>
-              <option>Above $100</option>
-            </select>
+          <select name="gender" onChange={handleFilterChange} value={filters.gender} className="rounded px-3 py-2 bg-customTeal">
+            <option value="">Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+
+          <select name="experience" onChange={handleFilterChange} value={filters.experience} className="rounded px-3 py-2 bg-customTeal">
+            <option value="">Experience</option>
+            <option value="1-5">1-5 years</option>
+            <option value="6-10">6-10 years</option>
+            <option value="10+">10+ years</option>
+          </select>
+
+          <select name="fees" onChange={handleFilterChange} value={filters.fees} className="rounded px-3 py-2 bg-customTeal">
+            <option value="">Fees</option>
+            <option value="Below $50">Below $50</option>
+            <option value="$50-$100">$50-$100</option>
+            <option value="Above $100">Above $100</option>
+          </select>
+            
+            
             <select className="rounded px-3 py-2 bg-customTeal">
               <option>Department</option>
               <option>Cardiology</option>
@@ -135,10 +159,9 @@ const DoctorsPage = () => {
                       alt={doctor.name}
                       className="rounded-lg w-24 h-24 object-cover mb-4"
                     />
-                    <p>{doctor.profilePicture || 'null'}</p>
                     {/* Doctor Details */}
                     <h3 className="font-bold text-white">{doctor.fullName}</h3>
-                    <p className="text-sm text-white">doctor.specialization</p>
+                    <p className="text-sm text-white">{doctor.specialization}</p>
                     {/* Rating */}
                     {/*
                     <div className="flex items-center justify-center mt-2 text-yellow-500">
@@ -155,22 +178,11 @@ const DoctorsPage = () => {
               </div>
 
               {/* Pagination */}
-              <div className="flex justify-center items-center gap-2 mt-6">
-                <button className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300">
-                  Previous
-                </button>
-                {[1, 2, 3, 4, 5, 6].map((page) => (
-                  <button
-                    key={page}
-                    className="px-3 py-2 rounded bg-white shadow-md hover:bg-gray-100"
-                  >
-                    {page}
-                  </button>
-                ))}
-                <button className="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300">
-                  Next
-                </button>
-              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
             </>
           ) : (
             <p className="text-center text-teal-700">No doctors found.</p>

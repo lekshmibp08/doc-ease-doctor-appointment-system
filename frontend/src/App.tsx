@@ -14,6 +14,7 @@ import UserSignup from './pages/userPages/UserSignup';
 import ProfilePage from './pages/userPages/ProfilePage';
 import PractitionersPage from './pages/adminPages/PractitionersPage';
 import UserManagement from './pages/adminPages/UserManagement';
+import DoctorProfilePage from './pages/doctorPages/DoctorProfilePage';
 
 
 const App: React.FC = () => {
@@ -27,8 +28,6 @@ const App: React.FC = () => {
         <Route path="/user/signup" element={<UserSignup />} />
         <Route path="/user/login" element={<UserLogin/>} />
         <Route path="/" element={<Home/>} />
-        <Route path="/doctors" element={<DoctorList/>} />
-        <Route path="/profile" element={<ProfilePage/>} />
 
         
         
@@ -41,6 +40,12 @@ const App: React.FC = () => {
           </RoleBasedRoute>} 
         />
 
+        <Route path="/doctor/profile" 
+          element={
+          <RoleBasedRoute allowedRole={'doctor'}>
+            <DoctorProfilePage />
+          </RoleBasedRoute>} 
+        />
         {/* ADMIN PAGES*/}        
         <Route path="/admin/dashboard" 
           element={
@@ -62,14 +67,18 @@ const App: React.FC = () => {
         />
 
         {/* USER PAGES*/}
-        {/*
         <Route path="/doctors" 
           element={
           <RoleBasedRoute allowedRole={'user'}>
             <DoctorList />
           </RoleBasedRoute>} 
         />
-        */}
+        <Route path="/profile" 
+          element={
+          <RoleBasedRoute allowedRole={'user'}>
+            <ProfilePage />
+          </RoleBasedRoute>} 
+        />
 
         {/* Unauthorized Page */}
         <Route path="/unauthorized" element={<Unauthorized />} />

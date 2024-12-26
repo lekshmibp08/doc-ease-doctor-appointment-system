@@ -31,5 +31,6 @@ export const loginUser = async (
     { expiresIn: "1h" } 
   );
 
+
   return { token, role: user.role, user: rest };
 };

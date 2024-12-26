@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IPractitioner } from '../../types/interfaces';
 
 interface DoctorAuthState {
   token: string | null;
-  currentUser: any;
+  currentUser: IPractitioner | null;
 }
 
 const initialState: DoctorAuthState = {
@@ -16,7 +17,7 @@ const doctorSlice = createSlice({
   reducers: {
     setDoctorToken: (
       state,
-      action: PayloadAction<{ token: string; currentUser: string }>
+      action: PayloadAction<{ token: string; currentUser: IPractitioner }>
     ) => {
       state.token = action.payload.token;
       state.currentUser = action.payload.currentUser;

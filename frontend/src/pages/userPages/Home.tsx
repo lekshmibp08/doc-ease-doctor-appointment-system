@@ -7,7 +7,7 @@ import Footer from "../../components/Footer"
 const Home = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <UserHeader/>
+      <UserHeader role="user"/>
       <HeroSection/>
       <DepartmentCard/>
       <HowItWorks/>

@@ -1,3 +1,4 @@
+import UserHeader from "../../components/UserHeader";
 import useLogout from "../../hooks/useLogout";
 
 
@@ -7,6 +8,7 @@ const DoctorDashboard = () => {
 
   return (
     <div>
+      <UserHeader role="doctor"/>
       <h1>Doctor Dashboard</h1>
       
       <button

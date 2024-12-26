@@ -1,6 +1,6 @@
 import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 import { app } from "../firebase";
-import axios from "axios";
+import axios from "../services/axiosConfig";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { setDoctorToken } from "../Redux/slices/doctorSlice";

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../services/axiosConfig';
+import Swal from "sweetalert2";
 import Pagination from './Pagination';
 
 interface User {
@@ -48,20 +49,33 @@ const UserList: React.FC = () => {
 
  
 
-  const handleBlockUser = async (id: string) => {
-    try {
+  const handleBlockUser = async (id: string, isBlocked: boolean) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: isBlocked ? "Yes, Unblock it!" : "Yes, Block it!",
+    });
+    if (result.isConfirmed){
+      try {
         const response = await axios.patch(`/api/admin/users/block/${id}`);
         const { isBlocked } = response.data;
 
         setUsers((prev) =>
-            prev.map((user) =>
-              user._id === id ? { ...user, isBlocked } : user
-            )
-          );        
-        
-    } catch (error: any) {
-        console.error('Error blocking/unblocking User:', error);
-    }
+          prev.map((user) =>
+            user._id === id ? { ...user, isBlocked } : user
+          )
+        );        
+        if (isBlocked) {
+          Swal.fire("Blocked!", response.data.message, "success");
+        } else {
+          Swal.fire("Unblocked!", response.data.message, "success");
+        }              
+      } catch (error: any) {
+          console.error('Error blocking/unblocking User:', error);
+      }
+      }
   }
 
   return (
@@ -96,7 +110,7 @@ const UserList: React.FC = () => {
                 <td className="p-3 border">{ user.email }</td>
                 <td className="p-3 border font-semibold">{ user.mobileNumber }</td>
                 <td className="p-3 text-center border">
-                  <button onClick={() => handleBlockUser(user._id)}
+                  <button onClick={() => handleBlockUser(user._id, user.isBlocked)}
                     className={`${
                       user.isBlocked ? 'bg-yellow-500 hover:bg-yellow-700' : 'bg-red-600 hover:bg-red-700'
                     } text-white px-4 py-1 rounded transition`}
