@@ -9,6 +9,8 @@ import Swal from "sweetalert2";
 
 // Form validation schema with Yup
 const validationSchema = Yup.object({
+  currentPassword: Yup.string()
+    .required("Current Password is required"),  
   password: Yup.string()
     .matches(/[A-Za-z]/, "Password must contain at least one letter")
     .matches(/[0-9]/, "Password must contain at least one number")
@@ -69,9 +71,12 @@ const UserAccountDetails = () => {
     }
   };
 
-  const handlesubmit = async (values: any, { resetForm, setFieldValue }: any) => {    const { password, profilePicture } = values;
+  const handlesubmit = async (values: any, { resetForm, setFieldValue }: any) => {    
+    const { currentPassword, password, profilePicture } = values;
   
-    const updatedData: any = {};
+    const updatedData: any = {
+      currentPassword
+    };
   
     if (password) {
       updatedData.password = password;
@@ -97,7 +102,12 @@ const UserAccountDetails = () => {
 
       setImagePercent(0);
       setFieldValue("profilePicture", updatedUserData.profilePicture);
-      resetForm({ values: { profilePicture: updatedUserData.profilePicture, password: "", confirmPassword: "" } });      
+      resetForm({ 
+        values: { 
+          profilePicture: updatedUserData.profilePicture, 
+          currentPassword: "",
+          password: "", 
+          confirmPassword: "" } });      
       Swal.fire("Updated!", "Profile updated successfully!", "success");      
   
     } catch (error) {
@@ -111,6 +121,7 @@ const UserAccountDetails = () => {
     <div className="bg-white shadow-md rounded-lg p-6 w-full lg:w-1/3">
       <Formik
         initialValues={{
+          currentPassword: "",
           password: "",
           confirmPassword: "",
           profilePicture: currentUser?.profilePicture || "",  
@@ -173,9 +184,21 @@ const UserAccountDetails = () => {
                 <p className="font-semibold">{currentUser?.email}</p>
               </div>
 
+              {/* Current Password Section */}
+              <div>
+                <p className="text-gray-600">Change Password</p>
+                <Field
+                  type="password"
+                  id="currentPassword"
+                  name="currentPassword"
+                  placeholder="Current Password"
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-700"
+                />
+                <ErrorMessage name="currentPassword" component="div" className="text-red-600" />
+              </div>              
+
               {/* Password Section */}
               <div>
-                <p className="text-gray-600">Reset Password</p>
                 <div className="space-y-2 mt-2">
                   <Field
                     type="password"

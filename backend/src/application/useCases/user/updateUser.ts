@@ -10,6 +10,22 @@ export const updateUser = async (
 
     console.log("USECASE ID: ", id);
     console.log("USECASE data: ", updatedData);
+
+    const existingUser = await userRepository.findUserById(id);
+    if(!existingUser) {
+      throw new Error("User not found");
+    }
+
+    if (updatedData.currentPassword) {
+      const isPasswordCorrect = await bcrypt.compare(
+        updatedData.currentPassword,
+        existingUser.password
+      );
+  
+      if (!isPasswordCorrect) {
+        throw new Error("Current password is incorrect");
+      }
+    }        
     
 
     if(updatedData.password) {

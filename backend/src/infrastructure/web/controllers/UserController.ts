@@ -125,8 +125,20 @@ export const userController = {
       res.status(200).json({message: "User Profile Updated Successfully..!", updatedUser});
       
     } catch (error: any) {
-      res.status(500).json({ message: "Failed to update profile", error: error.message });
-    }
+      console.error("Error in updateDoctorProfile:", error.message);
+
+      if (error.message === "Doctor not found") {
+        res.status(404).json({ message: "Doctor not found" });
+        return;
+      }
+  
+      if (error.message === "Current password is incorrect") {
+        res.status(400).json({ message: "Current password is incorrect" });
+        return;
+      }
+  
+      res.status(500).json({ message: "Failed to update profile", error: error.message }); 
+      return;     }
   },
 
   //Send OTP for forget Password
