@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { IPractitioner } from '../types/interfaces';
 import axios from '../services/axiosConfig';
 import Pagination from './Pagination';
+import { useNavigate } from 'react-router-dom';
 
 const DoctorsPage = () => {
 
@@ -20,6 +21,8 @@ const DoctorsPage = () => {
   const [sort, setSort] = useState('relevance');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const navigate = useNavigate();
 
 
 
@@ -151,7 +154,9 @@ const DoctorsPage = () => {
                 {doctors.map((doctor: any, index) => (
                   <div
                     key={index}
-                    className="bg-customTeal shadow-md rounded-lg p-4 flex flex-col items-center text-center"
+                    className="bg-customTeal shadow-md rounded-lg p-4 flex flex-col items-center text-center cursor-pointer transform transition-transform hover:scale-105 hover:shadow-lg"
+                    onClick={() => navigate(`/doctor/${doctor._id}`)} 
+
                   >
                     {/* Doctor Image */}
                     <img
