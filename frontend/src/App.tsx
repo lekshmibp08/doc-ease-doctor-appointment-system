@@ -17,6 +17,7 @@ import UserManagement from './pages/adminPages/UserManagement';
 import DoctorProfilePage from './pages/doctorPages/DoctorProfilePage';
 import RequestPage from './pages/adminPages/RequestPage';
 import ViewDocuments from './components/ViewDocuments';
+import DoctorDetailsPage from './pages/userPages/DoctorDetailsPage';
 
 
 const App: React.FC = () => {
@@ -87,6 +88,12 @@ const App: React.FC = () => {
           element={
           <RoleBasedRoute allowedRole={'user'}>
             <DoctorList />
+          </RoleBasedRoute>} 
+        />
+        <Route path="/doctor/details/:id" 
+          element={
+          <RoleBasedRoute allowedRole={'user'}>
+            <DoctorDetailsPage />
           </RoleBasedRoute>} 
         />
         <Route path="/profile" 

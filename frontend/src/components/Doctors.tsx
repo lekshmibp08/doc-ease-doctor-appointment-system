@@ -37,7 +37,7 @@ const DoctorsPage = () => {
         const response = await axios.get('/api/users/doctors', {
           params: {
             page: currentPage,
-            size: 8,
+            size: 9,
             search: search || "",
             location: filters.location,
             gender: filters.gender,
@@ -155,8 +155,7 @@ const DoctorsPage = () => {
                   <div
                     key={index}
                     className="bg-customTeal shadow-md rounded-lg p-4 flex flex-col items-center text-center cursor-pointer transform transition-transform hover:scale-105 hover:shadow-lg"
-                    onClick={() => navigate(`/doctor/${doctor._id}`)} 
-
+                    onClick={() => navigate(`/doctor/details/${doctor._id}`)} 
                   >
                     {/* Doctor Image */}
                     <img
