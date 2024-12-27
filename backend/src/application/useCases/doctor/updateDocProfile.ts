@@ -32,6 +32,8 @@ export const updateDocProfile = async (
         updatedData.password = hashedPassword;
     }
 
+    updatedData.isRejected = false;
+
     const updatedDocProfile = await doctorRepository.updateDoctor(id, updatedData);
     console.log("USECASE UPDATED USER: ", updatedDocProfile);
     

@@ -25,5 +25,4 @@ router.post("/logout", authController.logout);
 // update user profile
 router.patch("/profile/update/:id", doctorController.updateDoctorProfile);
 
-
 export default router;

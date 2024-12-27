@@ -2,7 +2,6 @@ import axios from "../services/axiosConfig";
 import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../Redux/store";
-import { setUserToken } from "../Redux/slices/userSlice";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
@@ -88,8 +87,6 @@ const DoctorAccountDetails = () => {
     }
   
     try {
-        console.log("STARTED HANDLE SUBMIT");
-        console.log(currentUser?._id);
         
       const res = await axios.patch(
         `/api/doctors/profile/update/${currentUser?._id}`,

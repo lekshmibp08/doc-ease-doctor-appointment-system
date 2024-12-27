@@ -17,6 +17,7 @@ interface IDoctorDocument extends Document, Doctor {
     longitude: number;
   } | null; 
   addressLine: string;
+  isRejected: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -48,6 +49,10 @@ const DoctorSchema = new Schema<IDoctorDocument>(
       type: String, 
     },
     isApproved: {
+      type: Boolean,
+      default: false,
+    },
+    isRejected: {
       type: Boolean,
       default: false,
     },

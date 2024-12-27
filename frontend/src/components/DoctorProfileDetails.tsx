@@ -71,6 +71,16 @@ const DoctorProfileDetails = () => {
         .trim()
         .matches(/^DOC\d{5}$/, 'Register Number must follow the format DOC12345')
         .required('Register Number is required'),
+        gallery: Yup.array()
+        .of(Yup.string().url("Gallery must contain valid URLs"))
+        .max(5, "You can only upload up to 5 gallery images"),
+      documents: Yup.array()
+        .of(Yup.string().url("Documents must contain valid URLs"))
+        .max(10, "You can only upload up to 10 documents"),
+      locationCoordinates: Yup.object().shape({
+        latitude: Yup.number().required("Latitude is required"),
+        longitude: Yup.number().required("Longitude is required"),
+      }),        
   });
 
   // Handle input changes with real-time validation
@@ -214,6 +224,8 @@ const handleMapClick = (event: google.maps.MapMouseEvent) => {
 
     try {
       await validationSchema.validate(formData, { abortEarly: false });
+      console.log("VALIDATED");
+      
       const res = await axios.patch(
         `/api/doctors/profile/update/${currentUser?._id}`,
         formData
@@ -230,11 +242,16 @@ const handleMapClick = (event: google.maps.MapMouseEvent) => {
       setErrors({});
       Swal.fire("Updated!", "Details updated successfully!", "success");
     } catch (validationError: any) {
-      const newErrors: Record<string, string> = {};
-      validationError.inner.forEach((err: any) => {
-        newErrors[err.path] = err.message;
-      });
-      setErrors(newErrors);
+      if (validationError.inner) {
+        const newErrors: Record<string, string> = {};
+        validationError.inner.forEach((err: any) => {
+          newErrors[err.path] = err.message;
+        });
+        setErrors(newErrors);
+      } else {
+        console.error("Unexpected Validation Error: ", validationError);
+        Swal.fire("Error!", "Validation failed. Please check your inputs.", "error");
+      }
     }
   };
 

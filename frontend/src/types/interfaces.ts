@@ -8,6 +8,7 @@ export interface IPractitioner {
     profilePicture: string;
     isBlocked: boolean;
     isApproved: boolean;
+    isRejected: boolean;
     specialization: string;
     qualification: string;
     fee: number;

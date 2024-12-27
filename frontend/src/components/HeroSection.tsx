@@ -4,7 +4,7 @@ const HeroSection = () => {
     <section className="relative w-screen h-[300px] md:h-[400px] bg-gray-100">
       {/* Background Image */}
       <img
-        src="/public/banner.png" // Replace with the correct path of your image
+        src="/banner.png" // Replace with the correct path of your image
         alt="Hero Banner"
         className="w-full h-full object-cover"
       />

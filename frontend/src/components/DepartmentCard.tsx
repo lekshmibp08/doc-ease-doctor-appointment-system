@@ -5,31 +5,31 @@ const DepartmentCard = () => {
       id: 1,
       title: 'General Medicine',
       description: 'Teething trouble? Schedule a dental checkup',
-      image: '/public/background-1.png', // Replace with the correct image path
+      image: '/background-1.png', // Replace with the correct image path
     },
     {
       id: 2,
       title: 'Cardiology',
       description: 'Teething trouble? Schedule a dental checkup',
-      image: '/public/background-1.png',
+      image: '/background-1.png',
     },
     {
       id: 3,
       title: 'Neurology',
       description: 'Teething trouble? Schedule a dental checkup',
-      image: '/public/background-1.png',
+      image: '/background-1.png',
     },
     {
       id: 4,
       title: 'Pediatrics',
       description: 'Teething trouble? Schedule a dental checkup',
-      image: '/public/background-1.png',
+      image: '/background-1.png',
     },
     {
       id: 5,
       title: 'Dentist',
       description: 'Teething trouble? Schedule a dental checkup',
-      image: '/public/background-1.png',
+      image: '/background-1.png',
     },
   ];
 

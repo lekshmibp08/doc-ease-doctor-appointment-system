@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 interface ISidebarProps {
@@ -22,6 +21,16 @@ const Sidebar = ({ isOpen }: ISidebarProps) => {
           }
         >
           Dashboard
+        </NavLink>
+        <NavLink
+          to="/admin/requests"
+          className={({ isActive }) =>
+            `py-2 px-4 rounded bg-white text-black ${
+              isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'
+            }`
+          }
+        >
+          New Requests
         </NavLink>
         <NavLink
           to="/admin/doctors"

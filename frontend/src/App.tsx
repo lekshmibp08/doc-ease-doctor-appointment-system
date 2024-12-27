@@ -15,6 +15,8 @@ import ProfilePage from './pages/userPages/ProfilePage';
 import PractitionersPage from './pages/adminPages/PractitionersPage';
 import UserManagement from './pages/adminPages/UserManagement';
 import DoctorProfilePage from './pages/doctorPages/DoctorProfilePage';
+import RequestPage from './pages/adminPages/RequestPage';
+import ViewDocuments from './components/ViewDocuments';
 
 
 const App: React.FC = () => {
@@ -59,12 +61,26 @@ const App: React.FC = () => {
             <PractitionersPage/>
           </RoleBasedRoute>} 
         />
+        <Route path="/admin/requests" 
+          element={
+          <RoleBasedRoute allowedRole={'admin'}>
+            <RequestPage/>
+          </RoleBasedRoute>} 
+        />
         <Route path="/admin/users" 
           element={
           <RoleBasedRoute allowedRole={'admin'}>
             <UserManagement/>
           </RoleBasedRoute>} 
         />
+        <Route path="/admin/doctors/view-documents/:id" 
+          element={
+          <RoleBasedRoute allowedRole={'admin'}>
+            <ViewDocuments/>
+          </RoleBasedRoute>} 
+        />
+
+
 
         {/* USER PAGES*/}
         <Route path="/doctors" 

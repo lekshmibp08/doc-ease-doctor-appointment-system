@@ -7,7 +7,9 @@ import { listUsers } from "../../../application/useCases/admin/listUsers";
 import { toggleApproval } from "../../../application/useCases/admin/toggleDoctorApproval";
 import { toggleBlockUser } from "../../../application/useCases/admin/toggleBlockUser";
 import { toggleBlockDoctor } from "../../../application/useCases/admin/toggleBlockDoctor";
-
+import { fetchPendingDoctors } from "../../../application/useCases/admin/fetchPendingDoctors";
+import { approveDoctor } from "../../../application/useCases/admin/approveDoctor";
+import { rejectRequest } from "../../../application/useCases/admin/rejectRequest";
 
 
 export const adminController = {
@@ -49,6 +51,26 @@ export const adminController = {
       res.status(500).json({ message: "Failed to fetch doctors", error: error.message });
     }
   },
+
+  //List all pending requests
+  getPendingDoctors: async (req: Request, res: Response): Promise<void> => {
+    const { page = 1, size = 8, search = "" } = req.query;
+
+    const pageNumber = parseInt(page as string);
+    const pageSize = parseInt(size as string);
+    const searchQuery = search ? String(search) : '';
+
+    try {
+    const doctorRepository = createDoctorRepository();
+    const { doctors, totalDoctors, totalPages } = await fetchPendingDoctors(doctorRepository, pageNumber, pageSize, searchQuery);
+    
+    res.status(200).json({ doctors, totalDoctors, totalPages, currentPage: pageNumber });
+
+    
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to fetch pending doctors", error: error.message });
+    }
+  },
   
   // List all users
   getAllUsers: async (req: Request, res: Response): Promise<void> => {
@@ -73,6 +95,24 @@ export const adminController = {
   doctorApproval: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
+      
+      
+      const doctorRepository = createDoctorRepository();
+
+      const result = await approveDoctor(doctorRepository, id);
+
+      res.status(200).json({message: "Doctor Approved Successfully..!"});
+      
+    } catch (error: any) {
+      console.error('Error in doctor Approval:', error.message);
+      res.status(500).json({ message: error.message || 'Internal server error' });
+    }
+  },
+  
+  //Handle Doctor Reject
+  rejectDoctor: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
       const reason = req.body.reason;
 
       console.log(reason);
@@ -80,7 +120,7 @@ export const adminController = {
       
       const doctorRepository = createDoctorRepository();
 
-      const result = await toggleApproval(doctorRepository, id, reason);
+      const result = await rejectRequest(doctorRepository, id, reason);
 
       res.status(200).json(result);
       
