@@ -29,6 +29,10 @@ router.post("/forget-password/send-otp", userController.sendOtpForForgetPassword
 //verify OTP and reset password
 router.patch("/forget-password/verify-and-reset", userController.verifyAndResetPassword);
 
+// Get doctor details
+router.get("/doctor/:id", userController.getDoctorDetails);
+
+
 
 
 export default router;

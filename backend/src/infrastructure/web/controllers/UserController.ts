@@ -9,6 +9,8 @@ import { listApprovedDoctors } from "../../../application/useCases/user/listAppr
 import { updateUser } from "../../../application/useCases/user/updateUser";
 import { sendOtpForResetPassword } from "../../../application/useCases/user/sendOtpForResetPassword";
 import { verifyOtpAndResetPassword } from "../../../application/useCases/user/verifyOtpAndResetPassword";
+import { doctorDetails } from "../../../application/useCases/user/doctorDetails";
+
 
 export const userController = {
   // Send OTP during signup
@@ -182,6 +184,19 @@ export const userController = {
       res.status(400).json({ message: error.message });
     }    
   },
+
+  // Get doctor Details
+  getDoctorDetails: async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const doctorRepository = createDoctorRepository();
+    try {
+      const details = await doctorDetails( doctorRepository, id )
+      res.status(200).json(details);
+      
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  }
 
 
 };

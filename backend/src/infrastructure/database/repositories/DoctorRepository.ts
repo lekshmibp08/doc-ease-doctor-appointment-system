@@ -75,6 +75,8 @@ export const createDoctorRepository = (): IDoctorRepository => ({
 
     // Get total count of documents matching the query
     const totalDocs = await DoctorModel.countDocuments(query);
+    console.log(doctors);
+    
 
     return {
       doctors,
