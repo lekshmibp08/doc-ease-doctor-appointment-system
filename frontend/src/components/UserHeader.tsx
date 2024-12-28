@@ -6,9 +6,10 @@ import { useNavigate } from 'react-router-dom';
 
 interface UserHeaderProps {
   role: 'user' | 'doctor'; // Add a role prop to differentiate between user and doctor
+  onToggleSidebar?: () => void; // Optional callback for toggling the sidebar
 }
 
-const UserHeader: React.FC<UserHeaderProps> = ({ role }) => {
+const UserHeader: React.FC<UserHeaderProps> = ({ role, onToggleSidebar }) => {
   const navigate = useNavigate();
   const { token, currentUser } = useSelector((state: RootState) =>
     role === 'user' ? state.userAuth : state.doctorAuth
@@ -42,6 +43,16 @@ const UserHeader: React.FC<UserHeaderProps> = ({ role }) => {
 
         {/* Right Section: User Info or Login/Register */}
         <div className="flex items-center gap-4 ml-auto">
+          {/* Hamburger Menu for Doctor */}
+          {role === 'doctor' && onToggleSidebar && (
+            <button
+              onClick={onToggleSidebar}
+              className="text-white text-2xl md:hidden mr-4"
+            >
+              <i className="fas fa-bars"></i> {/* Hamburger Icon */}
+            </button>
+          )}
+
           {currentUser ? (
             <div className="flex items-center gap-4 relative">
               {/* User avatar */}

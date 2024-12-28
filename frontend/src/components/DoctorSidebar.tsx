@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
 
-interface ISidebarProps {
-  isOpen: boolean;
-}
+interface IDoctorSidebarProps {
+    isOpen: boolean;
+    toggleSidebar?: () => void; 
+  }
 
-const Sidebar = ({ isOpen }: ISidebarProps) => {
+const DoctorSidebar = ({ isOpen }: IDoctorSidebarProps) => {
   return (
     <aside
       className={`bg-customBgLight text-black font-bold w-64 
@@ -15,7 +16,7 @@ const Sidebar = ({ isOpen }: ISidebarProps) => {
     >
       <nav className="flex flex-col gap-4">
         <NavLink
-          to="/admin/dashboard"
+          to="/doctor/dashboard"
           className={({ isActive }) =>
             `py-2 px-4 rounded bg-white text-black ${
               isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'
@@ -25,37 +26,27 @@ const Sidebar = ({ isOpen }: ISidebarProps) => {
           Dashboard
         </NavLink>
         <NavLink
-          to="/admin/requests"
+          to="/doctor/slot-management"
           className={({ isActive }) =>
             `py-2 px-4 rounded bg-white text-black ${
               isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'
             }`
           }
         >
-          New Requests
+          Slot Management
         </NavLink>
         <NavLink
-          to="/admin/doctors"
+          to="/chats"
           className={({ isActive }) =>
             `py-2 px-4 rounded bg-white text-black ${
               isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'
             }`
           }
         >
-          Practitioners
+          Chats
         </NavLink>
         <NavLink
-          to="/admin/users"
-          className={({ isActive }) =>
-            `py-2 px-4 rounded bg-white text-black ${
-              isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'
-            }`
-          }
-        >
-          User Management
-        </NavLink>
-        <NavLink
-          to="/appointments"
+          to="/doctor/appointments"
           className={({ isActive }) =>
             `py-2 px-4 rounded bg-white text-black ${
               isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'
@@ -65,18 +56,18 @@ const Sidebar = ({ isOpen }: ISidebarProps) => {
           Appointments
         </NavLink>
         <NavLink
-          to="/reports"
+          to="/logout"
           className={({ isActive }) =>
             `py-2 px-4 rounded bg-white text-black ${
               isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'
             }`
           }
         >
-          Reports
+          Log Out
         </NavLink>
       </nav>
     </aside>
   );
 };
 
-export default Sidebar;
+export default DoctorSidebar;
