@@ -44,7 +44,7 @@ const Review = ({ doctorId }) => {
       <h3 className="text-xl font-bold mb-4">Review</h3>
 
       {/* Card container */}
-      <div className="bg-white shadow-md rounded-md p-6">
+      <div className="bg-customBgLight1 shadow-md rounded-md p-6">
         <div className="relative flex items-center justify-center">
           {/* Previous Button */}
           <button
@@ -63,7 +63,7 @@ const Review = ({ doctorId }) => {
               {reviews.map((item, index) => (
                 <div
                   key={index}
-                  className="bg-white shadow-md p-4 rounded-md w-full max-w-md mx-2 flex-shrink-0"
+                  className="bg-customBgLight shadow-md p-4 rounded-md w-full max-w-md mx-2 flex-shrink-0"
                 >
                   <p className="font-bold">{item.user}</p>
                   <p className="text-sm text-gray-600 mt-2">{item.review}</p>

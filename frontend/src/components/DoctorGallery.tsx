@@ -24,7 +24,7 @@ const DoctorGallery = ({ images = [] }: DoctorGalleryProps) => {
   return (
     <div className="mt-8">
       <h3 className="text-xl font-bold mb-4">Gallery</h3>
-      <div className="bg-white shadow-md rounded-lg p-6">
+      <div className="bg-customBgLight1 shadow-md rounded-lg p-6">
 
         {images.length ? (
 

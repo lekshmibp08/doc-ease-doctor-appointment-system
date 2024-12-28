@@ -260,7 +260,7 @@ const handleMapClick = (event: google.maps.MapMouseEvent) => {
     if (loadError) return <div>Error loading Google Maps: {loadError.message}</div>;
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 w-full lg:w-2/3">
+    <div className="bg-customBgLight1 shadow-md rounded-lg p-6 w-full lg:w-2/3">
       <h3 className="text-lg font-semibold mb-4">Doctor Profile Details</h3>
       <form onSubmit={handleUpdateDetails}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

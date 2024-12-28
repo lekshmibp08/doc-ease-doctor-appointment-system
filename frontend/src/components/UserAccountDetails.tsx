@@ -119,7 +119,7 @@ const UserAccountDetails = () => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 w-full lg:w-1/3">
+    <div className="bg-customBgLight1 shadow-md rounded-lg p-6 w-full lg:w-1/3">
       <Formik
         initialValues={{
           currentPassword: "",

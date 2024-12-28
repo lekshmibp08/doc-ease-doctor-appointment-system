@@ -6,7 +6,7 @@ interface DoctorDetailsCardProps {
 
 const DoctorDetailsCard = ({ doctor }: DoctorDetailsCardProps) => {
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 mt-6 flex flex-col md:flex-row md:items-center gap-4">
+    <div className="bg-customBgLight1 shadow-md rounded-lg p-6 mt-6 flex flex-col md:flex-row md:items-center gap-4">
       {/* Doctor Image (Left) */}
       <div className="flex-shrink-0">
         <img

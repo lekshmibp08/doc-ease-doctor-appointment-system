@@ -9,7 +9,8 @@ export default {
       colors: {
         customTeal: '#1C7787', 
         customBgLight: '#B5D3E0',
-        customTealLight: '#62A6B2'
+        customTealLight: '#62A6B2',
+        customBgLight1: '#DBEEF6'
       },
     },
   },

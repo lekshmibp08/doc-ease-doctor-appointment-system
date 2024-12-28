@@ -25,7 +25,7 @@ const DoctorLocation = ({ addressLine, locationCoordinates }) => {
   return (
     <div className="mt-8">
       <h3 className="text-xl font-bold mb-4">Location</h3>
-      <div className="bg-white shadow-md rounded-md p-6">
+      <div className="bg-customBgLight1 shadow-md rounded-md p-6">
         <div className="flex flex-col md:flex-row gap-4 items-center justify-center min-h-[300px]"> {/* Centering the content */}
           {/* Address - Each part on a new line */}
           <div className="flex-1 text-center text-lg"> {/* This centers the text horizontally */}

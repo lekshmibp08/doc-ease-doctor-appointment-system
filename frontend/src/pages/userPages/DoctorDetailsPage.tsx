@@ -43,7 +43,7 @@ const DoctorDetailsPage = () => {
      
     
   return (
-    <div className="bg-blue-50 min-h-screen flex flex-col">
+    <div className="bg-customBgLight min-h-screen flex flex-col">
       <UserHeader role="user" />
       
       <main className="flex-1 max-w-7xl mx-auto px-4 md:px-8 py-4">
