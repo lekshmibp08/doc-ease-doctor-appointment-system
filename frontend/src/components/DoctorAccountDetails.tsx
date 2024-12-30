@@ -10,19 +10,39 @@ import { setDoctorToken } from "../Redux/slices/doctorSlice";
 // Form validation schema with Yup
 const validationSchema = Yup.object({
   currentPassword: Yup.string()
-    .required("Current Password is required"),
+    .test(
+      "currentPassword-required",
+      "Current Password is required when changing password",
+      function (value) {
+        const { password, confirmPassword } = this.parent;
+        if (password || confirmPassword) {
+          return !!value; // If password or confirmPassword is filled, currentPassword must be filled
+        }
+        return true; // Otherwise, currentPassword is not required
+      }
+    ),
   password: Yup.string()
     .matches(/[A-Za-z]/, "Password must contain at least one letter")
     .matches(/[0-9]/, "Password must contain at least one number")
     .matches(/[\W_]/, "Password must contain at least one special character")
     .min(6, "Password must be at least 6 characters long")
-    .notRequired(),  // password is optional for updates
-
+    .notRequired(),
   confirmPassword: Yup.string()
-    .min(6, "Password must be at least 6 characters long")
-    .oneOf([Yup.ref('password')], 'Passwords must match')  // confirm password must match the password
-    .notRequired(), // confirmPassword is optional for updates
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .test(
+      "confirmPassword-required",
+      "Confirm Password is required when changing password",
+      function (value) {
+        const { password } = this.parent;
+        if (password) {
+          return !!value; // If password is filled, confirmPassword must be filled
+        }
+        return true; // Otherwise, confirmPassword is not required
+      }
+    )
+    .notRequired(),
 });
+
 
 const DoctorAccountDetails = () => {
   const { token, currentUser } = useSelector((state: RootState) => state.doctorAuth);
