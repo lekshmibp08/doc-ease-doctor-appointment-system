@@ -18,6 +18,7 @@ import DoctorProfilePage from './pages/doctorPages/DoctorProfilePage';
 import RequestPage from './pages/adminPages/RequestPage';
 import ViewDocuments from './components/ViewDocuments';
 import DoctorDetailsPage from './pages/userPages/DoctorDetailsPage';
+import SlotManagementPage from './pages/doctorPages/SlotManagementPage';
 
 
 const App: React.FC = () => {
@@ -94,6 +95,12 @@ const App: React.FC = () => {
           element={
           <RoleBasedRoute allowedRole={'user'}>
             <DoctorDetailsPage />
+          </RoleBasedRoute>} 
+        />
+        <Route path="/doctor/slot-management" 
+          element={
+          <RoleBasedRoute allowedRole={'user'}>
+            < SlotManagementPage />
           </RoleBasedRoute>} 
         />
         <Route path="/profile" 

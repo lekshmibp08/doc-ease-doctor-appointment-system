@@ -7,6 +7,7 @@ import userRoutes from "./infrastructure/web/routes/UserRoutes";
 import doctorRoutes from "./infrastructure/web/routes/DoctorRoutes"
 import adminRoutes from "./infrastructure/web/routes/AdminRoutes"
 import authRoutes from "./infrastructure/web/routes/AuthRoutes"
+import { setupSlotMaintenanceJob } from "./infrastructure/jobs/slotJob";
 
 dotenv.config();
 
@@ -29,6 +30,8 @@ app.use("/api/auth", authRoutes);
 
 
 connectDB();
+setupSlotMaintenanceJob();
+
 
 app.listen(PORT, () => {
   console.log(`Server Running on http://localhost:${PORT}`);

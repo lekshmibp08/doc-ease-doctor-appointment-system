@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 
 export type User = {
-    _id?: Types.ObjectId; // Unique identifier for Mongoose models
+    _id?: Types.ObjectId; 
     fullName: string;
     email: string;
     profilePicture?: string;
