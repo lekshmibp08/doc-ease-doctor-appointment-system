@@ -196,6 +196,13 @@ export const userController = {
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
+  },
+  bookAppoinment: async (req: Request, res: Response): Promise<void> => {
+    const appoinmentData = req.body;
+    console.log('APPOINMENTDATA: ', appoinmentData);
+    res.status(200).json({message: 'Appoinment created'});
+
+    
   }
 
 

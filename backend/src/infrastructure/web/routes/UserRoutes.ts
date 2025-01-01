@@ -2,6 +2,9 @@ import express from "express";
 import { userController } from "../controllers/UserController";
 import { authController } from "../controllers/AuthController";
 import { authenticateUser } from "../../middlewares/AuthMiddleware";
+import { slotController } from "../controllers/SlotController";
+import { paymentController } from "../controllers/PaymentController";
+
 
 const router = express.Router();
 
@@ -32,7 +35,12 @@ router.patch("/forget-password/verify-and-reset", userController.verifyAndResetP
 // Get doctor details
 router.get("/doctor/:id", userController.getDoctorDetails);
 
+// Get slots
+router.get("/slots/:doctorId", slotController.fetchSlotsForUser);
 
+router.post("/create-order", paymentController.createOrder);
+
+router.post("/book-appointment", userController.bookAppoinment);
 
 
 export default router;
