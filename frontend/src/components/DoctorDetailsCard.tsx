@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { IPractitioner } from "../types/interfaces";
 
 interface DoctorDetailsCardProps {
@@ -5,6 +6,10 @@ interface DoctorDetailsCardProps {
   }
 
 const DoctorDetailsCard = ({ doctor }: DoctorDetailsCardProps) => {
+  const navigate = useNavigate();
+  const handleBookNow = () => {
+    navigate(`/book-appoinment/${doctor._id}`);
+  };
   return (
     <div className="bg-customBgLight1 shadow-md rounded-lg p-6 mt-6 flex flex-col md:flex-row md:items-center gap-4">
       {/* Doctor Image (Left) */}
@@ -47,7 +52,9 @@ const DoctorDetailsCard = ({ doctor }: DoctorDetailsCardProps) => {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
-            <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-sm">
+            <button
+             className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-sm"
+             onClick={ handleBookNow }>
               Book Now
             </button>
             <button className="bg-gray-200 text-gray-700 py-2 px-4 rounded hover:bg-gray-300 text-sm">

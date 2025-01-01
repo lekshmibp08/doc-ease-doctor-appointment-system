@@ -55,7 +55,6 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
   };
 
   const handleStatusChange = async (timeSlotId: string, status: string) => {
-    console.log("SLOT ID: ", slotId);
     
     try {
       const response = await axios.put("/api/doctors/slots/update-status", {
@@ -152,8 +151,8 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
                       }`}
                       value={slot.isAvailable ? "Available" : "Unavailable"}
                       onChange={(e) => handleStatusChange(slot._id, e.target.value)}                    >
-                      <option value="Available">Available</option>
-                      <option value="Unavailable">Unavailable</option>
+                      <option className="bg-green-500 text-white" value="Available">Available</option>
+                      <option className="bg-red-500 text-white" value="Unavailable">Unavailable</option>
                     </select>
                   </td>
                 </tr>

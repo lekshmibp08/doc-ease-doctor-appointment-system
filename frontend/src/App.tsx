@@ -19,6 +19,7 @@ import RequestPage from './pages/adminPages/RequestPage';
 import ViewDocuments from './components/ViewDocuments';
 import DoctorDetailsPage from './pages/userPages/DoctorDetailsPage';
 import SlotManagementPage from './pages/doctorPages/SlotManagementPage';
+import AppointmentBookingPage from './pages/userPages/AppointmentBookingPage';
 
 
 const App: React.FC = () => {
@@ -50,6 +51,14 @@ const App: React.FC = () => {
             <DoctorProfilePage />
           </RoleBasedRoute>} 
         />
+
+        <Route path="/doctor/slot-management" 
+          element={
+          <RoleBasedRoute allowedRole={'doctor'}>
+            < SlotManagementPage />
+          </RoleBasedRoute>} 
+        />        
+
         {/* ADMIN PAGES*/}        
         <Route path="/admin/dashboard" 
           element={
@@ -97,12 +106,13 @@ const App: React.FC = () => {
             <DoctorDetailsPage />
           </RoleBasedRoute>} 
         />
-        <Route path="/doctor/slot-management" 
+        <Route path="/book-appoinment/:doctorId" 
           element={
           <RoleBasedRoute allowedRole={'user'}>
-            < SlotManagementPage />
+            < AppointmentBookingPage />
           </RoleBasedRoute>} 
         />
+
         <Route path="/profile" 
           element={
           <RoleBasedRoute allowedRole={'user'}>
