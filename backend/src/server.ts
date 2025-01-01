@@ -9,7 +9,7 @@ import adminRoutes from "./infrastructure/web/routes/AdminRoutes"
 import authRoutes from "./infrastructure/web/routes/AuthRoutes"
 import { setupSlotMaintenanceJob } from "./infrastructure/jobs/slotJob";
 
-dotenv.config();
+dotenv.config({ path: `${__dirname}/../.env` });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
