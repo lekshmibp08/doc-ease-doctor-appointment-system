@@ -44,9 +44,22 @@ export const createSlotRepository = (): ISlotRepository => ({
       }
       return timeslot;
     });    
-
+    
     await slot?.save();    
     return slot
-  }
+  },
+  updateSlotStatus: async (slotId, timeSlotId, UpdatedStatus) => {
+    const slot = await SlotModel.findById(slotId);
+
+    const updatedTimeSlots = slot?.timeSlots.map((timeslot) => {
+      if (timeslot._id?.toString() === timeSlotId) {
+        console.log("Identified: ", timeslot);        
+        timeslot.status = UpdatedStatus;
+        return timeslot;
+      }
+      return timeslot;
+    });        
+    await slot?.save();   
+  },
 
 });

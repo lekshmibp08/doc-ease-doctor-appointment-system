@@ -4,6 +4,7 @@ import { authController } from "../controllers/AuthController";
 import { authenticateUser } from "../../middlewares/AuthMiddleware";
 import { slotController } from "../controllers/SlotController";
 import { paymentController } from "../controllers/PaymentController";
+import { appoinmentController } from "../controllers/AppoinmentController";
 
 
 const router = express.Router();
@@ -40,7 +41,7 @@ router.get("/slots/:doctorId", slotController.fetchSlotsForUser);
 
 router.post("/create-order", paymentController.createOrder);
 
-router.post("/book-appointment", userController.bookAppoinment);
+router.post("/book-appointment", appoinmentController.createNewAppoinment);
 
 
 export default router;
