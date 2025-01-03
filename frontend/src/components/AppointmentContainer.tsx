@@ -56,8 +56,14 @@ const AppointmentContainer = ({
         setSlots([]); 
         setSlotId(''); 
       } else {
+        console.log("WORKING");
+        console.log("SLOTID :", response.data.slotId);
+        
+        
         setSlots(response.data.timeSlots);
         setSlotId(response.data.slotId);
+        console.log(slotId);
+        
       }
     } catch (error) {
       console.error("Error fetching slots:", error);
@@ -97,6 +103,8 @@ const AppointmentContainer = ({
 
   //Pay Now Button Handler
   const handlePayNow = async () => {
+    console.log("handlePayNow: ",slotId);
+    
     if (!selectedSlot) {
       Swal.fire({
         icon: 'warning',
@@ -126,7 +134,7 @@ const AppointmentContainer = ({
   
       // Step 2: Configure Razorpay
       const options = {
-        key: 'rzp_test_wyMPk3or5BIJn5', // Replace with your Razorpay Key ID
+        key: 'rzp_test_wyMPk3or5BIJn5', 
         amount: order.amount,
         currency: order.currency,
         name: 'DocEase App',
@@ -141,26 +149,66 @@ const AppointmentContainer = ({
             confirmButtonText: 'Okay',
           });
   
-          // Save Appointment Details
-          const appointmentData = {
-            doctorId: doctorId,
-            userId: currentUser?._id,
-            date: selectedDate,
-            slotId,
-            selectedSlot,
-            timeSlotId: selectedSlot._id,
-            time: selectedSlot.time,
-            mode: visitType,
-            amount: totalAmount,
-            paymentId: response.razorpay_payment_id,
-          };
-          await axios.post('/api/users/book-appointment', appointmentData);
-          Swal.fire({
-            icon: 'success',
-            title: 'Appointment Created',
-            text: 'Your appointment has been successfully created!',
-            confirmButtonText: 'Okay',
+          try {
+            // Save Appointment Details
+            console.log("handlePayNow appointmentData: ",slotId);
+
+            const appointmentData = {
+              doctorId: doctorId,
+              userId: currentUser?._id,
+              date: selectedDate,
+              slotId,
+              selectedSlot,
+              timeSlotId: selectedSlot._id,
+              time: selectedSlot.time,
+              modeOfVisit: visitType,
+              amount: totalAmount,
+              paymentId: response.razorpay_payment_id,
+            };
+            const res = await axios.post(
+              '/api/users/book-appointment', 
+              appointmentData
+            );
+            console.log("Appointment created successfully:", res.data); 
+            
+            Swal.fire({
+              icon: 'success',
+              title: 'Payment Successful',
+              html: `
+              <h3>Your appointment has been successfully created!</h3>
+              <p><strong>Date:</strong> ${format(new Date(res.data.newAppoinment.date), 'dd MMM yyyy, EEEE')}</p>
+              <p><strong>Time:</strong> ${res.data.newAppoinment.time}</p>
+              <div class="mt-4">
+                <button id="go-home" class="swal2-confirm swal2-styled">Go to Home</button>
+                <button id="show-appointments" class="swal2-confirm swal2-styled">Show Appointments</button>
+              </div>
+            `,              
+            showConfirmButton: false,
+            didRender: () => {
+              // Attach custom button handlers
+              const goHomeButton = document.getElementById('go-home');
+              const showOpTicket = document.getElementById('show-op');
+              const showAppointmentsButton = document.getElementById('show-appointments');
+    
+              goHomeButton?.addEventListener('click', () => {
+                window.location.replace('/');
+              });
+
+              showAppointmentsButton?.addEventListener('click', () => {
+                window.location.replace('/appointments'); // Redirect to appointments
+              });
+            },            
           });
+            
+          } catch (error) {
+            console.error("Error creating appointment:", error);
+            Swal.fire({
+              icon: "error",
+              title: "Appointment Error",
+              text: "There was an error while creating your appointment. Please try again later.",
+              confirmButtonText: "Okay",
+            });            
+          }
         },
         prefill: {
           name: currentUser?.fullName,
@@ -316,8 +364,8 @@ const AppointmentContainer = ({
               <input
                 type="radio"
                 name="visitType"
-                value={mode.toLowerCase()}
-                checked={visitType === mode.toLowerCase()}
+                value={mode}
+                checked={visitType === mode}
                 onChange={(e) => setVisitType(e.target.value)}
               />
               <span>{mode}</span>
