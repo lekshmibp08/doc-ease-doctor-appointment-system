@@ -20,6 +20,7 @@ import ViewDocuments from './components/ViewDocuments';
 import DoctorDetailsPage from './pages/userPages/DoctorDetailsPage';
 import SlotManagementPage from './pages/doctorPages/SlotManagementPage';
 import AppointmentBookingPage from './pages/userPages/AppointmentBookingPage';
+import AppointmentPage from './pages/userPages/AppointmentsPage';
 
 
 const App: React.FC = () => {
@@ -117,6 +118,13 @@ const App: React.FC = () => {
           element={
           <RoleBasedRoute allowedRole={'user'}>
             <ProfilePage />
+          </RoleBasedRoute>} 
+        />
+
+        <Route path="/appointments/:userId" 
+          element={
+          <RoleBasedRoute allowedRole={'user'}>
+            <AppointmentPage />
           </RoleBasedRoute>} 
         />
 

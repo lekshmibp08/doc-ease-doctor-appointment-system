@@ -6,6 +6,7 @@ import axios from '../services/axiosConfig';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
+import { useNavigate } from 'react-router-dom';
 
 declare global {
   interface Window {
@@ -38,6 +39,8 @@ const AppointmentContainer = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [slotId, setSlotId] = useState<string>('')
   const { currentUser } = useSelector((state: RootState) => state.userAuth);
+
+  const navigate = useNavigate();
 
   const fetchSlots = async () => {
     setLoading(true); 
@@ -187,15 +190,14 @@ const AppointmentContainer = ({
             didRender: () => {
               // Attach custom button handlers
               const goHomeButton = document.getElementById('go-home');
-              const showOpTicket = document.getElementById('show-op');
               const showAppointmentsButton = document.getElementById('show-appointments');
     
               goHomeButton?.addEventListener('click', () => {
-                window.location.replace('/');
+                navigate('/');
               });
 
               showAppointmentsButton?.addEventListener('click', () => {
-                window.location.replace('/appointments'); // Redirect to appointments
+                navigate(`/appointments/${currentUser?._id}`);
               });
             },            
           });

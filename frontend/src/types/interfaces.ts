@@ -80,4 +80,25 @@ export interface IUser {
 //    handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 //    handleUpdateDetails: () => void;
 //}
-  
+
+export interface IAppointment {
+  _id: string;
+  doctorId: string;
+  userId: string;
+  date: Date;
+  slotId: string;
+  timeSlotId: string;
+  time: string;
+  modeOfVisit: "Video" | "Clinic";
+  amount: number;
+  paymentId: string;
+  isPaid?: boolean;
+  isCancelled?: boolean;
+  refundAmount?: number;
+  videoCallEnabled?: boolean;
+  chatEnabled?: boolean;
+  isCompleted?: boolean;
+  rating?: number;
+  reviewMessage?: string;
+  videoCallId?: string;
+}
