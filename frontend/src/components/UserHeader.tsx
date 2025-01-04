@@ -1,4 +1,4 @@
-import { Menu } from '@headlessui/react';
+import { Menu, MenuItem, MenuItems } from '@headlessui/react';
 import useLogout from '../hooks/useLogout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
@@ -69,8 +69,8 @@ const UserHeader: React.FC<UserHeaderProps> = ({ role, onToggleSidebar }) => {
                 </Menu.Button>
 
                 {/* Dropdown Menu */}
-                <Menu.Items className="absolute top-12 right-0 bg-white text-teal-700 rounded shadow-md z-10">
-                  <Menu.Item>
+                <MenuItems className="absolute top-12 right-0 bg-white text-teal-700 rounded shadow-md z-10">
+                  <MenuItem>
                     {({ active }) => (
                       <button
                         className={`${
@@ -85,8 +85,25 @@ const UserHeader: React.FC<UserHeaderProps> = ({ role, onToggleSidebar }) => {
                         Profile
                       </button>
                     )}
-                  </Menu.Item>
-                  <Menu.Item>
+                  </MenuItem>
+
+                  {/* Conditional Appointments Menu */}
+                  {role === 'user' && (
+                    <MenuItem>
+                      {({ active }) => (
+                        <button
+                          className={`${
+                            active ? 'bg-teal-100' : ''
+                          } block w-full px-4 py-2 text-left cursor-pointer`}
+                          onClick={() => navigate('/appointments')}
+                        >
+                          Appointments
+                        </button>
+                      )}
+                    </MenuItem>
+                  )}
+
+                  <MenuItem>
                     {({ active }) => (
                       <button
                         className={`${
@@ -97,8 +114,8 @@ const UserHeader: React.FC<UserHeaderProps> = ({ role, onToggleSidebar }) => {
                         SignOut
                       </button>
                     )}
-                  </Menu.Item>
-                </Menu.Items>
+                  </MenuItem>
+                </MenuItems>
               </Menu>
 
               {/* Greeting */}
