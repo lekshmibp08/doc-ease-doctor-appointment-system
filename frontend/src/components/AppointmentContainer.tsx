@@ -193,11 +193,13 @@ const AppointmentContainer = ({
               const showAppointmentsButton = document.getElementById('show-appointments');
     
               goHomeButton?.addEventListener('click', () => {
+                Swal.close();
                 navigate('/');
               });
 
               showAppointmentsButton?.addEventListener('click', () => {
-                navigate(`/appointments/${currentUser?._id}`);
+                Swal.close();
+                navigate(`/appointments`);
               });
             },            
           });

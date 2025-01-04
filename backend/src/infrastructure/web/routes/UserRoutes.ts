@@ -43,5 +43,12 @@ router.post("/create-order", paymentController.createOrder);
 
 router.post("/book-appointment", appoinmentController.createNewAppoinment);
 
+router.get("/appointments/:userId", appoinmentController.getAppointmentsByUser);
+
+router.put("/appointments/:appointmentId", appoinmentController.cancelAppointmentByUser);
+
+
+
+
 
 export default router;

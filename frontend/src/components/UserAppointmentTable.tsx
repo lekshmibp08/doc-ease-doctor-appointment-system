@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 import { IAppointment } from '../types/interfaces';
 import { format } from "date-fns";
+import Swal from 'sweetalert2';
+import { isCancel } from 'axios';
 
 const UserAppointmentTable: React.FC = () => {
 
@@ -13,9 +15,12 @@ const UserAppointmentTable: React.FC = () => {
 
   const fetchAppointments = async () => {
     const userId = currentUser?._id;
+    
     try {
         const response = await axios.get(`/api/users/appointments/${userId}`);
-        setAppointments(response.data); 
+        console.log(response.data.appointments);
+        
+        setAppointments(response.data.appointments); 
         
     } catch (error) {
         console.error(error);        
@@ -23,11 +28,39 @@ const UserAppointmentTable: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchAppointments();
-  },[]);
+    fetchAppointments();    
+  },[currentUser?._id]);
+  
 
-  const handleCancelAppointment = (appoinmentId: string) => {
-    console.log("Button Clicked", appoinmentId);
+  const handleCancelAppointment = async (appoinmentId: string) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You want to cancell the  Appointment..?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Cancel it!",
+    });    
+    if(result.isConfirmed) {
+      try {
+        const response = await axios.put(`/api/users/appointments/${appoinmentId}`);
+        console.log(response.data.updatedData);
+        const isCancelled = response.data.updatedData;
+        console.log("isCancelled: ", isCancelled);
+        
+        setAppointments((prev) => 
+          prev.map((appoinment) => 
+            appoinment._id === appoinmentId ? {...appoinment, isCancelled } : appoinment
+          )
+        );
+        
+        Swal.fire("Cancelled!", response.data.message, "success");        
+        
+      } catch (error: any) {
+        console.error('Error blocking/unblocking User:', error);
+        Swal.fire("Error!", error.message, "error");        
+      }
+
+    }
     
 
   }
