@@ -32,7 +32,9 @@ const AppointmentContainer = ({
   modesOfConsultation,
   fee,
 }: AppointmentContainerProps) => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(
+    new Date(new Date().setDate(new Date().getDate() + 1))
+  );
   const [visitType, setVisitType] = useState<string>('');
   const [selectedSlot, setSelectedSlot] = useState<Slot>();
   const [slots, setSlots] = useState<Slot[]>([]); // To store the fetched slots
@@ -269,7 +271,7 @@ const AppointmentContainer = ({
         <DatePicker
           selected={selectedDate}
           onChange={(date) => setSelectedDate(date as Date)}
-          minDate={new Date()} // Disable past dates
+          minDate={new Date(new Date().setDate(new Date().getDate() + 1))} // Disable today's date
           dateFormat="yyyy-MM-dd"
           className="border rounded-md px-3 py-2"
           placeholderText="Select a date"
