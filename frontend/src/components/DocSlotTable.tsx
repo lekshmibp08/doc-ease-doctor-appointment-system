@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import "../styles/responsive-table.css"
 import DatePicker from "react-datepicker";
 import axios from "../services/axiosConfig";
 import "react-datepicker/dist/react-datepicker.css";
@@ -79,11 +80,11 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-customBgLight" >
       {/* Header with Calendar and Time Period Filters */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
         {/* Date Picker */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row items-center gap-4 w-full">
           <label className="font-semibold">Select Date:</label>
           <DatePicker
             selected={selectedDate}
@@ -94,7 +95,7 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
         </div>
 
         {/* Time Period Filters */}
-        <div className="flex gap-4">
+        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
           {["Morning", "Afternoon", "Evening"].map((period) => (
             <button
               key={period}
@@ -132,8 +133,8 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
                     slot.status === "Not Booked" ? "bg-gray-50" : "bg-white"
                   }`}
                 >
-                  <td className="py-3 px-4">{slot.time}</td>
-                  <td
+                  <td data-label="Slots" className="py-3 px-4">{slot.time}</td>
+                  <td data-label="Status"
                     className={`py-3 px-4 ${
                       slot.status === "Not Booked"
                         ? "text-red-500"
@@ -142,7 +143,7 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
                   >
                     {slot.status}
                   </td>
-                  <td className="py-3 px-4">
+                  <td data-label="Update Status" className="py-3 px-4">
                     <select
                       className={`py-2 px-3 rounded-md ${
                         slot.isAvailable

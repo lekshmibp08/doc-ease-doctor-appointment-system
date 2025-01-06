@@ -23,7 +23,7 @@ const SlotManagementPage = () => {
         <DoctorSidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
         {/* Main Content */}
-        <div className="flex-1 bg-white p-6">
+        <div className="flex-1 bg-gray-100 p-6">
           < DocSlotTable doctorId = {currentUser?._id || ""} />
         </div>
       </div>
