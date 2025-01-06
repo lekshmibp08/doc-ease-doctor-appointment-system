@@ -46,7 +46,7 @@ const DoctorSidebar = ({ isOpen }: IDoctorSidebarProps) => {
           Chats
         </NavLink>
         <NavLink
-          to="/doctor/appointments"
+          to="/doctor/appointment-management"
           className={({ isActive }) =>
             `py-2 px-4 rounded bg-white text-black ${
               isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'

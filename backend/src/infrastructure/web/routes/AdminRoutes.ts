@@ -2,6 +2,7 @@ import express from "express";
 import { adminController } from "../controllers/AdminController";
 import { authController } from "../controllers/AuthController";
 import { authenticateUser } from "../../middlewares/AuthMiddleware";
+import { appoinmentController } from "../controllers/AppoinmentController";
 
 const router = express.Router();
 
@@ -26,6 +27,9 @@ router.patch("/doctors/block/:id", authenticateUser(["admin"]), adminController.
 
 // Users Listing
 router.get("/users", authenticateUser(["admin"]), adminController.getAllUsers);
+
+// Appointment Listing
+router.get("/appointments", authenticateUser(["admin"]), appoinmentController.getAllAppointmentsByAdmin);
 
 //Block and unblock User
 router.patch("/users/block/:id", authenticateUser(["admin"]), adminController.blockAndUnblockUser);

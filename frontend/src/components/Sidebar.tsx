@@ -55,7 +55,7 @@ const Sidebar = ({ isOpen }: ISidebarProps) => {
           User Management
         </NavLink>
         <NavLink
-          to="/appointments"
+          to="/admin/appointments"
           className={({ isActive }) =>
             `py-2 px-4 rounded bg-white text-black ${
               isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'

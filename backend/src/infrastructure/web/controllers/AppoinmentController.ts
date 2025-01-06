@@ -4,6 +4,8 @@ import { createAppointmentRepository } from "../../database/repositories/Appoinm
 import { createAppointmentUseCase } from "../../../application/useCases/user/CreateAppointmentUseCase ";
 import { getAppointmentsByUserUseCase } from "../../../application/useCases/user/getAppointmentsByUserUseCase ";
 import { cancelAppointmentByUserUsecase } from "../../../application/useCases/user/cancelAppointment";
+import { listAllAppointmentsForAdmin } from "../../../application/useCases/admin/listAllAppointmentsForAdmin";
+import { getAppointmentsByDoctorIdUseCase } from "../../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
 
 type TimePeriod = "Morning" | "Afternoon" | "Evening";
 
@@ -65,14 +67,56 @@ export const appoinmentController = {
     cancelAppointmentByUser: async (req: Request, res: Response): Promise<void> => {
         const { appointmentId } = req.params;
         const appointmentRepository = createAppointmentRepository();
+        const slotRepository = createSlotRepository();
         try {
-            const updatedData = await cancelAppointmentByUserUsecase(appointmentId, appointmentRepository)
+            const updatedData = await cancelAppointmentByUserUsecase(appointmentId, appointmentRepository, slotRepository)
             res.status(200).json({message: "Appointment cancelled Successfully.", updatedData})
         } catch (error) {
             console.error("Error cancelling appointment:", error);            
             res.status(500).json({ error: "Failed to cancel appointment." });
         }
     },
+
+    getAllAppointmentsByAdmin: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { page, size, search } = req.query;
+            
+            const pageNumber = parseInt(page as string);
+            const pageSize = parseInt(size as string);
+            const searchQuery = search ? String(search) : '';        
+            
+            const appointmentRepository = createAppointmentRepository();
+    
+            const { appointments, totalAppointments, totalPages } = await listAllAppointmentsForAdmin(appointmentRepository, pageNumber, pageSize, searchQuery);
+            res.status(200).json({ appointments, totalAppointments, totalPages, currentPage: pageNumber });            
+        } catch (error: any) {
+            res.status(500).json({ message: "Failed to fetch users", error: error.message });
+        }
+    },
+
+    getAppointmentsByDoctorId: async (req: Request, res: Response) => {
+        const { page, size, date, doctorId } = req.query;
+            
+        const pageNumber = parseInt(page as string);
+        const pageSize = parseInt(size as string);
+
+        const appointmentRepository = createAppointmentRepository();
+
+        try {
+            const { appointments, totalAppointments, totalPages } = await getAppointmentsByDoctorIdUseCase(
+                appointmentRepository, 
+                doctorId as string, 
+                date as string, 
+                pageNumber, 
+                pageSize 
+            )
+            res.status(200).json({ appointments, totalAppointments, totalPages, currentPage: pageNumber });
+        } catch (error: any) {
+            res.status(500).json({ message: "Failed to fetch users", error: error.message });
+        }
+
+
+    }
     
 
 

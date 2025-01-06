@@ -22,10 +22,10 @@ router.post("/login", userController.login);
 router.post("/logout", authController.logout);
 
 // Get all Approved doctors
-router.get("/doctors", userController.getDoctors);
+router.get("/doctors", authenticateUser(['user']), userController.getDoctors);
 
 // update user profile
-router.patch("/profile/update/:id", userController.updateUserProfile);
+router.patch("/profile/update/:id", authenticateUser(['user']), userController.updateUserProfile);
 
 //send OTP for forget password
 router.post("/forget-password/send-otp", userController.sendOtpForForgetPassword);
@@ -34,18 +34,18 @@ router.post("/forget-password/send-otp", userController.sendOtpForForgetPassword
 router.patch("/forget-password/verify-and-reset", userController.verifyAndResetPassword);
 
 // Get doctor details
-router.get("/doctor/:id", userController.getDoctorDetails);
+router.get("/doctor/:id", authenticateUser(['user']), userController.getDoctorDetails);
 
 // Get slots
-router.get("/slots/:doctorId", slotController.fetchSlotsForUser);
+router.get("/slots/:doctorId", authenticateUser(['user']), slotController.fetchSlotsForUser);
 
-router.post("/create-order", paymentController.createOrder);
+router.post("/create-order", authenticateUser(['user']), paymentController.createOrder);
 
-router.post("/book-appointment", appoinmentController.createNewAppoinment);
+router.post("/book-appointment", authenticateUser(['user']), appoinmentController.createNewAppoinment);
 
-router.get("/appointments/:userId", appoinmentController.getAppointmentsByUser);
+router.get("/appointments/:userId", authenticateUser(['user']), appoinmentController.getAppointmentsByUser);
 
-router.put("/appointments/:appointmentId", appoinmentController.cancelAppointmentByUser);
+router.put("/appointments/:appointmentId", authenticateUser(['user']), appoinmentController.cancelAppointmentByUser);
 
 
 

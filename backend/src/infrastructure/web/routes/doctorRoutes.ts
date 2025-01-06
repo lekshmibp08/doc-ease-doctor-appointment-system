@@ -3,6 +3,7 @@ import { doctorController } from "../controllers/DoctorController";
 import { authController } from "../controllers/AuthController";
 import { slotController } from "../controllers/SlotController";
 import { authenticateUser } from "../../middlewares/AuthMiddleware";
+import { appoinmentController } from "../controllers/AppoinmentController";
 const router = express.Router();
 
 // Send OTP during signup
@@ -24,13 +25,16 @@ router.patch("/forget-password/verify-and-reset", doctorController.verifyAndRese
 router.post("/logout", authController.logout);
 
 // update user profile
-router.patch("/profile/update/:id", doctorController.updateDoctorProfile);
+router.patch("/profile/update/:id", authenticateUser(['doctor']), doctorController.updateDoctorProfile);
 
 // Get slots for Doctor
-router.get("/slots", slotController.fetchOrCreateSlot);
+router.get("/slots", authenticateUser(['doctor']), slotController.fetchOrCreateSlot);
+
+// Get all appointments for the doctor
+router.get("/appointments", authenticateUser(['doctor']), appoinmentController.getAppointmentsByDoctorId);
 
 // Slot management by doctor
-router.put("/slots/update-status", slotController.updateSlotStatus);
+router.put("/slots/update-status", authenticateUser(['doctor']), slotController.updateSlotStatus);
 
 
 

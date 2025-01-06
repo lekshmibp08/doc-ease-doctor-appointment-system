@@ -21,7 +21,8 @@ import DoctorDetailsPage from './pages/userPages/DoctorDetailsPage';
 import SlotManagementPage from './pages/doctorPages/SlotManagementPage';
 import AppointmentBookingPage from './pages/userPages/AppointmentBookingPage';
 import AppointmentPage from './pages/userPages/AppointmentsPage';
-
+import AdminAppointmentPage from './pages/adminPages/AdminAppointmentPage';
+import DocAppointmentManagementPage from './pages/doctorPages/DocAppointmentManagementPage';
 
 const App: React.FC = () => {
   return (
@@ -60,6 +61,16 @@ const App: React.FC = () => {
           </RoleBasedRoute>} 
         />        
 
+        <Route path="/doctor/appointment-management" 
+          element={
+          <RoleBasedRoute allowedRole={'doctor'}>
+            < DocAppointmentManagementPage />
+          </RoleBasedRoute>} 
+        />     
+
+
+
+
         {/* ADMIN PAGES*/}        
         <Route path="/admin/dashboard" 
           element={
@@ -87,11 +98,17 @@ const App: React.FC = () => {
         />
         <Route path="/admin/doctors/view-documents/:id" 
           element={
-          <RoleBasedRoute allowedRole={'admin'}>
+            <RoleBasedRoute allowedRole={'admin'}>
             <ViewDocuments/>
           </RoleBasedRoute>} 
         />
 
+        <Route path="/admin/appointments" 
+          element={
+          <RoleBasedRoute allowedRole={'admin'}>
+            <AdminAppointmentPage/>
+          </RoleBasedRoute>} 
+        />
 
 
         {/* USER PAGES*/}
@@ -121,7 +138,7 @@ const App: React.FC = () => {
           </RoleBasedRoute>} 
         />
 
-        <Route path="/appointments/:userId" 
+        <Route path="/appointments" 
           element={
           <RoleBasedRoute allowedRole={'user'}>
             <AppointmentPage />
