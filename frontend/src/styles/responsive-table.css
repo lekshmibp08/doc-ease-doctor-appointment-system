@@ -1,0 +1,31 @@
+@media (max-width: 640px) {
+    table {
+      display: block;
+    }
+  
+    thead {
+      display: none;
+    }
+  
+    tbody tr {
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+    }
+  
+    td {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+    }
+  
+    td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      margin-right: 1rem;
+      color: #555;
+    }
+  }
+  
