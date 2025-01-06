@@ -7,12 +7,13 @@ import { useDispatch } from 'react-redux';
 
 // Base Axios instance
 const axios = axiosInstance.create({
-  baseURL: 'http://localhost:5000', // Replace with your backend URL
-  timeout: 10000, // Optional: Adjust timeout as needed
+  baseURL: 'http://localhost:5000', 
+  timeout: 10000, 
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
 
 // Function to get the token from Redux state
 const getTokenFromRedux = () => {
@@ -32,6 +33,35 @@ const getTokenFromRedux = () => {
   return null; // Return null if no token exists
 };
 
+
+const getTokenFromSessionStorage = (url: string | undefined): string | null => {
+  // Check the URL to determine the token's role
+  if (url?.includes('/api/admin')) {
+    console.log("ADMIN");
+    console.log(url);
+    
+    
+    return sessionStorage.getItem('adminToken'); // Return Admin Token
+  } else if (url?.includes('/api/doctors')) {
+    console.log("DOCTOR");
+    console.log(url);
+    
+    
+    return sessionStorage.getItem('doctorToken'); // Return Doctor Token
+  } else if (url?.includes('/api/users')) {
+    console.log("USER");
+    console.log(url);
+    
+
+    return sessionStorage.getItem('userToken'); // Return User Token
+  }
+
+  // No matching role
+  console.warn('No matching token found for URL:', url);
+  return null;
+};
+
+
 // Request Interceptor
 axios.interceptors.request.use(
   (config) => {
@@ -43,7 +73,15 @@ axios.interceptors.request.use(
       return config; // Skip adding Authorization header
     }
 
-    const token = getTokenFromRedux(); // Get the token
+
+
+
+
+    const token = getTokenFromSessionStorage(config.url);
+
+
+    
+    //const token = getTokenFromRedux(); // Get the token
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`; // Attach the token to the Authorization header
       console.log('Authorization Header Set:', config.headers['Authorization']);
