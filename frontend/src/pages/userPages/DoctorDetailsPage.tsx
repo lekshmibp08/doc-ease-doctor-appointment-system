@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import axios from "../../services/axiosConfig";
 
 import UserHeader from "../../components/UserHeader";
 import DoctorDetailsCard from "../../components/DoctorDetailsCard";
