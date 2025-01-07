@@ -69,12 +69,20 @@ export const doctorController = {
 
       const doctorRepository = createDoctorRepository();
 
-      const { docToken, role, doctor } = await loginDoctor(doctorRepository, { email, password });
+      const { token, refreshToken, role, doctor } = await loginDoctor(doctorRepository, { email, password });
       
       const userData = doctor._doc;
 
-      res.cookie("auth_token", docToken, { httpOnly: true, maxAge: 86400000 })
-      .status(200).json({ message: "Login successful", docToken, role, userData });
+      // Store the refresh token in an HTTP-only cookie
+      res.cookie("doctor_refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+
+      res.status(200).json({ message: "Login successful", token, refreshToken, role, userData });
     } catch (error: any) {
       res.status(401).json({ message: error.message });
     }

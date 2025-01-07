@@ -20,6 +20,7 @@ const UserLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("Redux Token:", token);
     if (token) {
       navigate('/doctors', { replace: true });
     }
@@ -35,10 +36,13 @@ const UserLogin = () => {
 
     try {
       dispatch(clearUserToken());
-      const response = await axios.post('/api/users/login', formData);
+      const response = await axios.post('/api/users/login', formData, { withCredentials: true });
 
       const { token, userData } = response.data;
       console.log('Login Successful:', response.data);
+      // Log token and userData for debugging
+      console.log("Access Token:", token);
+      console.log("User Data:", userData);
 
       dispatch(setUserToken({ token, currentUser: userData }));
 

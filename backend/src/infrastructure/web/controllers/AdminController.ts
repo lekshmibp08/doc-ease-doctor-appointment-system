@@ -25,10 +25,17 @@ export const adminController = {
 
       const userRepository = createUserRepository();
 
-      const { adminToken, role } = await loginAdmin(userRepository, { email, password });
+      const { token, refreshToken, role } = await loginAdmin(userRepository, { email, password });
 
-      res.cookie("auth_token", adminToken, { httpOnly: true, maxAge: 86400000 });
-      res.status(200).json({ message: "Login successful", adminToken, role });
+      // Store the refresh token in an HTTP-only cookie
+      res.cookie("admin_refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+      
+      res.status(200).json({ message: "Login successful", token, refreshToken, role });
     } catch (error: any) {
       res.status(401).json({ message: error.message });
     }

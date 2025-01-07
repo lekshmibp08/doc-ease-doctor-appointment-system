@@ -18,6 +18,9 @@ router.post("/verify-otp-and-register", userController.verifyOtpAndRegisterUser)
 // Login route
 router.post("/login", userController.login);
 
+// Refresh token endpoint
+router.post("/refresh-token", authController.refreshAccessToken);
+
 // Logout route
 router.post("/logout", authController.logout);
 

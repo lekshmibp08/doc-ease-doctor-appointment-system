@@ -37,11 +37,11 @@ const DoctorLoginPage = () => {
     
     try {
       clearDoctorToken();
-      const response = await axios.post('/api/doctors/login', formData);
+      const response = await axios.post('/api/doctors/login', formData, { withCredentials: true });
 
-      const { docToken: token, userData } = response.data;
+      const { token, userData } = response.data;
 
-      console.log(userData);
+      console.log("TOKEN ----------> ", token);
       
       dispatch(setDoctorToken({token, currentUser: userData}));
 

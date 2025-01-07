@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 export const loginDoctor = async (
   doctorRepository: IDoctorRepository,
   data: { email: string; password: string }
-): Promise<{ docToken: string; role: string, doctor: Record<string, any> }> => {
+): Promise<{ token: string; refreshToken: string; role: string, doctor: Record<string, any> }> => {
   const { email, password } = data;
 
   const doctor = await doctorRepository.findByEmail(email);
@@ -25,11 +25,17 @@ export const loginDoctor = async (
 
   const { password: _, ... rest} = doctor
 
-  const docToken = jwt.sign(
-    { id: doctor._id, email: doctor.email, fullName: doctor.fullName, role: doctor.role }, 
-    process.env.JWT_SECRET as string, 
-    { expiresIn: "1h" } 
-  );
+  const token = jwt.sign(
+      { id: doctor._id, email: doctor.email, role: doctor.role },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "15m" } // Short-lived access token
+    );
+  
+    const refreshToken = jwt.sign(
+      { id: doctor._id, email: doctor.email, role: doctor.role },
+      process.env.JWT_REFRESH_SECRET as string,
+      { expiresIn: "7d" } // Long-lived refresh token
+    );
 
-  return { docToken, role: doctor.role, doctor: rest };
+  return { token, refreshToken, role: doctor.role, doctor: rest };
 };

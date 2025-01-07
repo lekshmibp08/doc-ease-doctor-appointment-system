@@ -29,8 +29,18 @@ const doctorSlice = createSlice({
       state.currentUser = null;
       sessionStorage.removeItem('doctorToken');
     },
+
+    refreshDoctorToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
+
+      // Update sessionStorage with the new token
+      sessionStorage.setItem('doctorToken', action.payload);
+    },
+
+
+
   },
 });
 
-export const { setDoctorToken, clearDoctorToken } = doctorSlice.actions;
+export const { setDoctorToken, clearDoctorToken, refreshDoctorToken } = doctorSlice.actions;
 export default doctorSlice.reducer;

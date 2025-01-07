@@ -28,8 +28,16 @@ const adminSlice = createSlice({
       state.currentUser = null;
       sessionStorage.removeItem('adminToken');
     },
+
+    refreshAdminToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
+
+      // Update sessionStorage with the new token
+      sessionStorage.setItem('adminToken', action.payload);
+    },
+
   },
 });
 
-export const { setAdminToken, clearAdminToken } = adminSlice.actions;
+export const { setAdminToken, clearAdminToken, refreshAdminToken } = adminSlice.actions;
 export default adminSlice.reducer;

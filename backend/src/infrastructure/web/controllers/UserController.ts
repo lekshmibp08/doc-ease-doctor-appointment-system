@@ -72,16 +72,24 @@ export const userController = {
       const userRepository = createUserRepository();      
 
       // Call the login use case
-      const { token, role, user  } = await loginUser(userRepository, { email, password });
+      const { token, refreshToken, role, user  } = await loginUser(userRepository, { email, password });
 
       const userData = user._doc;
       
 
-      // Respond with token and role
-      res.cookie("auth_token", token, { 
-        httpOnly: true, maxAge: 86400000 
+      // Store the refresh token in an HTTP-only cookie
+      res.cookie("user_refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
+
+      console.log("Access Token:", token);
+      console.log("Refresh Token Set in Cookie");
+
       res.status(200).json({ message: "Login successful", token, role, userData });
+    
     } catch (error: any) {
       res.status(401).json({ message: error.message });
     }

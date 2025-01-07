@@ -35,9 +35,9 @@ const AdminLogin = () => {
       
       try {
         dispatch(clearAdminToken());
-        const response = await axios.post('/api/admin/login', formData);
+        const response = await axios.post('/api/admin/login', formData, { withCredentials: true });
   
-        const { adminToken: token } = response.data;
+        const { token } = response.data;
 
         const {fullName} = jwtDecode<any>(token);
         

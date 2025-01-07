@@ -15,6 +15,9 @@ router.post("/verify-otp-and-register", doctorController.verifyOtpAndRegisterUse
 // Login route
 router.post("/login", doctorController.login);
 
+// Refresh token endpoint
+router.post("/refresh-token", authController.refreshAccessToken);
+
 //send OTP for forget password
 router.post("/forget-password/send-otp", doctorController.sendOtpForForgetPassword);
 

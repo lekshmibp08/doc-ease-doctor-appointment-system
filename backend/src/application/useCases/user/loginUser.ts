@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 export const loginUser = async (
   userRepository: IUserRepository,
   data: { email: string; password: string }
-): Promise<{ token: string; role: string; user: Record<string, any> }> => {
+): Promise<{ token: string; refreshToken: string; role: string; user: Record<string, any> }> => {
   const { email, password } = data;
 
   
@@ -26,11 +26,21 @@ export const loginUser = async (
   const { password: _, ... rest} = user
 
   const token = jwt.sign(
-    { id: user._id, email: user.email, fullName: user.fullName, role: user.role }, 
-    process.env.JWT_SECRET as string, 
-    { expiresIn: "1h" } 
+    { id: user._id, email: user.email, role: user.role },
+    process.env.JWT_SECRET as string,
+    { expiresIn: "15m" } // Short-lived access token
   );
 
+  const refreshToken = jwt.sign(
+    { id: user._id, email: user.email, role: user.role },
+    process.env.JWT_REFRESH_SECRET as string,
+    { expiresIn: "7d" } // Long-lived refresh token
+  );
 
-  return { token, role: user.role, user: rest };
+  console.log(token);
+  console.log(refreshToken);
+  
+
+
+  return { token, refreshToken, role: user.role, user: rest };
 };

@@ -32,11 +32,14 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
       const decodedToken = jwt.decode(token);
       console.log("DECODED TOKEN: ", decodedToken);
       
-      //const decoded = jwt.verify(token, process.env.JWT_SECRET || "DocEaseSecret"  as string) as DecodedToken;
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'DocEaseSecret',) as DecodedToken;
       console.log(decoded);
 
       if (allowedRoles.length > 0 && !allowedRoles.includes(decoded.role)) {
+        console.log(allowedRoles);
+        console.log(decoded.role);
+        
+        
         console.log("4");
         
         res.status(403).json({ message: "You do not have the required permissions" });
@@ -55,7 +58,7 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
         console.error('Token verification error:', error.message);
       }
       
-      //res.status(401).json({ message: "Invalid or expired token" });
+      res.status(401).json({ message: "Invalid or expired token" });
     }
   };
 };
