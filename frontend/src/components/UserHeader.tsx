@@ -1,5 +1,5 @@
 import { Menu, MenuItem, MenuItems } from '@headlessui/react';
-import useLogout from '../hooks/useLogout';
+import { useLogout } from '../hooks/useLogout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +15,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({ role, onToggleSidebar }) => {
     role === 'user' ? state.userAuth : state.doctorAuth
   );
 
-  const handleSignOut = useLogout();
+  const logout = useLogout();
 
   return (
     <header className="bg-customTeal text-white px-4">
@@ -109,7 +109,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({ role, onToggleSidebar }) => {
                         className={`${
                           active ? 'bg-teal-100' : ''
                         } block w-full px-4 py-2 text-left cursor-pointer`}
-                        onClick={handleSignOut}
+                        onClick={logout}
                       >
                         SignOut
                       </button>

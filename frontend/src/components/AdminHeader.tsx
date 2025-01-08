@@ -1,4 +1,4 @@
-import useLogout from '../hooks/useLogout';
+import {useLogout} from '../hooks/useLogout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 
