@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
+import { createUserRepository } from "../database/repositories/UserRepository";
+import { createDoctorRepository } from "../database/repositories/DoctorRepository";
+
 
 interface DecodedToken {
   id: string;
@@ -9,7 +12,7 @@ interface DecodedToken {
 }
 
 export const authenticateUser = (allowedRoles: string[] = []): RequestHandler => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers.authorization;
         
     if (!authHeader) {
@@ -46,10 +49,30 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
         return;
       }
 
+      const userRepository = createUserRepository();
+      const doctorRepository = createDoctorRepository();
+
+      let user;
+      if(decoded.role === 'user' || decoded.role === "admin") {
+        user = await userRepository.findUserById(decoded.id);
+      } else if (decoded.role === "doctor") {
+        user = await doctorRepository.findDoctorById(decoded.id);
+      }
+
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      if (user.isBlocked) {
+        res.status(403).json({ message: "Your account is blocked. Please contact support." });
+        return;
+      }
+
       // Attach user information to the request object
       //req.user = { id: decoded.id, role: decoded.role };
 
-      next(); // Pass control to the next middleware or controller
+      next();
     } catch (error: any) {
       console.log("5");
       if (error.name === 'TokenExpiredError') {

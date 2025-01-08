@@ -3,7 +3,8 @@ import { store } from '../Redux/store';
 import { refreshUserToken, clearUserToken } from "../Redux/slices/userSlice";
 import { refreshAdminToken, clearAdminToken } from '../Redux/slices/adminSlice';
 import { refreshDoctorToken, clearDoctorToken } from '../Redux/slices/doctorSlice';
-import { useDispatch } from 'react-redux';
+import {handleLogout} from '../hooks/useLogout';
+import Swal from 'sweetalert2';
 
 
 // Base Axios instance
@@ -151,7 +152,10 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response,
   async (error) => {
+    console.log("ENTERED INTERCEPTOR ERROR BLOCK");
+    
     const originalRequest = error.config;
+    
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       console.log("Access token expired. Attempting to refresh...");
@@ -168,6 +172,8 @@ axios.interceptors.response.use(
       }
 
       try {
+        console.log("refreshConfig.role: ", refreshConfig.role);
+        
         const { data } = await axios.post(refreshConfig.refreshEndpoint, {
           role: refreshConfig.role,
         }, { withCredentials: true });
@@ -191,6 +197,26 @@ axios.interceptors.response.use(
         sessionStorage.removeItem(refreshConfig.tokenStorageKey);
         window.location.href = "/login";
         return Promise.reject(refreshError);
+      }
+    }
+
+    if(error.response?.status === 403) {
+      console.log("ENTERED 403 BLOCK ");
+      console.log(error.response.data);
+      
+      Swal.fire({
+        icon: 'error', 
+        title: 'Access Denied',
+        text: error.response.data.message, 
+        confirmButtonText: 'OK',
+      });
+
+      try {
+        const basePath = window.location.pathname.split("/")[1]; // Derive the base path
+        handleLogout(basePath);
+        alert(error.response.data.message)
+      } catch (logoutError) {
+        console.error("Error during logout after 403:", logoutError);
       }
     }
 
