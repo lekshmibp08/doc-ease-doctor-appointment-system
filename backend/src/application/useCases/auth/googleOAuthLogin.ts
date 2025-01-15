@@ -8,7 +8,7 @@ export const googleOAuthLogin = async (
   email: string,
   profilePicture: string,
   role: "doctor" | "user" | "admin",
-): Promise<{ authToken: string; user: Record<string, any>;  role: string }> => {
+): Promise<{ token: string; refreshToken: string; user: Record<string, any>;  role: string }> => {
   let entity;
   
 
@@ -53,15 +53,20 @@ export const googleOAuthLogin = async (
 
   const { password: _, ...rest } = entity
 
-  // Generate JWT token
-  const authToken = jwt.sign(
-    { id: entity._id, email: entity.email, role: entity.role },
-    process.env.JWT_SECRET as string,
-    { expiresIn: "1h" }
-  );
-
   console.log("REST: ", rest);
+
+  const token = jwt.sign(
+      { id: entity._id, email: entity.email, role: entity.role },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "15m" } // Short-lived access token
+    );
+  
+    const refreshToken = jwt.sign(
+      { id: entity._id, email: entity.email, role: entity.role },
+      process.env.JWT_REFRESH_SECRET as string,
+      { expiresIn: "7d" } // Long-lived refresh token
+    );  
   
 
-  return { authToken, user: rest, role: entity.role };
+  return { token, refreshToken, user: rest, role: entity.role };
 };
