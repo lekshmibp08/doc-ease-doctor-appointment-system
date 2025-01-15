@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const DoctorsPage = () => {
 
   const [doctors, setDoctors] = useState<IPractitioner[]>([]);
+  const [specializations, setSpecializations] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
@@ -25,7 +26,22 @@ const DoctorsPage = () => {
   const navigate = useNavigate();
 
 
-
+  // Fetch Specialization for filtering
+  useEffect(() => {
+    const fetchSpecializations = async () => {      
+      try {
+        const response = await axios.get('/api/users/doctors/specializations');
+        const validSpecializations = response.data.specializations.filter(
+          (specialization: string) => specialization.trim() !== ""
+        );
+        setSpecializations(validSpecializations);
+      } catch (err) {
+        console.error('Failed to load specializations', err);
+      }
+    };
+  
+    fetchSpecializations();
+  }, []);
 
 
   // Fetch doctors where isApproved = true
@@ -111,33 +127,45 @@ const DoctorsPage = () => {
         <aside className="bg-customTealLight text-white shadow-md rounded-lg p-4 w-full md:w-1/5">
           <h2 className="text-lg font-bold mb-4">Filters</h2>
           <div className="flex flex-col gap-4">
-          <select name="gender" onChange={handleFilterChange} value={filters.gender} className="rounded px-3 py-2 bg-customTeal">
-            <option value="">Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
-
-          <select name="experience" onChange={handleFilterChange} value={filters.experience} className="rounded px-3 py-2 bg-customTeal">
-            <option value="">Experience</option>
-            <option value="1-5">1-5 years</option>
-            <option value="6-10">6-10 years</option>
-            <option value="10+">10+ years</option>
-          </select>
-
-          <select name="fees" onChange={handleFilterChange} value={filters.fees} className="rounded px-3 py-2 bg-customTeal">
-            <option value="">Fees</option>
-            <option value="Below $50">Below $50</option>
-            <option value="$50-$100">$50-$100</option>
-            <option value="Above $100">Above $100</option>
-          </select>
-            
-            
-            <select className="rounded px-3 py-2 bg-customTeal">
-              <option>Department</option>
-              <option>Cardiology</option>
-              <option>Dentistry</option>
-              <option>General Physician</option>
+            <select name="gender" onChange={handleFilterChange} value={filters.gender} className="rounded px-3 py-2 bg-customTeal">
+              <option value="">Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
             </select>
+    
+            <select name="experience" onChange={handleFilterChange} value={filters.experience} className="rounded px-3 py-2 bg-customTeal">
+              <option value="">Experience</option>
+              <option value="1-5">1-5 years</option>
+              <option value="6-10">6-10 years</option>
+              <option value="10+">10+ years</option>
+            </select>
+    
+            <select name="fees" onChange={handleFilterChange} value={filters.fees} className="rounded px-3 py-2 bg-customTeal">
+              <option value="">Fees</option>
+              <option value="Below ₹250">Below ₹250</option>
+              <option value="250-500">₹250-₹500</option>
+              <option value="Above 500">Above ₹500</option>
+            </select>
+              
+            <select
+              name="department"
+              onChange={handleFilterChange}
+              value={filters.department}
+              className="rounded px-3 py-2 bg-customTeal"
+            >
+              <option value="" disabled>
+                Department
+              </option>
+              {specializations.length > 0 ? (
+                specializations.map((specialization, index) => (
+                  <option key={index} value={specialization}>
+                    {specialization}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No specializations available</option>
+              )}
+            </select>            
           </div>
         </aside>
 
