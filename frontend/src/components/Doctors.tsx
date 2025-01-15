@@ -99,12 +99,22 @@ const DoctorsPage = () => {
           </select>
 
           {/* Search Input */}
-          <div className="flex-grow">
+          <div className="flex-grow relative">
             <input
               type="text"
               placeholder="Search Doctor / Specialization"
               className="w-full rounded-full px-4 py-2 text-teal-700 bg-white"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-4 top-2 text-teal-700"
+              >
+                ✖
+              </button>
+            )}
           </div>
 
           {/* Sort Dropdown */}
@@ -153,7 +163,7 @@ const DoctorsPage = () => {
               value={filters.department}
               className="rounded px-3 py-2 bg-customTeal"
             >
-              <option value="" disabled>
+              <option value="">
                 Department
               </option>
               {specializations.length > 0 ? (

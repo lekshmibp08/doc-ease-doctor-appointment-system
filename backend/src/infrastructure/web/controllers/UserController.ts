@@ -10,6 +10,7 @@ import { updateUser } from "../../../application/useCases/user/updateUser";
 import { sendOtpForResetPassword } from "../../../application/useCases/user/sendOtpForResetPassword";
 import { verifyOtpAndResetPassword } from "../../../application/useCases/user/verifyOtpAndResetPassword";
 import { doctorDetails } from "../../../application/useCases/user/doctorDetails";
+import { fetchSpecializationsUseCase } from "../../../application/useCases/user/fetchSpecializationsUseCase";
 
 
 export const userController = {
@@ -99,6 +100,9 @@ export const userController = {
   getDoctors: async (req: Request, res: Response) => {
     try {
       const { page = 1, size = 8, search, location, gender, experience, availability, fees, department, sort } = req.query;
+
+      console.log(req.query);
+      
   
       const doctorRepository = createDoctorRepository();
 
@@ -110,7 +114,7 @@ export const userController = {
         gender: gender as string,
         experience: experience as string,
         availability: availability as string,
-        fees: fees as string,
+        fee: fees as string,
         department: department as string,
         sort: sort as string,
       });
@@ -121,7 +125,20 @@ export const userController = {
     }
   },
 
-  //Update User profile
+  // List Specializations
+  listSpecializations: async (req: Request, res: Response) => {
+    try {
+      const doctorRepository = createDoctorRepository();
+      const specializations = await fetchSpecializationsUseCase(doctorRepository)
+      console.log("[specializations controller]: -----> ", specializations);  
+      res.json({ specializations });
+      
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to fetch specialization list", error });      
+    }
+  },
+
+  // Update User profile
   updateUserProfile: async (req: Request, res: Response): Promise<void> => {
     console.log("ENTERED UPDATION");
     

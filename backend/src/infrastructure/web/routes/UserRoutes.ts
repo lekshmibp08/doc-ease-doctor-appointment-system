@@ -27,6 +27,9 @@ router.post("/logout", authController.logout);
 // Get all Approved doctors
 router.get("/doctors", authenticateUser(['user']), userController.getDoctors);
 
+// List all Specializations
+router.get("/doctors/specializations", authenticateUser(['user']), userController.listSpecializations);
+
 // update user profile
 router.patch("/profile/update/:id", authenticateUser(['user']), userController.updateUserProfile);
 

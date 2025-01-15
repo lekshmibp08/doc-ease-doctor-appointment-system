@@ -8,7 +8,7 @@ interface IDoctorDocument extends Document, Doctor {
   qualification: string;
   fee: number;
   gender: string;
-  experience: string;
+  experience: number;
   modesOfConsultation: string[];
   gallery: string[];
   documents: string[],
@@ -81,8 +81,8 @@ const DoctorSchema = new Schema<IDoctorDocument>(
       default: "",
     },
     experience: {
-      type: String,
-      default: "",
+      type: Number,
+      default: 0,
     },
     modesOfConsultation: {
       type: [String],

@@ -27,14 +27,30 @@ export const authController = {
         return;
       }
 
-      const { authToken, role: userRole, user } = await googleOAuthLogin(fullname, email, profilePicture, role);   
+      const { token, refreshToken, role: userRole, user } = await googleOAuthLogin(fullname, email, profilePicture, role);   
 
       //console.log("USER USER AUTH: ", user);
       const userData = user._doc;
-      
-      
-      res.cookie("auth_token", authToken, { httpOnly: true, maxAge: 86400000 });
-      res.status(200).json({ token: authToken, userData, role: userRole });
+
+      if(role === 'user') {
+        res.cookie("user_refresh_token", refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+        res.status(200).json({ token, userData, role: userRole });
+
+      }
+      if(role === 'doctor') {
+        res.cookie("doctor_refresh_token", refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        });
+        res.status(200).json({ token, userData, role: userRole });
+      }  
 
     } catch (error: any) {
       console.error("Google OAuth Error:", error);

@@ -35,53 +35,25 @@ export const createDoctorRepository = (): IDoctorRepository => ({
     const updatedDoctor = await DoctorModel.findByIdAndUpdate(id, updates, { new: true});
     return updatedDoctor;
   },
-  getDoctorsByCriteria: async (criteria: {
-    page: number;
-    size: number;
-    search?: string;
-    location?: string;
-    gender?: string;
-    experience?: string;
-    availability?: string;
-    fee?: string;
-    department?: string;
-    sort?: string;
-  }): Promise<{ doctors: any[]; totalPages: number }> => {
-    const query: any = { isBlocked: false, isApproved: true };
-
-    // Apply text search on fullName and specialization
-    if (criteria.search) {
-      query.$text = { $search: criteria.search };
-    }
-
-    // Apply filters
-    if (criteria.location) query.location = criteria.location;
-    if (criteria.gender) query.gender = criteria.gender;
-    if (criteria.experience) query.experience = criteria.experience;
-    if (criteria.availability) query.availability = criteria.availability;
-    if (criteria.fee) query.fee = { $lte: criteria.fee };
-    if (criteria.department) query.department = criteria.department;
-
-    // Define sorting
-    const sortOptions: any = {};
-    if (criteria.sort === "experience") sortOptions.experience = -1;
-    else if (criteria.sort === "fee") sortOptions.fee = 1;
-
-    // Fetch doctors with pagination
+  getDoctorsByCriteria: async (query, sortOptions, skip, limit) => {
+    console.log(query);
+    
     const doctors = await DoctorModel.find(query, "-password")
       .sort(sortOptions)
-      .skip((criteria.page - 1) * criteria.size)
-      .limit(criteria.size);
-
-    // Get total count of documents matching the query
+      .skip(skip)
+      .limit(limit);
     const totalDocs = await DoctorModel.countDocuments(query);
-    console.log(doctors);
+    console.log("TOT DOCS: ", doctors);
+    //console.log("TOT Count: ", totalDocs);
+    const docs = await DoctorModel.find({}, { experience: 1, _id: 0 });
+    console.log(docs);
     
 
-    return {
-      doctors,
-      totalPages: Math.ceil(totalDocs / criteria.size),
-    };
+    return { doctors, totalDocs };
   },
+  getAllSpecializations: async () => {
+    const specializations = await DoctorModel.distinct('specialization');
+    return specializations;
+  }
   
 });
