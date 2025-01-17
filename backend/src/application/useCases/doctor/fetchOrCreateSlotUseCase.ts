@@ -17,8 +17,9 @@ export const fetchOrCreateSlotUseCase  = async (
 
     if(existingSlot) {
         const filteredSlots = filterSlotsByPeriod(timePeriod, existingSlot.timeSlots);
-        const slotId = existingSlot._id
-        return {filteredSlots, slotId};
+        const slotId = existingSlot._id;
+        const slotDataAll = existingSlot.timeSlots
+        return {filteredSlots, slotDataAll, slotId};
     }
 
     const timeSlots = generateWholeDaySlots();
@@ -29,7 +30,8 @@ export const fetchOrCreateSlotUseCase  = async (
         timeSlots,
     })
     const slotId = newSlot._id;
+    const slotDataAll = newSlot.timeSlots
     
     const filteredSlots = filterSlotsByPeriod(timePeriod, newSlot.timeSlots)
-    return {filteredSlots, slotId};
+    return {filteredSlots, slotDataAll, slotId};
 }

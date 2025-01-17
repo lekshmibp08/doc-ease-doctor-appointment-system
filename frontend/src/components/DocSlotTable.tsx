@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import "../styles/responsive-table.css"
+import "../styles/responsive-table.css";
 import DatePicker from "react-datepicker";
 import axios from "../services/axiosConfig";
 import "react-datepicker/dist/react-datepicker.css";
+import { FaEdit } from "react-icons/fa"; // Importing edit icon from react-icons
+import Swal from "sweetalert2";
 
 interface Slot {
   _id: string;
@@ -14,17 +16,16 @@ interface Slot {
 const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [timePeriod, setTimePeriod] = useState("Morning");
-  const [slots, setSlots] = useState<Slot[]>([]);
-  const [loading, setLoading] = useState(false); 
-  const [slotId, setSlotId] = useState('');
+  const [slots, setSlots] = useState<Slot[]>([]); // store filtered slots
+  const [allSlots, setAllSlots] = useState<Slot[]>([]); //store all slots
+  const [loading, setLoading] = useState(false);
+  const [slotId, setSlotId] = useState("");
+  const [editSlotId, setEditSlotId] = useState<string | null>(null);
+  const [newTime, setNewTime] = useState("");
 
-  console.log("TIME PERIOD1: ", timePeriod);
-  
-  
   // Fetch slots from backend
   const fetchSlots = async () => {
     setLoading(true);
-    console.log("TIME PERIOD2: ", timePeriod);
     try {
       const response = await axios.get("/api/doctors/slots", {
         params: {
@@ -34,13 +35,13 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
         },
       });
 
-      console.log("RESPONSE: ", response.data);
-      
-      setSlots(response.data.slotData);
-      setSlotId(response.data.slotId)
+      setSlots(response.data.slotDataFiltered);
+      setAllSlots(response.data.slotDataAll);
+      setSlotId(response.data.slotId);
     } catch (error) {
       console.error("Error fetching slots:", error);
       setSlots([]);
+      setAllSlots([]);
     } finally {
       setLoading(false);
     }
@@ -48,53 +49,112 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
 
   useEffect(() => {
     fetchSlots();
-  }, [selectedDate, timePeriod]);  
-
+  }, [selectedDate, timePeriod]);
 
   const handleTimePeriodChange = (period: string) => {
     setTimePeriod(period);
   };
 
   const handleStatusChange = async (timeSlotId: string, status: string) => {
-    
     try {
       const response = await axios.put("/api/doctors/slots/update-status", {
         slotId,
         timeSlotId,
-        status
+        status,
       });
-  
-      console.log("Slot status updated:", response.data.updation);
-      const isAvailable = response.data.updation
-  
+
+      const isAvailable = response.data.updation;
+
       setSlots((prevSlots) =>
         prevSlots.map((slot) =>
           slot._id === timeSlotId ? { ...slot, isAvailable } : slot
         )
       );
-
     } catch (error) {
       console.error("Error updating slot status:", error);
       alert("Failed to update slot status. Please try again.");
     }
   };
 
+  const handleEditIconClick = (slot: Slot) => {
+    setEditSlotId(slot._id);
+    setNewTime(slot.time);
+  };
+
+  const handleSaveNewTime = async () => {
+    // Regex for validating time in HH:mm AM/PM format
+    const timeFormatRegex = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/;
+  
+    if (!newTime.match(timeFormatRegex)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Time Format',
+        text: 'Please enter the time in the format HH:mm AM/PM (e.g., 08:30 AM).',
+        confirmButtonText: 'Okay',
+      });
+      return;
+    }
+  
+    // Check if the entered time already exists
+    const isDuplicateTime = allSlots.some((slot) => slot.time === newTime);
+    if (isDuplicateTime) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Duplicate Time',
+        text: 'The entered time slot already exists. Please choose a different time.',
+        confirmButtonText: 'Okay',
+      });
+      return;
+    }
+  
+    try {
+      await axios.put("/api/doctors/slots/update-time", {
+        slotId,
+        timeSlotId: editSlotId,
+        newTime,
+      });
+  
+      setSlots((prevSlots) =>
+        prevSlots.map((slot) =>
+          slot._id === editSlotId ? { ...slot, time: newTime } : slot
+        )
+      );
+      setAllSlots((prevAllSlots) =>
+        prevAllSlots.map((slot) =>
+          slot._id === editSlotId ? { ...slot, time: newTime } : slot
+        )
+      );
+      setEditSlotId(null); 
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Successfully updated time slot.',
+        confirmButtonText: 'Okay',
+      });
+    } catch (error) {
+      console.error("Error updating slot time:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'Failed to update slot time. Please try again.',
+        confirmButtonText: 'Okay',
+      });
+    }
+  };
+
   return (
-    <div className="p-6 bg-customBgLight" >
-      {/* Header with Calendar and Time Period Filters */}
+    <div className="p-6 bg-customBgLight">
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
-        {/* Date Picker */}
         <div className="flex flex-col md:flex-row items-center gap-4 w-full">
           <label className="font-semibold">Select Date:</label>
           <DatePicker
             selected={selectedDate}
             onChange={(date) => setSelectedDate(date as Date)}
-            minDate={new Date()} // Disable past dates
+            minDate={new Date()}
             className="border rounded-md px-4 py-2"
           />
         </div>
 
-        {/* Time Period Filters */}
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
           {["Morning", "Afternoon", "Evening"].map((period) => (
             <button
@@ -112,7 +172,6 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
         </div>
       </div>
 
-      {/* Slot Management Table */}
       <div className="bg-white shadow rounded-md overflow-hidden">
         {loading ? (
           <p className="text-center p-6">Loading slots...</p>
@@ -133,8 +192,43 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
                     slot.status === "Not Booked" ? "bg-gray-50" : "bg-white"
                   }`}
                 >
-                  <td data-label="Slots" className="py-3 px-4">{slot.time}</td>
-                  <td data-label="Status"
+                  <td data-label="Slots" className="py-3 px-4">
+                    {editSlotId === slot._id ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={newTime}
+                          onChange={(e) => setNewTime(e.target.value)}
+                          className="border rounded-md px-2 py-1"
+                        />
+                        <button
+                          onClick={handleSaveNewTime}
+                          className="text-green-500 hover:underline"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditSlotId(null)}
+                          className="text-red-500 hover:underline"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-4">
+                        {slot.time}
+                        {slot.status === "Not Booked" && (
+                          <FaEdit
+                            className="text-blue-500 cursor-pointer hover:scale-110"
+                            title="Edit slot time"
+                            onClick={() => handleEditIconClick(slot)}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </td>
+                  <td
+                    data-label="Status"
                     className={`py-3 px-4 ${
                       slot.status === "Not Booked"
                         ? "text-red-500"
@@ -151,9 +245,22 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
                           : "bg-red-500 text-white"
                       }`}
                       value={slot.isAvailable ? "Available" : "Unavailable"}
-                      onChange={(e) => handleStatusChange(slot._id, e.target.value)}                    >
-                      <option className="bg-green-500 text-white" value="Available">Available</option>
-                      <option className="bg-red-500 text-white" value="Unavailable">Unavailable</option>
+                      onChange={(e) =>
+                        handleStatusChange(slot._id, e.target.value)
+                      }
+                    >
+                      <option
+                        className="bg-green-500 text-white"
+                        value="Available"
+                      >
+                        Available
+                      </option>
+                      <option
+                        className="bg-red-500 text-white"
+                        value="Unavailable"
+                      >
+                        Unavailable
+                      </option>
                     </select>
                   </td>
                 </tr>

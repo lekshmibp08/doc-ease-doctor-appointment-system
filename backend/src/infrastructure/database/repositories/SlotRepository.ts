@@ -61,5 +61,13 @@ export const createSlotRepository = (): ISlotRepository => ({
     });        
     await slot?.save();   
   },
+  updateSlotTime: async (slotId, timeSlotId, newTime) => {
+    const result = await SlotModel.updateOne(
+      { _id: slotId, "timeSlots._id": timeSlotId },
+      { $set: { "timeSlots.$.time": newTime } }
+    );
+    return result.modifiedCount > 0;
+  },
+
 
 });

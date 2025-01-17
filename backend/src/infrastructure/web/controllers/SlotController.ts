@@ -3,7 +3,7 @@ import { fetchOrCreateSlotUseCase } from "../../../application/useCases/doctor/f
 import { createSlotRepository } from "../../database/repositories/SlotRepository";
 import { updateSlotUseCase } from "../../../application/useCases/doctor/updateSlotUseCase";
 import { fetchSlotUseCase } from "../../../application/useCases/user/fetchSlotUseCase";
-
+import { updateSlotTimeUseCase } from "../../../application/useCases/doctor/updateSlotTimeUseCase";
 
 type TimePeriod = "Morning" | "Afternoon" | "Evening";
 
@@ -17,9 +17,9 @@ export const slotController = {
     try {
      console.log("Received params:", req.query); 
      const slotRepository = createSlotRepository();
-     const {filteredSlots, slotId} = await fetchOrCreateSlotUseCase(slotRepository, doctorId, date, timePeriod);
-     const slotData = filteredSlots
-     res.status(200).json({slotData, slotId});
+     const {filteredSlots, slotDataAll, slotId} = await fetchOrCreateSlotUseCase(slotRepository, doctorId, date, timePeriod);
+     const slotDataFiltered = filteredSlots
+     res.status(200).json({slotDataFiltered, slotDataAll, slotId});
      return;
      
     } catch (error) {
@@ -59,6 +59,20 @@ export const slotController = {
       res.status(500).json({ message: "Internal server error" });      
     }
   },
+
+  // Update Slot Time by Doctor
+  updateSlotTime: async (req: Request, res: Response): Promise<void> => {
+    const { slotId, timeSlotId, newTime } = req.body;
+    const slotRepository = createSlotRepository();
+
+    try {
+      const success = await updateSlotTimeUseCase(slotRepository, slotId, timeSlotId, newTime);
+      res.status(200).json({ success });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update slot time" });
+    }
+  },
+  
 
 
 

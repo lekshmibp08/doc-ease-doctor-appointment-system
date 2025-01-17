@@ -39,6 +39,7 @@ router.get("/appointments", authenticateUser(['doctor']), appoinmentController.g
 // Slot management by doctor
 router.put("/slots/update-status", authenticateUser(['doctor']), slotController.updateSlotStatus);
 
+router.put("/slots/update-time", authenticateUser(['doctor']), slotController.updateSlotTime);
 
 
 
