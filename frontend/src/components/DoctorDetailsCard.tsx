@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IPractitioner } from "../types/interfaces";
 
 interface DoctorDetailsCardProps {
@@ -9,6 +9,10 @@ const DoctorDetailsCard = ({ doctor }: DoctorDetailsCardProps) => {
   const navigate = useNavigate();
   const handleBookNow = () => {
     navigate(`/book-appoinment/${doctor._id}`);
+  };
+
+  const handleChat = () => {
+    navigate("/chat", { state: { doctorId: doctor._id } });
   };
   return (
     <div className="bg-customBgLight1 shadow-md rounded-lg p-6 mt-6 flex flex-col md:flex-row md:items-center gap-4">
@@ -57,9 +61,14 @@ const DoctorDetailsCard = ({ doctor }: DoctorDetailsCardProps) => {
              onClick={ handleBookNow }>
               Book Now
             </button>
-            <button className="bg-gray-200 text-gray-700 py-2 px-4 rounded hover:bg-gray-300 text-sm">
+            <button
+              className="bg-gray-200 text-gray-700 py-2 px-4 rounded
+               hover:bg-gray-300 text-sm"
+              onClick={handleChat}
+            >
               Chat With Us
             </button>
+            
           </div>
         </div>
       </div>

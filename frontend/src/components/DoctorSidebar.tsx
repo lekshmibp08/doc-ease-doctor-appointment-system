@@ -9,7 +9,7 @@ const DoctorSidebar = ({ isOpen }: IDoctorSidebarProps) => {
   return (
     <aside
       className={`bg-customBgLight text-black font-bold w-64 
-        min-h-screen p-6 fixed top-0 left-0 transform transition-transform 
+         p-6 fixed top-0 left-0 transform transition-transform 
         duration-300 md:relative ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } md:translate-x-0`}
@@ -36,7 +36,7 @@ const DoctorSidebar = ({ isOpen }: IDoctorSidebarProps) => {
           Slot Management
         </NavLink>
         <NavLink
-          to="/chats"
+          to="/doctor/chat"
           className={({ isActive }) =>
             `py-2 px-4 rounded bg-white text-black ${
               isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'
