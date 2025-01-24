@@ -4,6 +4,8 @@ import { authController } from "../controllers/AuthController";
 import { slotController } from "../controllers/SlotController";
 import { authenticateUser } from "../../middlewares/AuthMiddleware";
 import { appoinmentController } from "../controllers/AppoinmentController";
+import { chatController } from "../controllers/ChatController";
+
 const router = express.Router();
 
 // Send OTP during signup
@@ -40,6 +42,15 @@ router.get("/appointments", authenticateUser(['doctor']), appoinmentController.g
 router.put("/slots/update-status", authenticateUser(['doctor']), slotController.updateSlotStatus);
 
 router.put("/slots/update-time", authenticateUser(['doctor']), slotController.updateSlotTime);
+
+router.get("/get-chats", authenticateUser(['doctor']), chatController.getAllChatsForDoctor);
+
+router.get("/get-messages", authenticateUser(['doctor']), chatController.getAChatUsingChatId);
+
+router.post("/send-message", authenticateUser(['doctor']), chatController.sendMessage);
+
+
+
 
 
 

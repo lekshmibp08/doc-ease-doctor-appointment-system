@@ -5,6 +5,7 @@ import { authenticateUser } from "../../middlewares/AuthMiddleware";
 import { slotController } from "../controllers/SlotController";
 import { paymentController } from "../controllers/PaymentController";
 import { appoinmentController } from "../controllers/AppoinmentController";
+import { chatController } from "../controllers/ChatController";
 
 
 const router = express.Router();
@@ -53,7 +54,13 @@ router.get("/appointments/:userId", authenticateUser(['user']), appoinmentContro
 
 router.put("/appointments/:appointmentId", authenticateUser(['user']), appoinmentController.cancelAppointmentByUser);
 
+router.post("/chat", authenticateUser(['user']), chatController.getOrCreateChat);
 
+router.get("/get-chats", authenticateUser(['user']), chatController.getAllChats);
+
+router.post("/send-message", authenticateUser(['user']), chatController.sendMessage);
+
+router.get("/get-messages", authenticateUser(['user']), chatController.getAChatUsingChatId);
 
 
 
