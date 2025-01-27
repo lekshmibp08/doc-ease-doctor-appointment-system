@@ -163,41 +163,53 @@ axios.interceptors.response.use(
       // Prevent multiple retries
       originalRequest._retry = true;
 
-      // Determine the role-specific refresh token endpoint and actions
-      const refreshConfig = getRefreshTokenConfig(originalRequest.url);
+      const errorMessage = error.response?.data?.message;
 
-      if (!refreshConfig) {
-        console.error("Unknown role. Unable to refresh token.");
-        return Promise.reject(error);
+      if (errorMessage === "Invalid or expired token") {
+        // Determine the role-specific refresh token endpoint and actions
+        const refreshConfig = getRefreshTokenConfig(originalRequest.url);
+        
+        if (!refreshConfig) {
+          console.error("Unknown role. Unable to refresh token.");
+          return Promise.reject(error);
+        }
+        try {
+          console.log("refreshConfig.role: ", refreshConfig.role);
+          
+          const { data } = await axios.post(refreshConfig.refreshEndpoint, {
+            role: refreshConfig.role,
+          }, { withCredentials: true });
+  
+          const newAccessToken = data.token;
+          console.log("NEW ACCESS TOKEN: ", newAccessToken);
+          
+  
+          // Update Redux and sessionStorage with the new token
+          store.dispatch(refreshConfig.refreshAction(newAccessToken));
+          sessionStorage.setItem(refreshConfig.tokenStorageKey, newAccessToken);
+  
+          // Retry the original request with the new token
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          return axios(originalRequest);
+        } catch (refreshError) {
+          console.error("Failed to refresh token:", refreshError);
+  
+          // Clear tokens and log out
+          store.dispatch(refreshConfig.clearAction());
+          sessionStorage.removeItem(refreshConfig.tokenStorageKey);
+          window.location.href = "/login";
+          return Promise.reject(refreshError);
+        }
+      } else {
+
+        Swal.fire({
+          icon: 'error', 
+          title: 'Access Denied',
+          text: error.response.data.message, 
+          confirmButtonText: 'OK',
+        });
       }
 
-      try {
-        console.log("refreshConfig.role: ", refreshConfig.role);
-        
-        const { data } = await axios.post(refreshConfig.refreshEndpoint, {
-          role: refreshConfig.role,
-        }, { withCredentials: true });
-
-        const newAccessToken = data.token;
-        console.log("NEW ACCESS TOKEN: ", newAccessToken);
-        
-
-        // Update Redux and sessionStorage with the new token
-        store.dispatch(refreshConfig.refreshAction(newAccessToken));
-        sessionStorage.setItem(refreshConfig.tokenStorageKey, newAccessToken);
-
-        // Retry the original request with the new token
-        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-        return axios(originalRequest);
-      } catch (refreshError) {
-        console.error("Failed to refresh token:", refreshError);
-
-        // Clear tokens and log out
-        store.dispatch(refreshConfig.clearAction());
-        sessionStorage.removeItem(refreshConfig.tokenStorageKey);
-        window.location.href = "/login";
-        return Promise.reject(refreshError);
-      }
     }
 
     if(error.response?.status === 403) {
