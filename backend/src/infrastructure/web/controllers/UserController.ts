@@ -64,12 +64,6 @@ export const userController = {
     try {
       const { email, password } = req.body;      
 
-      // Validate input
-      if (!email || !password) {
-        res.status(400).json({ message: "Email and Password are required" });
-        return;
-      }
-
       const userRepository = createUserRepository();      
 
       // Call the login use case
@@ -92,6 +86,9 @@ export const userController = {
       res.status(200).json({ message: "Login successful", token, role, userData });
     
     } catch (error: any) {
+      console.log('====================================');
+      console.log(error);
+      console.log('====================================');
       res.status(401).json({ message: error.message });
     }
   },
@@ -99,10 +96,7 @@ export const userController = {
   // List all approved doctors
   getDoctors: async (req: Request, res: Response) => {
     try {
-      const { page = 1, size = 8, search, location, gender, experience, availability, fees, department, sort } = req.query;
-
-      console.log(req.query);
-      
+      const { page = 1, size = 8, search, location, gender, experience, availability, fees, department, sort } = req.query;      
   
       const doctorRepository = createDoctorRepository();
 

@@ -2,9 +2,14 @@ import axios from "../services/axiosConfig";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/Redux/store";
+import io from "socket.io-client";
+
+const ENDPOINT = "http://localhost:5000";
+var socket: any, selectedChatCompare;
 
 
 interface Message {
+  chatId: string;
   senderId: string;
   receiverId: string;
   text: string;
@@ -34,13 +39,30 @@ const DoctorChat = () => {
   const [allChats, setAllChats] = useState<Chat[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const [loadingChat, setLoadingChat] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(false);
 
 
+  // Connect to Socket.IO server
+  useEffect(() => {
+    socket = io(ENDPOINT)
+    socket.emit("setup", doctorId);
+    socket.on("connection", () => {
+      setSocketConnected(true);
+    })
+
+    socket.on("receive message", (newMessage: Message) => {
+      if (newMessage.chatId === currentChat?._id) {
+        setMessages((prevMessages) => [...prevMessages, newMessage]); // Update messages in real-time        
+      }
+    });
+  }, [doctorId]);
 
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const response = await axios.get("/api/doctors/get-chats", { params: { doctorId }, });
+        const response = await axios.get("/api/doctors/get-chats", {
+          params: { doctorId },
+        });
         setAllChats(response.data)
 
       } catch (error) {
@@ -59,7 +81,9 @@ const DoctorChat = () => {
         { params: { chatId: chat._id } }
       );
       setMessages(response.data); 
-      setLoadingChat(true);      
+      setLoadingChat(false);      
+      
+      socket.emit('join chat', currentChat?._id )
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
@@ -69,6 +93,13 @@ const DoctorChat = () => {
   const sendMessage = async () => {
     if (!newMessage.trim()) return; 
 
+    const messageData = {
+      chatId: currentChat?._id,
+      senderId: doctorId,
+      receiverId: currentChat?.userId?._id,
+      text: newMessage,
+    };
+
     try {
       const response = await axios.post("/api/doctors/send-message", {
         chatId: currentChat?._id,
@@ -77,21 +108,24 @@ const DoctorChat = () => {
         text: newMessage,
       });
 
+      socket.emit("send message", messageData);
+
       const sentMessage = response.data;
       setMessages((prevMessages) => [...prevMessages, sentMessage]); 
-      setNewMessage(""); // Clear input field
+      setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
-
-
 
   
   return (
     <div className="flex h-[580px]">
         {/* Left Sidebar */}
         <div className="w-1/3 bg-gray-100 border-r border-gray-300 flex flex-col">
+          <div className="font-bold text-xl ml-4 mt-4">
+            Chats
+          </div>        
           {/* Search Bar */}
           <div className="p-4">
             <input
@@ -107,7 +141,7 @@ const DoctorChat = () => {
             allChats.map((chat) => (
               <div key={chat._id}
                 onClick={() => selectChat(chat) }
-                className={`p-4 cursor-pointer ${currentChat?._id === chat._id ? "bg-blue-100" : "bg-blue-100"}`}
+                className={`p-4 cursor-pointer ${currentChat?._id === chat._id ? "bg-blue-100" : "bg-gray-100"}`}
               >
                 <div className="font-bold">{chat.userId.fullName}</div>
                 <div className="text-sm text-gray-600">

@@ -49,8 +49,8 @@ const UserLogin = () => {
       navigate('/doctors', { replace: true });
     } catch (error: any) {
       
-        console.error('Error:', error.message || 'Network Error');
-        setError(error.message || 'Network Error');
+        console.error(' Login Error:', error || 'Network Error');
+        setError(error.response.data.message || 'Network Error');
     }
   };
 

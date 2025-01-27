@@ -50,7 +50,7 @@ const DoctorLoginPage = () => {
 
     } catch (error: any) {  
         console.error('Error:', error.message || 'Network Error');
-        setError(error.message || 'Network Error')
+        setError(error.response.data.message || 'Network Error')
     }
   };
 
