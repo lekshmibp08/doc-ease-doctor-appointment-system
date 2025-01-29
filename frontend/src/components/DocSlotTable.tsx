@@ -3,7 +3,7 @@ import "../styles/responsive-table.css";
 import DatePicker from "react-datepicker";
 import axios from "../services/axiosConfig";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaEdit } from "react-icons/fa"; // Importing edit icon from react-icons
+import { FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 interface Slot {
@@ -16,14 +16,13 @@ interface Slot {
 const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [timePeriod, setTimePeriod] = useState("Morning");
-  const [slots, setSlots] = useState<Slot[]>([]); // store filtered slots
-  const [allSlots, setAllSlots] = useState<Slot[]>([]); //store all slots
+  const [slots, setSlots] = useState<Slot[]>([]);
   const [loading, setLoading] = useState(false);
-  const [slotId, setSlotId] = useState("");
-  const [editSlotId, setEditSlotId] = useState<string | null>(null);
-  const [newTime, setNewTime] = useState("");
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const [slotIdFetched, setSlotIdFetched] = useState<string | null>(null);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
 
-  // Fetch slots from backend
   const fetchSlots = async () => {
     setLoading(true);
     try {
@@ -36,12 +35,10 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
       });
 
       setSlots(response.data.slotDataFiltered);
-      setAllSlots(response.data.slotDataAll);
-      setSlotId(response.data.slotId);
+      setSlotIdFetched(response.data.slotId);
     } catch (error) {
       console.error("Error fetching slots:", error);
       setSlots([]);
-      setAllSlots([]);
     } finally {
       setLoading(false);
     }
@@ -51,93 +48,63 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
     fetchSlots();
   }, [selectedDate, timePeriod]);
 
-  const handleTimePeriodChange = (period: string) => {
-    setTimePeriod(period);
-  };
-
-  const handleStatusChange = async (timeSlotId: string, status: string) => {
-    try {
-      const response = await axios.put("/api/doctors/slots/update-status", {
-        slotId,
-        timeSlotId,
-        status,
-      });
-
-      const isAvailable = response.data.updation;
-
-      setSlots((prevSlots) =>
-        prevSlots.map((slot) =>
-          slot._id === timeSlotId ? { ...slot, isAvailable } : slot
-        )
-      );
-    } catch (error) {
-      console.error("Error updating slot status:", error);
-      alert("Failed to update slot status. Please try again.");
-    }
-  };
-
-  const handleEditIconClick = (slot: Slot) => {
-    setEditSlotId(slot._id);
-    setNewTime(slot.time);
-  };
-
-  const handleSaveNewTime = async () => {
-    // Regex for validating time in HH:mm AM/PM format
+  const handleGenerateSlots = async () => {
     const timeFormatRegex = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/;
-  
-    if (!newTime.match(timeFormatRegex)) {
+    if (!startTime.match(timeFormatRegex) || !endTime.match(timeFormatRegex)) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Invalid Time Format',
-        text: 'Please enter the time in the format HH:mm AM/PM (e.g., 08:30 AM).',
-        confirmButtonText: 'Okay',
+        icon: "warning",
+        title: "Invalid Time Format",
+        text: "Please enter the time in the format HH:mm AM/PM (e.g., 08:30 AM).",
+        confirmButtonText: "Okay",
       });
       return;
     }
-  
-    // Check if the entered time already exists
-    const isDuplicateTime = allSlots.some((slot) => slot.time === newTime);
-    if (isDuplicateTime) {
+
+    const convertTo24HourFormat = (time: string) => {
+      const [hours, minutes] = time.split(/[: ]/);
+      const isPM = time.includes("PM");
+      let hour = parseInt(hours);
+      hour = isPM && hour !== 12 ? hour + 12 : hour === 12 && !isPM ? 0 : hour;
+      return new Date(1970, 0, 1, hour, parseInt(minutes));
+    };
+
+    const startTimeDate = convertTo24HourFormat(startTime);
+    const endTimeDate = convertTo24HourFormat(endTime);
+
+    if (endTimeDate <= startTimeDate) {
       Swal.fire({
-        icon: 'warning',
-        title: 'Duplicate Time',
-        text: 'The entered time slot already exists. Please choose a different time.',
-        confirmButtonText: 'Okay',
+        icon: "warning",
+        title: "Invalid Time Range",
+        text: "Ending time must be later than starting time.",
+        confirmButtonText: "Okay",
       });
       return;
     }
-  
+
     try {
-      await axios.put("/api/doctors/slots/update-time", {
-        slotId,
-        timeSlotId: editSlotId,
-        newTime,
+      await axios.post("/api/doctors/generate-slots", {
+        doctorId,
+        date: selectedDate.toISOString().split("T")[0],
+        startTime,
+        endTime,
       });
-  
-      setSlots((prevSlots) =>
-        prevSlots.map((slot) =>
-          slot._id === editSlotId ? { ...slot, time: newTime } : slot
-        )
-      );
-      setAllSlots((prevAllSlots) =>
-        prevAllSlots.map((slot) =>
-          slot._id === editSlotId ? { ...slot, time: newTime } : slot
-        )
-      );
-      setEditSlotId(null); 
+
       Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Successfully updated time slot.',
-        confirmButtonText: 'Okay',
+        icon: "success",
+        title: "Slots Generated",
+        text: "New slots have been successfully created!",
+        confirmButtonText: "Okay",
       });
+
+      setShowGenerateModal(false);
+      fetchSlots();
     } catch (error) {
-      console.error("Error updating slot time:", error);
+      console.error("Error generating slots:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Update Failed',
-        text: 'Failed to update slot time. Please try again.',
-        confirmButtonText: 'Okay',
+        icon: "error",
+        title: "Generation Failed",
+        text: "Failed to generate slots. Please try again.",
+        confirmButtonText: "Okay",
       });
     }
   };
@@ -159,7 +126,7 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
           {["Morning", "Afternoon", "Evening"].map((period) => (
             <button
               key={period}
-              onClick={() => handleTimePeriodChange(period)}
+              onClick={() => setTimePeriod(period)}
               className={`px-4 py-2 rounded-md ${
                 timePeriod === period
                   ? "bg-green-500 text-white"
@@ -186,91 +153,81 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
             </thead>
             <tbody>
               {slots.map((slot) => (
-                <tr
-                  key={slot._id}
-                  className={`text-center ${
-                    slot.status === "Not Booked" ? "bg-gray-50" : "bg-white"
-                  }`}
-                >
-                  <td data-label="Slots" className="py-3 px-4">
-                    {editSlotId === slot._id ? (
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={newTime}
-                          onChange={(e) => setNewTime(e.target.value)}
-                          className="border rounded-md px-2 py-1"
-                        />
-                        <button
-                          onClick={handleSaveNewTime}
-                          className="text-green-500 hover:underline"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditSlotId(null)}
-                          className="text-red-500 hover:underline"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-4">
-                        {slot.time}
-                        {slot.status === "Not Booked" && (
-                          <FaEdit
-                            className="text-blue-500 cursor-pointer hover:scale-110"
-                            title="Edit slot time"
-                            onClick={() => handleEditIconClick(slot)}
-                          />
-                        )}
-                      </div>
-                    )}
-                  </td>
-                  <td
-                    data-label="Status"
-                    className={`py-3 px-4 ${
-                      slot.status === "Not Booked"
-                        ? "text-red-500"
-                        : "text-green-500"
-                    }`}
-                  >
-                    {slot.status}
-                  </td>
-                  <td data-label="Update Status" className="py-3 px-4">
-                    <select
-                      className={`py-2 px-3 rounded-md ${
-                        slot.isAvailable
-                          ? "bg-green-500 text-white"
-                          : "bg-red-500 text-white"
-                      }`}
-                      value={slot.isAvailable ? "Available" : "Unavailable"}
-                      onChange={(e) =>
-                        handleStatusChange(slot._id, e.target.value)
-                      }
+                <tr key={slot._id} className="text-center bg-white">
+                  <td className="py-3 px-4">{slot.time}</td>
+                  <td className="py-3 px-4">{slot.status}</td>
+                  <td className="py-3 px-4">
+                    <button
+                      className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                      onClick={() => console.log("Update Status")}
                     >
-                      <option
-                        className="bg-green-500 text-white"
-                        value="Available"
-                      >
-                        Available
-                      </option>
-                      <option
-                        className="bg-red-500 text-white"
-                        value="Unavailable"
-                      >
-                        Unavailable
-                      </option>
-                    </select>
+                      Update Status
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p className="text-center p-6">No slots available for this period.</p>
+          <div className="p-6 text-center">
+            {slotIdFetched ? (
+              <p className="mb-4">No slots available for the time period.</p>
+            ) : (
+              <>
+                <p className="mb-4">No slots generated yet.</p>
+                <button
+                  className="bg-green-500 text-white px-4 py-2 rounded-md"
+                  onClick={() => setShowGenerateModal(true)}
+                >
+                  Generate Slots
+                </button>
+              </>
+            )}
+          </div>
         )}
       </div>
+
+      {showGenerateModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-md shadow-md">
+            <h3 className="text-lg font-semibold mb-4">Generate Slots</h3>
+            <div className="mb-4">
+              <label className="block mb-2">Start Time:</label>
+              <input
+                type="text"
+                placeholder="HH:mm AM/PM"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="border rounded-md px-4 py-2 w-full"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">End Time:</label>
+              <input
+                type="text"
+                placeholder="HH:mm AM/PM"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="border rounded-md px-4 py-2 w-full"
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                className="bg-green-500 text-white px-4 py-2 rounded-md"
+                onClick={handleGenerateSlots}
+              >
+                Submit
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded-md"
+                onClick={() => setShowGenerateModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

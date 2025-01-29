@@ -33,7 +33,10 @@ router.post("/logout", authController.logout);
 router.patch("/profile/update/:id", authenticateUser(['doctor']), doctorController.updateDoctorProfile);
 
 // Get slots for Doctor
-router.get("/slots", authenticateUser(['doctor']), slotController.fetchOrCreateSlot);
+//router.get("/slots", authenticateUser(['doctor']), slotController.fetchOrCreateSlot);
+router.get("/slots", authenticateUser(['doctor']), slotController.fetchSlot);
+
+router.post("/generate-slots", authenticateUser(['doctor']), slotController.generateSlots);
 
 // Get all appointments for the doctor
 router.get("/appointments", authenticateUser(['doctor']), appoinmentController.getAppointmentsByDoctorId);
