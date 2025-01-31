@@ -3,71 +3,67 @@ import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
 import { Slot } from "../../../domain/entities/Slot";
 import { Types } from "mongoose";
 
-export const createSlotRepository = (): ISlotRepository => ({
-  // Find a slot by doctorId and date
-  findByDoctorIdAndDate: async (doctorId, date) => {
+export class SlotRepository implements ISlotRepository {
+  
+  async saveSlots(slots: Slot[]): Promise<void> {
+    await SlotModel.insertMany(slots);
+  }
+
+  async findByDoctorIdAndDate(doctorId: string, date: Date): Promise<Slot | null> {
     const slot = await SlotModel.findOne({ doctorId, date }).lean();
     if (!slot) return null;
 
-    // Ensure the _id and doctorId are cast properly
     return {
       ...slot,
-      _id: slot._id?.toString(), 
-      doctorId: slot.doctorId.toString(), 
+      _id: slot._id?.toString(),
+      doctorId: slot.doctorId.toString(),
     } as Slot;
-  },
+  }
 
-  // Create slots for a doctor
-  createSlots: async (slot) => {
+  async createSlots(slot: Slot): Promise<Slot> {
     const newSlotDoc = await SlotModel.create(slot);
-
-    // Convert the Mongoose document to the Slot type
-    const newSlot: Slot = {
-      _id: newSlotDoc._id?.toString(),  
-      doctorId: newSlotDoc.doctorId.toString(),  
+    return {
+      _id: newSlotDoc._id?.toString(),
+      doctorId: newSlotDoc.doctorId.toString(),
       date: newSlotDoc.date,
       timeSlots: newSlotDoc.timeSlots,
     };
+  }
 
-    return newSlot;
-  },
-  findByIdAndUpdateAvailability: async(slotId, timeSlotId, updation) => {
+  async findByIdAndUpdateAvailability(slotId: string, timeSlotId: string, updation: boolean): Promise<any> {
     const slot = await SlotModel.findById(slotId);
-    console.log("UPDATION RECEIVED: ",updation);
+    if (!slot) return null;
     
-
-    const updatedTimeSlots = slot?.timeSlots.map((timeslot) => {
+    slot.timeSlots = slot.timeSlots.map((timeslot) => {
       if (timeslot._id?.toString() === timeSlotId) {
-        console.log(timeslot);        
         timeslot.isAvailable = updation;
-        return timeslot;
       }
       return timeslot;
-    });    
+    });
     
-    await slot?.save();    
-    return slot
-  },
-  updateSlotStatus: async (slotId, timeSlotId, UpdatedStatus) => {
-    const slot = await SlotModel.findById(slotId);
+    await slot.save();
+    return slot;
+  }
 
-    const updatedTimeSlots = slot?.timeSlots.map((timeslot) => {
+  async updateSlotStatus(slotId: string, timeSlotId: string, status: string): Promise<any> {
+    const slot = await SlotModel.findById(slotId);
+    if (!slot) return;
+    
+    slot.timeSlots = slot.timeSlots.map((timeslot) => {
       if (timeslot._id?.toString() === timeSlotId) {
-        console.log("Identified: ", timeslot);        
-        timeslot.status = UpdatedStatus;
-        return timeslot;
+        timeslot.status = status;
       }
       return timeslot;
-    });        
-    await slot?.save();   
-  },
-  updateSlotTime: async (slotId, timeSlotId, newTime) => {
+    });
+    
+    await slot.save();
+  }
+
+  async updateSlotTime(slotId: string, timeSlotId: string, newTime: string): Promise<boolean> {
     const result = await SlotModel.updateOne(
       { _id: slotId, "timeSlots._id": timeSlotId },
       { $set: { "timeSlots.$.time": newTime } }
     );
     return result.modifiedCount > 0;
-  },
-
-
-});
+  }
+}

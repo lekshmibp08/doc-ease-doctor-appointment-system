@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
-import { createSlotRepository } from "../../database/repositories/SlotRepository";
-import { createAppointmentRepository } from "../../database/repositories/AppoinmentRepository";
+import { SlotRepository } from "../../database/repositories/SlotRepository";import { createAppointmentRepository } from "../../database/repositories/AppoinmentRepository";
 import { createAppointmentUseCase } from "../../../application/useCases/user/CreateAppointmentUseCase ";
 import { getAppointmentsByUserUseCase } from "../../../application/useCases/user/getAppointmentsByUserUseCase ";
 import { cancelAppointmentByUserUsecase } from "../../../application/useCases/user/cancelAppointment";
@@ -8,6 +7,8 @@ import { listAllAppointmentsForAdmin } from "../../../application/useCases/admin
 import { getAppointmentsByDoctorIdUseCase } from "../../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
 
 type TimePeriod = "Morning" | "Afternoon" | "Evening";
+
+const slotRepository = new SlotRepository();
 
 export const appoinmentController = {
     createNewAppoinment: async (req: Request, res: Response): Promise<void> => { 
@@ -23,7 +24,6 @@ export const appoinmentController = {
         
 
         const appointmentRepository = createAppointmentRepository();
-        const slotRepository = createSlotRepository();
         try {
             const newAppoinment = await createAppointmentUseCase(
                 appointmentRepository,
@@ -67,7 +67,6 @@ export const appoinmentController = {
     cancelAppointmentByUser: async (req: Request, res: Response): Promise<void> => {
         const { appointmentId } = req.params;
         const appointmentRepository = createAppointmentRepository();
-        const slotRepository = createSlotRepository();
         try {
             const updatedData = await cancelAppointmentByUserUsecase(appointmentId, appointmentRepository, slotRepository)
             res.status(200).json({message: "Appointment cancelled Successfully.", updatedData})

@@ -3,8 +3,8 @@ import "../styles/responsive-table.css";
 import DatePicker from "react-datepicker";
 import axios from "../services/axiosConfig";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
+import GenerateSlotsModal from "./GenerateSlotsModal";
 
 interface Slot {
   _id: string;
@@ -17,11 +17,19 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [timePeriod, setTimePeriod] = useState("Morning");
   const [slots, setSlots] = useState<Slot[]>([]);
+  //const [slotId, setSlotId] = useState("");
   const [loading, setLoading] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [slotIdFetched, setSlotIdFetched] = useState<string | null>(null);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [startDate, setStartDate] = useState(new Date());
+  const [repeat, setRepeat] = useState("Weekly");
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [duration, setDuration] = useState<number | undefined>(undefined);
+  const [dayTimeSettings, setDayTimeSettings] = useState<{ [key: string]: { startTime: string; endTime: string } }>({});
+  const [durationError, setDurationError] = useState('');
+  const [timeErrors, setTimeErrors] = useState<{ [key: string]: string }>({});
+
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
   const fetchSlots = async () => {
     setLoading(true);
@@ -48,51 +56,94 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
     fetchSlots();
   }, [selectedDate, timePeriod]);
 
-  const handleGenerateSlots = async () => {
-    const timeFormatRegex = /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/;
-    if (!startTime.match(timeFormatRegex) || !endTime.match(timeFormatRegex)) {
-      Swal.fire({
-        icon: "warning",
-        title: "Invalid Time Format",
-        text: "Please enter the time in the format HH:mm AM/PM (e.g., 08:30 AM).",
-        confirmButtonText: "Okay",
-      });
-      return;
-    }
+  const toggleDaySelection = (day: string) => {
+    setSelectedDays((prevDays) =>
+      prevDays.includes(day)
+        ? prevDays.filter((d) => d !== day)
+        : [...prevDays, day]
+    );
 
-    const convertTo24HourFormat = (time: string) => {
-      const [hours, minutes] = time.split(/[: ]/);
-      const isPM = time.includes("PM");
-      let hour = parseInt(hours);
-      hour = isPM && hour !== 12 ? hour + 12 : hour === 12 && !isPM ? 0 : hour;
-      return new Date(1970, 0, 1, hour, parseInt(minutes));
+    if (!dayTimeSettings[day]) {
+      setDayTimeSettings((prev) => ({
+        ...prev,
+        [day]: { startTime: "", endTime: "" },
+      }));
+    }
+  };
+
+  const handleTimeChange = (day: string, field: "startTime" | "endTime", value: string) => {
+    setDayTimeSettings((prev: { [key: string]: { startTime: string; endTime: string } }) => {
+      const currentDayTime = prev[day] || { startTime: "", endTime: "" };
+      return {
+        ...prev,
+        [day]: {
+          ...currentDayTime,
+          [field]: value,
+        },
+      };
+    });
+
+    const updatedSettings = {
+      ...dayTimeSettings,
+      [day]: { ...dayTimeSettings[day], [field]: value },
     };
 
-    const startTimeDate = convertTo24HourFormat(startTime);
-    const endTimeDate = convertTo24HourFormat(endTime);
+    const { startTime, endTime } = updatedSettings[day];
 
-    if (endTimeDate <= startTimeDate) {
+    if (startTime && endTime && startTime >= endTime) {
+      setTimeErrors((prevErrors) => ({
+        ...prevErrors,
+        [day]: "Start time must be before end time.",
+      }));
+    } else {
+      setTimeErrors((prevErrors) => ({
+        ...prevErrors,
+        [day]: "",
+      }));
+    }
+  };
+
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10);
+
+    if (isNaN(value) || value < 1 || value > 60) {
+      setDurationError("Duration should be between 1 and 60 minutes.");
+    } else {
+      setDurationError("");
+    }
+
+    setDuration(value);
+  };
+
+  const handleGenerateSlots = async () => {
+    if (!duration || selectedDays.some((day) => !dayTimeSettings[day]?.startTime || !dayTimeSettings[day]?.endTime)) {
       Swal.fire({
         icon: "warning",
-        title: "Invalid Time Range",
-        text: "Ending time must be later than starting time.",
+        title: "Missing Fields",
+        text: "Please fill in all required fields for each selected day.",
         confirmButtonText: "Okay",
       });
       return;
     }
 
     try {
-      await axios.post("/api/doctors/generate-slots", {
+      const res = await axios.post("/api/doctors/generate-slots", {
         doctorId,
-        date: selectedDate.toISOString().split("T")[0],
-        startTime,
-        endTime,
+        startDate: startDate.toISOString().split("T")[0],
+        repeat,
+        availableDays: selectedDays.map((day) => ({
+          day: day.slice(0, 2).toUpperCase(),
+          startTime: dayTimeSettings[day].startTime,
+          endTime: dayTimeSettings[day].endTime,
+        })),
+        duration,
       });
 
       Swal.fire({
         icon: "success",
         title: "Slots Generated",
-        text: "New slots have been successfully created!",
+        text: res.data.message,
+        //text: "New slots have been successfully created!",
         confirmButtonText: "Okay",
       });
 
@@ -109,6 +160,29 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
     }
   };
 
+  const handleAvailabilityChange = async (timeSlotId: string, status: string) => {
+    try {
+      const response = await axios.put("/api/doctors/slots/update-status", {
+        slotId: slotIdFetched,
+        timeSlotId,
+        status,
+      });
+
+      const isAvailable = response.data.updation;
+
+      setSlots((prevSlots) =>
+        prevSlots.map((slot) =>
+          slot._id === timeSlotId ? { ...slot, isAvailable } : slot
+        )
+      );
+    } catch (error) {
+      console.error("Error updating slot status:", error);
+      alert("Failed to update slot status. Please try again.");
+    }
+  };
+
+
+
   return (
     <div className="p-6 bg-customBgLight">
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
@@ -119,6 +193,7 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
             onChange={(date) => setSelectedDate(date as Date)}
             minDate={new Date()}
             className="border rounded-md px-4 py-2"
+            dateFormat="dd/MM/yyyy"
           />
         </div>
 
@@ -128,9 +203,7 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
               key={period}
               onClick={() => setTimePeriod(period)}
               className={`px-4 py-2 rounded-md ${
-                timePeriod === period
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 text-black"
+                timePeriod === period ? "bg-green-500 text-white" : "bg-gray-200 text-black"
               }`}
             >
               {period}
@@ -148,21 +221,47 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
               <tr>
                 <th className="py-3 px-4">Slots</th>
                 <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Update Status</th>
+                <th className="py-3 px-4">Update Availability</th>
               </tr>
             </thead>
             <tbody>
               {slots.map((slot) => (
                 <tr key={slot._id} className="text-center bg-white">
                   <td className="py-3 px-4">{slot.time}</td>
-                  <td className="py-3 px-4">{slot.status}</td>
+                  <td
+                    className={`py-3 px-4 ${
+                      slot.status === "Not Booked"
+                        ? "text-red-500"
+                        : "text-green-500"
+                    }`}
+                  >
+                    {slot.status}
+                  </td>
                   <td className="py-3 px-4">
-                    <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                      onClick={() => console.log("Update Status")}
+                    <select
+                      className={`py-2 px-3 rounded-md ${
+                        slot.isAvailable
+                          ? "bg-green-500 text-white"
+                          : "bg-red-500 text-white"
+                      }`}
+                      value={slot.isAvailable ? "Available" : "Unavailable"}
+                      onChange={(e) =>
+                        handleAvailabilityChange(slot._id, e.target.value)
+                      }
                     >
-                      Update Status
-                    </button>
+                      <option
+                        className="bg-green-500 text-white"
+                        value="Available"
+                      >
+                        Available
+                      </option>
+                      <option
+                        className="bg-red-500 text-white"
+                        value="Unavailable"
+                      >
+                        Unavailable
+                      </option>
+                    </select>
                   </td>
                 </tr>
               ))}
@@ -187,47 +286,22 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
         )}
       </div>
 
-      {showGenerateModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-md shadow-md">
-            <h3 className="text-lg font-semibold mb-4">Generate Slots</h3>
-            <div className="mb-4">
-              <label className="block mb-2">Start Time:</label>
-              <input
-                type="text"
-                placeholder="HH:mm AM/PM"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="border rounded-md px-4 py-2 w-full"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2">End Time:</label>
-              <input
-                type="text"
-                placeholder="HH:mm AM/PM"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="border rounded-md px-4 py-2 w-full"
-              />
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                className="bg-green-500 text-white px-4 py-2 rounded-md"
-                onClick={handleGenerateSlots}
-              >
-                Submit
-              </button>
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
-                onClick={() => setShowGenerateModal(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <GenerateSlotsModal
+        showGenerateModal={showGenerateModal}
+        setShowGenerateModal={setShowGenerateModal}
+        repeat={repeat}
+        setRepeat={setRepeat}
+        duration={duration}
+        handleDurationChange={handleDurationChange}
+        durationError={durationError}
+        selectedDays={selectedDays}
+        toggleDaySelection={toggleDaySelection}
+        dayTimeSettings={dayTimeSettings}
+        handleTimeChange={handleTimeChange}
+        timeErrors={timeErrors}
+        handleGenerateSlots={handleGenerateSlots}
+        daysOfWeek={daysOfWeek}
+      />
     </div>
   );
 };
