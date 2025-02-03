@@ -4,12 +4,15 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 import { IAppointment } from '../types/interfaces';
 import { format } from "date-fns";
+import PrescriptionView from './PrescriptionView';
 import Swal from 'sweetalert2';
 
 const UserAppointmentTable: React.FC = () => {
 
   const { currentUser } = useSelector((state: RootState) => state.userAuth);
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
+  const [showPrescription, setShowPrescription] = useState(false)
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null)
 
 
   const fetchAppointments = async () => {
@@ -60,8 +63,12 @@ const UserAppointmentTable: React.FC = () => {
       }
 
     }
-    
 
+  }
+
+  const handlePrescription = async (appointmentId: string) => {
+    setSelectedAppointmentId(appointmentId);
+    setShowPrescription(true);
   }
 
   return (
@@ -98,8 +105,17 @@ const UserAppointmentTable: React.FC = () => {
                     {format(new Date(appointment.date), "EEEE")}
                   </td>
                   <td className="p-2 border border-gray-300">{appointment.time}</td>
-                  <td className="p-2 border border-gray-300">
-                    {appointment.isCompleted ? "Completed" : "Pending"}
+                  <td className={`p-2 border border-gray-300 ${appointment.isCompleted ? "text-green-700" : "text-red-600"}`}>
+                    {appointment.isCompleted ? "Completed" : "Pending"} <br />
+                    {appointment.isCompleted &&
+                      <button
+                        onClick={() => handlePrescription(appointment._id)}
+                        className="text-blue-600 underline cursor-pointer 
+                        bg-transparent border-none text-sm"
+                      >                        
+                        Open Prescription                       
+                      </button>
+                    }
                   </td>
                   <td className="p-2 border border-gray-300">
                     <button className="px-4 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-xs md:text-sm">
@@ -134,6 +150,16 @@ const UserAppointmentTable: React.FC = () => {
           <p className="text-lg font-semibold">No appointments taken</p>
         </div>
       )}
+      {showPrescription && selectedAppointmentId && (
+        <PrescriptionView
+          appointmentId={selectedAppointmentId}
+          onClose={() => {
+            setShowPrescription(false)
+            setSelectedAppointmentId(null)
+          }}
+        />
+      )}
+
     </div>
   );
 };

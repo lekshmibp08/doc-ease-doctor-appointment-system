@@ -6,6 +6,7 @@ import { slotController } from "../controllers/SlotController";
 import { paymentController } from "../controllers/PaymentController";
 import { appoinmentController } from "../controllers/AppoinmentController";
 import { chatController } from "../controllers/ChatController";
+import { prescriptionController } from "../controllers/PrescriptionController";
 
 
 const router = express.Router();
@@ -53,6 +54,8 @@ router.post("/book-appointment", authenticateUser(['user']), appoinmentControlle
 router.get("/appointments/:userId", authenticateUser(['user']), appoinmentController.getAppointmentsByUser);
 
 router.put("/appointments/:appointmentId", authenticateUser(['user']), appoinmentController.cancelAppointmentByUser);
+
+router.get('/prescriptions/:appointmentId', authenticateUser(['user']), prescriptionController.getPrescriptionForUser)
 
 router.post("/chat", authenticateUser(['user']), chatController.getOrCreateChat);
 

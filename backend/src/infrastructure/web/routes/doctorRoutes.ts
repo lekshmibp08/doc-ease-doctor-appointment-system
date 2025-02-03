@@ -5,6 +5,7 @@ import { slotController } from "../controllers/SlotController";
 import { authenticateUser } from "../../middlewares/AuthMiddleware";
 import { appoinmentController } from "../controllers/AppoinmentController";
 import { chatController } from "../controllers/ChatController";
+import { prescriptionController } from "../controllers/PrescriptionController";
 
 const router = express.Router();
 
@@ -51,6 +52,12 @@ router.get("/get-chats", authenticateUser(['doctor']), chatController.getAllChat
 router.get("/get-messages", authenticateUser(['doctor']), chatController.getAChatUsingChatId);
 
 router.post("/send-message", authenticateUser(['doctor']), chatController.sendMessage);
+
+router.post('/prescriptions', authenticateUser(['doctor']), prescriptionController.createPrescription)
+
+router.get('/prescriptions/:appointmentId', authenticateUser(['doctor']), prescriptionController.getPrescription)
+
+router.put('/prescriptions/:id', authenticateUser(['doctor']), prescriptionController.updatePrescription)
 
 
 

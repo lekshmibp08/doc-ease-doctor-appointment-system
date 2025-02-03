@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
-import { fetchOrCreateSlotUseCase } from "../../../application/useCases/doctor/fetchOrCreateSlotUseCase";
 import { SlotRepository } from "../../database/repositories/SlotRepository";
 import { updateSlotUseCase } from "../../../application/useCases/doctor/updateSlotUseCase";
 import { fetchSlotUseCase } from "../../../application/useCases/user/fetchSlotUseCase";
 import { updateSlotTimeUseCase } from "../../../application/useCases/doctor/updateSlotTimeUseCase";
-import { generateSlotUseCase } from "../../../application/useCases/doctor/generateSlotUseCase";
 import SlotUseCase from "../../../application/useCases/SlotUseCase";
 
 type TimePeriod = "Morning" | "Afternoon" | "Evening";
@@ -16,9 +14,6 @@ export const slotController = {
   /** Generate Slots **/
   async generateSlots (req: Request, res: Response): Promise<void> {
     try {
-      console.log('====================================');
-      console.log("Entered Generation: ",req.body);
-      console.log('====================================');
       await SlotUseCase.generateSlots(req.body);
       res.status(201).json({ message: "Slots generated successfully!" });
     } catch (error) {

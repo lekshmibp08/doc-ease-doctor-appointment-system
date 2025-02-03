@@ -84,7 +84,7 @@ export interface IUser {
 export interface IAppointment {
   _id: string;
   doctorId: string;
-  userId: string;
+  userId: any;
   date: Date;
   slotId: string;
   timeSlotId: string;

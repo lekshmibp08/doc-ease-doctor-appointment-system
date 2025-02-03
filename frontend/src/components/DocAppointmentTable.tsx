@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import axios from '../services/axiosConfig';
 import Pagination from './Pagination';
 import { IAppointment } from '../types/interfaces';
-
+import PrescriptionForm from '../components/PrescriptionForm';
 
 
 const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
@@ -14,6 +14,9 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedAppointment, setSelectedAppointment] = useState<IAppointment | null>(null);
+  const [showPrescriptionForm, setShowPrescriptionForm] = useState(false)
+  const [existingPrescription, setExistingPrescription] = useState<any>(undefined)
 
   useEffect(() => {
     const fetchAllAppointments = async () => {        
@@ -37,11 +40,31 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
     };
 
     fetchAllAppointments();
+    setShowPrescriptionForm(false)
   }, [currentPage, selectedDate]);
 
+  const handlePrescription = async (appointment: any) => {
+    setSelectedAppointment(appointment)
+    try {
+      const response = await axios.get(`/api/doctors/prescriptions/
+        ${appointment._id}`)
+      setExistingPrescription(response.data.prescription);
+      console.log('====================================');
+      console.log(response.data);
+      console.log('====================================');
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        setExistingPrescription(null);
+      } else {
+        console.error("Error fetching prescription:", error)
+      }
+    }
+    setShowPrescriptionForm(true)
+  }
 
 
-  return (
+  return (<>
+  
     <div className="p-6 bg-customBgLight">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <h2 className="text-2xl font-bold">Appointment List</h2>
@@ -51,8 +74,9 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
           <DatePicker
             selected={selectedDate}
             onChange={(date) => setSelectedDate(date as Date)}
-            minDate={new Date()} // Disable past dates
+            //minDate={new Date()} // Disable past dates
             className="border rounded-md px-2 py-2 w-32"
+            dateFormat="dd/MM/yyyy"
           />
         </div>
       </div>      
@@ -85,15 +109,24 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
                     {appointment.time}
                   </td>
                   <td data-label="Consultation Type" className="p-3 border font-semibold text-center">
-                    {appointment.modeOfVisit}
+                    {appointment.modeOfVisit} <br />
                   </td>
                   <td
                     data-label="Status"
                     className={`p-3 text-center border font-semibold ${
                       appointment.isCompleted ? "text-green-600" : "text-red-600"
                     }`}
-                  >
-                    {appointment.isCompleted ? "Success" : "Pending"}
+                    >
+                    {appointment.isCompleted ? "Success" : "Pending"} <br />
+                    {appointment.isCompleted &&
+                      <button
+                        onClick={() => handlePrescription(appointment)}
+                        className="text-blue-600 underline cursor-pointer 
+                        bg-transparent border-none text-sm"
+                      >                        
+                        Add/Edit Prescription                       
+                      </button>
+                    }
                   </td>
                   <td data-label="Action" className="p-3 border font-semibold">
                     <button>Cancel</button>
@@ -116,7 +149,17 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
         />
       )}
     </div>
-  );
+
+    {showPrescriptionForm && selectedAppointment && (
+    <PrescriptionForm
+      appointmentId={selectedAppointment._id}
+      patientName={selectedAppointment.userId.fullName}
+      age={selectedAppointment.userId.age}
+      onClose={() => setShowPrescriptionForm(false)}
+      existingPrescription={existingPrescription}
+    />
+    )}  
+  </>);
 };
 
 export default DocAppointmentTable;

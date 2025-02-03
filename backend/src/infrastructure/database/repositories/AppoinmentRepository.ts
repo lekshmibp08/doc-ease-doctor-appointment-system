@@ -20,6 +20,10 @@ export const createAppointmentRepository = (): IAppointmentRepository => ({
         const appointment = await AppointmentModel.findById(appointmentId);
         return appointment;
     },
+    findAppointmentsByIdWithDocDetails: async (appointmentId: string) => {
+        const appointment = await AppointmentModel.findById(appointmentId).populate("doctorId");
+        return appointment;
+    },
     updateAppointment: async (appointmentId: string, updates: Partial<IAppointment>) => {
         const updatedAppointment = await AppointmentModel.findByIdAndUpdate(
           appointmentId,
@@ -112,7 +116,7 @@ export const createAppointmentRepository = (): IAppointmentRepository => ({
 
     getAppointmentsByDoctorId: async (filter, skip, limit) => {
         const appointments = await AppointmentModel.find(filter)
-            .populate("userId", "fullName")
+            .populate("userId")
             .skip(skip)
             .limit(limit)
             .exec();
