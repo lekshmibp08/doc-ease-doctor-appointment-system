@@ -21,7 +21,11 @@ const UserHeader: React.FC<UserHeaderProps> = ({ role, onToggleSidebar }) => {
     <header className="bg-customTeal text-white px-4">
       <div className="flex flex-wrap items-center justify-between gap-4 px-10">
         {/* Left Section: Logo and Tagline */}
-        <div className="bg-customTeal text-white flex flex-col items-center py-6">
+        <div
+          onClick={() => navigate(role === 'user' ? '/doctors' : '/doctor/dashboard')}
+          className="bg-customTeal text-white flex flex-col 
+          items-center py-6 cursor-pointer"
+        >
           {/* Logo */}
           <div className="flex items-center">
             <h1
