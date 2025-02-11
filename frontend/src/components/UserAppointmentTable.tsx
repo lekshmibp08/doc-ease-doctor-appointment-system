@@ -5,6 +5,8 @@ import { RootState } from '../Redux/store';
 import { IAppointment } from '../types/interfaces';
 import { format } from "date-fns";
 import PrescriptionView from './PrescriptionView';
+import { Star } from "lucide-react";
+import ReviewForm from './ReviewForm';
 import Swal from 'sweetalert2';
 
 const UserAppointmentTable: React.FC = () => {
@@ -13,6 +15,8 @@ const UserAppointmentTable: React.FC = () => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
   const [showPrescription, setShowPrescription] = useState(false)
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null)
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [selectedAppointmentForReview, setSelectedAppointmentForReview] = useState<IAppointment | null>(null)
 
 
   const fetchAppointments = async () => {
@@ -71,6 +75,15 @@ const UserAppointmentTable: React.FC = () => {
     setShowPrescription(true);
   }
 
+  const handleRateUs = (appointment: IAppointment) => {
+    setSelectedAppointmentForReview(appointment)
+    setShowReviewForm(true)
+  }
+
+    const handleReviewSubmit = () => {
+    fetchAppointments()
+  }
+
   return (
     <div className="p-4 mx-auto max-w-6xl bg-lightTeal rounded-md">
       {appointments.length > 0 ? (
@@ -86,6 +99,7 @@ const UserAppointmentTable: React.FC = () => {
                 <th className="p-2 border border-gray-300">Status</th>
                 <th className="p-2 border border-gray-300">Ticket</th>
                 <th className="p-2 border border-gray-300">Cancel</th>
+                <th className="p-2 border border-gray-300">Rate Now</th>
               </tr>
             </thead>
             <tbody>
@@ -139,6 +153,20 @@ const UserAppointmentTable: React.FC = () => {
                       </button>
                     )}
                   </td>
+                  <td className="p-2 border border-gray-300 items-center">
+                <button
+                  className={`flex justify-center px-3 py-1 rounded-md text-xs md:text-sm ${
+                    appointment.isCompleted
+                      ? "bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+                  disabled={!appointment.isCompleted}
+                  onClick={() => handleRateUs(appointment)}
+                >
+                  <Star className="w-4 h-4 mr-1" />
+                  {appointment.isReviewed ? "Edit Review" : "Add Review"}
+                </button>
+              </td>
                 </tr>
               ))}
             </tbody>
@@ -157,6 +185,16 @@ const UserAppointmentTable: React.FC = () => {
             setShowPrescription(false)
             setSelectedAppointmentId(null)
           }}
+        />
+      )}
+
+      {showReviewForm && selectedAppointmentForReview && currentUser && (
+        <ReviewForm
+          appointmentId={selectedAppointmentForReview._id}
+          userId={currentUser?._id}
+          doctorId={(selectedAppointmentForReview.doctorId as any)._id}
+          onClose={() => setShowReviewForm(false)}
+          onSubmit={handleReviewSubmit}
         />
       )}
 

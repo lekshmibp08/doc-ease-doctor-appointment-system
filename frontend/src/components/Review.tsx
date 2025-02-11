@@ -1,30 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { IReview } from "@/types/interfaces";
+import axios from "../services/axiosConfig";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
-const Review = ({ doctorId }) => {
-  const reviews = [
-    {
-      user: "User 1",
-      review:
-        "A friendly doctor ready to explain the treatment process and associated costs.",
-    },
-    {
-      user: "User 2",
-      review:
-        "The doctor is highly professional and explains the treatment process thoroughly.",
-    },
-    {
-      user: "User 3",
-      review:
-        "Very caring and knowledgeable, providing excellent care and advice.",
-    },
-    {
-      user: "User 4",
-      review:
-        "The doctor is approachable and provides detailed explanations about the treatment.",
-    },
-  ];
+interface ReviewProps {
+  doctorId: string;
+}
 
+const Review: React.FC<ReviewProps> = ({ doctorId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [reviews, setReviews] = useState<IReview[]>([]);
+
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get(`/api/users/reviews/${doctorId}`);
+      setReviews(response.data.reviews);
+    } catch (error) {
+      console.log("Error in fetching reviews: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, [doctorId]);
+
+  // Auto-slide every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleNext();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [currentIndex]);
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
@@ -40,46 +46,62 @@ const Review = ({ doctorId }) => {
 
   return (
     <div className="mt-8">
-      {/* Heading outside the card */}
-      <h3 className="text-xl font-bold mb-4">Review</h3>
-
-      {/* Card container */}
-      <div className="bg-customBgLight1 shadow-md rounded-md p-6">
-        <div className="relative flex items-center justify-center">
-          {/* Previous Button */}
-          <button
-            onClick={handlePrev}
-            className="absolute left-2 bg-gray-200 text-gray-600 rounded-full p-2 hover:bg-gray-300 z-10"
-          >
-            ◀
-          </button>
-
-          {/* Review Slider */}
-          <div className="overflow-hidden w-full max-w-4xl">
-            <div
-              className="flex transition-transform duration-300"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+      <h3 className="text-xl font-bold mb-4 text-center">Reviews</h3>
+      <div className=" bg-customBgLight1 shadow-lg rounded-lg p-6 mx-auto">
+        {reviews.length === 0 ? (
+          <p className="text-center text-gray-500">No reviews available.</p>
+        ) : (
+          <div className="relative flex items-center justify-center">
+            {/* Previous Button */}
+            <button
+              onClick={handlePrev}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-300 text-gray-700 hover:bg-gray-400 p-3 rounded-full shadow-md z-10 transition duration-200"
             >
-              {reviews.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-customBgLight shadow-md p-4 rounded-md w-full max-w-md mx-2 flex-shrink-0"
-                >
-                  <p className="font-bold">{item.user}</p>
-                  <p className="text-sm text-gray-600 mt-2">{item.review}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+              <FaChevronLeft size={20} />
+            </button>
 
-          {/* Next Button */}
-          <button
-            onClick={handleNext}
-            className="absolute right-2 bg-gray-200 text-gray-600 rounded-full p-2 hover:bg-gray-300 z-10"
-          >
-            ▶
-          </button>
-        </div>
+            {/* Review Slider */}
+            <div className="overflow-hidden w-full max-w-lg">
+              <div
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              >
+                {reviews.map((review, index) => (
+                  <div
+                    key={index}
+                    className="bg-white shadow-md p-4 rounded-lg w-full max-w-[31rem] mx-2 flex-shrink-0 text-center border border-gray-200"
+                  >
+                    <p className="font-bold text-lg">{review.userId.fullName}</p>
+                    <p className="text-yellow-500 font-semibold mt-1">{review.rating} / 5 ★</p>
+                    <p className="text-sm text-gray-600 mt-2 italic">"{review.comment}"</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Next Button */}
+            <button
+              onClick={handleNext}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-300 text-gray-700 hover:bg-gray-400 p-3 rounded-full shadow-md z-10 transition duration-200"
+            >
+              <FaChevronRight size={20} />
+            </button>
+          </div>
+        )}
+
+        {/* Pagination Dots */}
+        {reviews.length > 1 && (
+          <div className="flex justify-center mt-4 space-x-2">
+            {reviews.map((_, index) => (
+              <div
+                key={index}
+                className={`w-3 h-3 rounded-full ${
+                  index === currentIndex ? "bg-blue-500" : "bg-gray-300"
+                } transition-all duration-300`}
+              ></div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

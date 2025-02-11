@@ -77,6 +77,10 @@ const appointmentSchema = new mongoose.Schema<IAppointment>({
     videoCallId: { 
         type: String 
     },
+    isReviewed: {
+        type: Boolean,
+        default: false
+    }
 },  
 { 
     timestamps: true 

@@ -20,6 +20,7 @@ export type IAppointment = {
   rating?: number; 
   reviewMessage?: string; 
   videoCallId?: string; 
+  isReviewed?: boolean;
   updatedAt?: Date;
   createdAt?: Date;
 }

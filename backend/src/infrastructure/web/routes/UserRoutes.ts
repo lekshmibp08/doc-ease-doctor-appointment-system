@@ -7,6 +7,7 @@ import { paymentController } from "../controllers/PaymentController";
 import { appoinmentController } from "../controllers/AppoinmentController";
 import { chatController } from "../controllers/ChatController";
 import { prescriptionController } from "../controllers/PrescriptionController";
+import { reviewController } from "../controllers/reviewController";
 
 
 const router = express.Router();
@@ -65,6 +66,13 @@ router.post("/send-message", authenticateUser(['user']), chatController.sendMess
 
 router.get("/get-messages", authenticateUser(['user']), chatController.getAChatUsingChatId);
 
+router.post("/reviews", reviewController.createReview)
+
+router.get("/reviews/:doctorId", reviewController.getReviewsByDoctorId)
+
+router.get("/reviews", reviewController.getReviewsByAppointmentId)
+
+router.put("/reviews/:reviewId", reviewController.updateReview)
 
 
 export default router;

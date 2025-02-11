@@ -1,30 +1,31 @@
 // Practitioner Interface
 export interface IPractitioner {
-    _id: string;
-    registerNumber: string;
-    fullName: string;
-    email: string;
-    mobileNumber: string;
-    profilePicture: string;
-    isBlocked: boolean;
-    isApproved: boolean;
-    isRejected: boolean;
-    specialization: string;
-    qualification: string;
-    fee: number;
-    gender: string;
-    experience: string;
-    modesOfConsultation: string[];
-    gallery: string[];
-    documents: string[],
-    locationCoordinates?: {
-      latitude: number;
-      longitude: number;
-    } | null;
-    addressLine: string;
-    createdAt: Date;
-    updatedAt: Date;
-  }
+  _id: string;
+  registerNumber: string;
+  fullName: string;
+  email: string;
+  mobileNumber: string;
+  profilePicture: string;
+  isBlocked: boolean;
+  isApproved: boolean;
+  isRejected: boolean;
+  specialization: string;
+  qualification: string;
+  fee: number;
+  gender: string;
+  experience: string;
+  modesOfConsultation: string[];
+  gallery: string[];
+  documents: string[],
+  locationCoordinates?: {
+    latitude: number;
+    longitude: number;
+  } | null;
+  locationName: string,
+  addressLine: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
   
   
 
@@ -101,4 +102,18 @@ export interface IAppointment {
   rating?: number;
   reviewMessage?: string;
   videoCallId?: string;
+  isReviewed: boolean
+}
+
+export interface IReview {
+  _id: string
+  userId: {
+    _id: string,
+    fullName: string
+  }
+  doctorId: string
+  appointmentId: string
+  rating: number
+  comment: string
+  createdAt: Date
 }
