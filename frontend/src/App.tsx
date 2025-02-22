@@ -18,13 +18,13 @@ import DoctorProfilePage from './pages/doctorPages/DoctorProfilePage';
 import RequestPage from './pages/adminPages/RequestPage';
 import ViewDocuments from './components/ViewDocuments';
 import DoctorDetailsPage from './pages/userPages/DoctorDetailsPage';
-import UserChatPage from './pages/userPages/UserChatPage';
 import AppointmentBookingPage from './pages/userPages/AppointmentBookingPage';
 import SlotManagementPage from './pages/doctorPages/SlotManagementPage';
 import AppointmentPage from './pages/userPages/AppointmentsPage';
 import AdminAppointmentPage from './pages/adminPages/AdminAppointmentPage';
 import DocAppointmentManagementPage from './pages/doctorPages/DocAppointmentManagementPage';
 import DoctorChatPage from './pages/doctorPages/DoctorChatPage';
+import NotFound from './pages/NotFound';
 
 
 
@@ -154,15 +154,9 @@ const App: React.FC = () => {
           </RoleBasedRoute>} 
         />
 
-        <Route path="/chat" 
-          element={
-          <RoleBasedRoute allowedRole={'user'}>
-            <UserChatPage />
-          </RoleBasedRoute>} 
-        />
-
         {/* Unauthorized Page */}
         <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
     </Router>
