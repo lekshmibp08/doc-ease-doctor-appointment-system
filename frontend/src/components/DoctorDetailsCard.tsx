@@ -42,60 +42,48 @@ const DoctorDetailsCard: React.FC<DoctorDetailsCardProps> = ({ doctor }) => {
   }
 
   return (
-    <div className="bg-customBgLight1 shadow-md rounded-lg p-6 mt-6 flex flex-col md:flex-row md:items-center gap-4">
-      {/* Doctor Image (Left) */}
-      <div className="flex-shrink-0">
-        <img
-          src={doctor.profilePicture || "/placeholder-user.jpg"}
-          alt={`Dr. ${doctor.fullName}`}
-          className="w-40 h-40 object-cover rounded"
-        />
-      </div>
+    <div className="bg-customBgLight1 shadow-md rounded-lg p-4 sm:p-6 mt-6 flex flex-col md:flex-row md:items-center gap-4">
+  {/* Doctor Image */}
+  <div className="flex-shrink-0 flex justify-center md:block">
+    <img
+      src={doctor.profilePicture || "/placeholder-user.jpg"}
+      alt={`Dr. ${doctor.fullName}`}
+      className="w-24 h-24 sm:w-40 sm:h-40 object-cover rounded"
+    />
+  </div>
 
-      {/* Doctor Info (Center) */}
-      <div className="flex-1">
-        {/* Name & Qualifications */}
-        <h2 className="text-xl font-bold">{doctor.fullName}</h2>
-        <p className="text-gray-700 mt-1">
-          {doctor.specialization} <br />
-          {doctor.qualification} <br />
-          {doctor.experience} Years Experience
-        </p>
+  {/* Doctor Info */}
+  <div className="flex-1 text-center md:text-left">
+    <h2 className="text-lg sm:text-xl font-bold">{doctor.fullName}</h2>
+    <p className="text-gray-700 mt-1">
+      {doctor.specialization} <br />
+      {doctor.qualification} <br />
+      {doctor.experience} Years Experience
+    </p>
 
-        {/* Verification & Fee */}
-        <p className="text-green-600 font-medium mt-2">✔️ Medical Registration Verified</p>
-        <p className="mt-2 text-gray-700">Consultation Fee: {doctor.fee}</p>
+    {/* Rating & Buttons */}
+    <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      {/* Rating */}
+      {averageRating && (
+        <span className="bg-gray-200 text-yellow-600 px-2 py-1 rounded font-semibold">
+          {averageRating}/5
+        </span>
+      )}
+      <span className="text-gray-500 text-sm">( {totalReviews} Reviews )</span>
 
-        {/* Bottom Row: Rating on the left, Buttons on the right */}
-        <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between">
-          {/* Star Rating + Votes */}
-          <div className="flex items-center space-x-2 mb-2 sm:mb-0">
-            {averageRating && (
-            <span className="bg-gray-200 text-yellow-600 px-2 py-1 rounded font-semibold">
-              {averageRating}/5
-            </span>
-            )}
-            <span className="text-gray-500 text-sm">( {totalReviews} Reviews )</span>
-            {/** 
-            <button className="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600 text-sm">
-              Rate Now
-            </button>
-            */}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-2">
-            <button
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-sm"
-              onClick={handleBookNow}
-            >
-              Book Now
-            </button>
-            <ChatButton doctorId={doctor._id} />
-          </div>
-        </div>
+      {/* Buttons */}
+      <div className="flex space-x-2">
+        <button
+          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-sm"
+          onClick={handleBookNow}
+        >
+          Book Now
+        </button>
+        <ChatButton doctorId={doctor._id} />
       </div>
     </div>
+  </div>
+</div>
   )
 }
 
