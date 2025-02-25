@@ -16,33 +16,21 @@ const axios = axiosInstance.create({
   },
 });
 
-
-
-
 const getTokenFromSessionStorage = (url: string | undefined): string | null => {
+  const state = store.getState();
   // Check the URL to determine the token's role
   if (url?.includes('/api/admin')) {
-    console.log("ADMIN");
-    console.log(url);
     
-    
-    return sessionStorage.getItem('adminToken'); // Return Admin Token
+    return state.adminAuth.token;
   } else if (url?.includes('/api/doctors')) {
-    console.log("DOCTOR");
-    console.log(url);
     
-    
-    return sessionStorage.getItem('doctorToken'); // Return Doctor Token
+    return state.doctorAuth.token;
   } else if (url?.includes('/api/users')) {
-    console.log("USER");
-    console.log(url);
     
-
-    return sessionStorage.getItem('userToken'); // Return User Token
+    return state.userAuth.token;
   }
 
   // No matching role
-  console.warn('No matching token found for URL:', url);
   return null;
 };
 
@@ -51,7 +39,6 @@ const getTokenFromSessionStorage = (url: string | undefined): string | null => {
 // Function to determine the refresh token endpoint and Redux actions based on the URL
 const getRefreshTokenConfig = (url: string) => {
   if (url.includes("/api/users")) {
-    console.log("USER ROUTE FOUND");
     
     return {
       refreshEndpoint: "/api/users/refresh-token",
@@ -61,7 +48,6 @@ const getRefreshTokenConfig = (url: string) => {
       role: 'user',
     };
   } else if (url.includes("/api/doctors")) {
-    console.log("DDOCTOR ROUTE FOUND");
 
     return {
       refreshEndpoint: "/api/doctors/refresh-token",
@@ -71,7 +57,6 @@ const getRefreshTokenConfig = (url: string) => {
       role: 'doctor',
     };
   } else if (url.includes("/api/admin")) {
-    console.log("ADMIN ROUTE FOUND");
 
     return {
       refreshEndpoint: "/api/admin/refresh-token",
@@ -89,31 +74,15 @@ const getRefreshTokenConfig = (url: string) => {
 // Request Interceptor
 axios.interceptors.request.use(
   (config) => {
-    console.log('Axios Interceptor Activated: Sending request with config:', config);
-
     // Check if the request is to Cloudinary
     if (config.url?.startsWith('https://api.cloudinary.com')) {
-      console.log('Cloudinary request detected, skipping Authorization header.');
       return config; // Skip adding Authorization header
     }
 
-
     const token = getTokenFromSessionStorage(config.url);
 
-    //const token = sessionStorage.getItem(config.url?.includes("/api/users")
-    //  ? "userToken"
-    //  : config.url?.includes("/api/doctors")
-    //  ? "doctorToken"
-    //  : "adminToken");
-
-      console.log("ITS A ", token);
-
-      
-
-    
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`; // Attach the token to the Authorization header
-      console.log('Authorization Header Set:', config.headers['Authorization']);
     } else {
       console.warn('No token found in Redux state');
     }
@@ -121,44 +90,20 @@ axios.interceptors.request.use(
     return config; // Return the updated config
   },
   (error) => {
-    console.error('Axios Request Interceptor Error:', error);
     return Promise.reject(error); // Forward the error
   }
 );
-
-// Response Interceptor
-// axios.interceptors.response.use(
-//   (response) => response, // Pass successful responses
-//   (error) => {
-//     // Handle errors (e.g., token expiration)
-//     if (error.response?.status === 401) {
-//       const dispatch = useDispatch();
-//       console.error('Unauthorized access! Clearing tokens and redirecting to login.');
-// 
-//       // Clear tokens for all roles
-//       dispatch(clearUserToken());
-//       dispatch(clearDoctorToken());
-//       dispatch(clearAdminToken());
-// 
-//       // Redirect to login page
-//       window.location.href = '/login';
-//     }
-//     return Promise.reject(error); // Forward the error
-//   }
-// );
 
 
 // Response Interceptor
 axios.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log("ENTERED INTERCEPTOR ERROR BLOCK");
     
     const originalRequest = error.config;
     
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      console.log("Access token expired. Attempting to refresh...");
 
       // Prevent multiple retries
       originalRequest._retry = true;
@@ -166,6 +111,7 @@ axios.interceptors.response.use(
       const errorMessage = error.response?.data?.message;
 
       if (errorMessage === "Invalid or expired token") {
+
         // Determine the role-specific refresh token endpoint and actions
         const refreshConfig = getRefreshTokenConfig(originalRequest.url);
         
@@ -174,15 +120,12 @@ axios.interceptors.response.use(
           return Promise.reject(error);
         }
         try {
-          console.log("refreshConfig.role: ", refreshConfig.role);
           
           const { data } = await axios.post(refreshConfig.refreshEndpoint, {
             role: refreshConfig.role,
           }, { withCredentials: true });
   
-          const newAccessToken = data.token;
-          console.log("NEW ACCESS TOKEN: ", newAccessToken);
-          
+          const newAccessToken = data.token;          
   
           // Update Redux and sessionStorage with the new token
           store.dispatch(refreshConfig.refreshAction(newAccessToken));
@@ -197,7 +140,7 @@ axios.interceptors.response.use(
           // Clear tokens and log out
           store.dispatch(refreshConfig.clearAction());
           sessionStorage.removeItem(refreshConfig.tokenStorageKey);
-          window.location.href = "/login";
+          window.location.href = "/user/login";
           return Promise.reject(refreshError);
         }
       } else {
@@ -213,8 +156,6 @@ axios.interceptors.response.use(
     }
 
     if(error.response?.status === 403) {
-      console.log("ENTERED 403 BLOCK ");
-      console.log(error.response.data);
       
       Swal.fire({
         icon: 'error', 
@@ -225,8 +166,13 @@ axios.interceptors.response.use(
 
       try {
         const basePath = window.location.pathname.split("/")[1]; // Derive the base path
+        Swal.fire({
+          icon: 'error', 
+          title: 'Error',
+          text: error.response.data.message, 
+          confirmButtonText: 'OK',
+        });
         handleLogout(basePath);
-        alert(error.response.data.message)
       } catch (logoutError) {
         console.error("Error during logout after 403:", logoutError);
       }
