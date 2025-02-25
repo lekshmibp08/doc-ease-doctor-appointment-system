@@ -24,27 +24,16 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
     console.log(token);
     //const token = authHeader.split(" ")[1];
     if (!token) {
-      console.log("2");      
       res.status(401).json({ message: "Authentication token is missing" });
       return;
     }
 
     try {
-      console.log("3");
-
-      const decodedToken = jwt.decode(token);
-      console.log("DECODED TOKEN: ", decodedToken);
       
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'DocEaseSecret',) as DecodedToken;
-      console.log(decoded);
 
       if (allowedRoles.length > 0 && !allowedRoles.includes(decoded.role)) {
-        console.log(allowedRoles);
-        console.log(decoded.role);
-        
-        
-        console.log("4");
-        
+                
         res.status(403).json({ message: "You do not have the required permissions" });
         return;
       }
@@ -74,7 +63,6 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
 
       next();
     } catch (error: any) {
-      console.log("5");
       if (error.name === 'TokenExpiredError') {
         console.error('Token has expired');
       } else {
