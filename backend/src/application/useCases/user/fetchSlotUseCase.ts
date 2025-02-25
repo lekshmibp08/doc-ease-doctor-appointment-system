@@ -1,7 +1,7 @@
 import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
 import { Slot } from "../../../domain/entities/Slot";
-import { generateWholeDaySlots } from "../../test/slotUtils";
-import { filterSlotsByPeriod } from "../../test/slotFilter";
+import { generateWholeDaySlots } from "../../helper/slotUtils";
+import { filterSlotsByPeriod } from "../../helper/slotFilter";
 
 type TimePeriod = "Morning" | "Afternoon" | "Evening";
 

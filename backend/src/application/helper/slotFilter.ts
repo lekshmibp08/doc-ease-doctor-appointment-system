@@ -1,9 +1,10 @@
+/* eslint-disable prefer-const */
 type TimePeriod = "Morning" | "Afternoon" | "Evening";
 
 export const filterSlotsByPeriod = (timePeriod: TimePeriod, timeSlots: any[]) => {
     const timeRanges: Record<TimePeriod, { start: string; end: string }> = {
         Morning: { start: "07:30 AM", end: "11:30 AM" },
-        Afternoon: { start: "12:30 PM", end: "04:30 PM" },
+        Afternoon: { start: "12:00 PM", end: "04:30 PM" },
         Evening: { start: "05:00 PM", end: "08:30 PM" },
     };
 
@@ -18,6 +19,8 @@ export const filterSlotsByPeriod = (timePeriod: TimePeriod, timeSlots: any[]) =>
         // Split time into hours, minutes and AM/PM
         const [timeString, modifier] = time.split(' ');
         let [hours, minutes] = timeString.split(':').map(Number);
+        console.log(minutes);
+        
 
         // Handle AM/PM conversion
         if (modifier === "AM" && hours === 12) {
@@ -37,10 +40,8 @@ export const filterSlotsByPeriod = (timePeriod: TimePeriod, timeSlots: any[]) =>
     console.log("End Time:", endTime);
     
     return timeSlots.filter(slot => {
-        // Parse the slot time to Date
         const slotTime = parseTime(slot.time);
 
-        // Compare the times using getTime() for accurate comparison
         return slotTime >= startTime && slotTime <= endTime;
     });
 };

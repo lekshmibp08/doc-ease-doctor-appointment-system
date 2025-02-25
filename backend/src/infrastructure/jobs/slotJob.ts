@@ -28,8 +28,8 @@ export const setupSlotMaintenanceJob = () => {
 
     try {
       // Remove expired slots
-      await SlotModel.deleteMany({ date: { $lt: today } });
-      console.log("Expired slots removed.");
+      //await SlotModel.deleteMany({ date: { $lt: today } });
+      //console.log("Expired slots removed.");
 
       // Add slots for the 11th day
       const newSlots = generateSlotsForDate(newDate);

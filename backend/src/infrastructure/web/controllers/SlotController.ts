@@ -5,7 +5,7 @@ import { fetchSlotUseCase } from "../../../application/useCases/user/fetchSlotUs
 import { updateSlotTimeUseCase } from "../../../application/useCases/doctor/updateSlotTimeUseCase";
 import SlotUseCase from "../../../application/useCases/SlotUseCase";
 
-type TimePeriod = "Morning" | "Afternoon" | "Evening";
+//type TimePeriod = "Morning" | "Afternoon" | "Evening";
 
 const slotRepository = new SlotRepository();
 
@@ -13,7 +13,7 @@ export const slotController = {
 
   /** Generate Slots **/
   async generateSlots (req: Request, res: Response): Promise<void> {
-    try {
+    try {      
       await SlotUseCase.generateSlots(req.body);
       res.status(201).json({ message: "Slots generated successfully!" });
     } catch (error) {
@@ -23,10 +23,10 @@ export const slotController = {
   },
 
   async fetchSlot (req: Request, res: Response): Promise<void> {        
-    const doctorId = req.query.doctorId as string;
-    const date = req.query.date as string;
-    const period = req.query.timePeriod as string;
-    const timePeriod = period as TimePeriod;
+    //const doctorId = req.query.doctorId as string;
+    //const date = req.query.date as string;
+    //const period = req.query.timePeriod as string;
+    //const timePeriod = period as TimePeriod;
 
     try {
       console.log("Received params:", req.query); 
@@ -100,8 +100,8 @@ export const slotController = {
     try {
       const success = await updateSlotTimeUseCase(slotRepository, slotId, timeSlotId, newTime);
       res.status(200).json({ success });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to update slot time" });
+    } catch (error:any) {
+      res.status(500).json({ error: error.message || "Failed to update slot time" });
     }
   },
 };

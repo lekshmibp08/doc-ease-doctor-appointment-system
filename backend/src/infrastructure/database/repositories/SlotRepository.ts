@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import SlotModel from "../models/SlotModel";
 import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
 import { Slot } from "../../../domain/entities/Slot";
-import { Types } from "mongoose";
 
 export class SlotRepository implements ISlotRepository {
   
@@ -50,7 +50,7 @@ export class SlotRepository implements ISlotRepository {
     if (!slot) return;
     
     slot.timeSlots = slot.timeSlots.map((timeslot) => {
-      if (timeslot._id?.toString() === timeSlotId) {
+      if (timeslot._id?.toString() === timeSlotId.toString()) {
         timeslot.status = status;
       }
       return timeslot;
