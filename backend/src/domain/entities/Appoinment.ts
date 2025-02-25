@@ -1,4 +1,4 @@
-import { Document, Types } from "mongoose";
+import { Types } from "mongoose";
 
 export type IAppointment = {
   _id?: Types.ObjectId | string;
@@ -14,6 +14,8 @@ export type IAppointment = {
   isPaid?: boolean;
   isCancelled?: boolean;
   refundAmount?: number;
+  refundStatus?: "Pending" | "Processed" | "Failed";
+  refundTransactionId?: string | null;
   videoCallEnabled?: boolean;
   chatEnabled?: boolean;
   isCompleted?: boolean;

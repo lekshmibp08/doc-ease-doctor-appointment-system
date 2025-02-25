@@ -1,8 +1,9 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { IAppointment } from "../../../domain/entities/Appoinment";
 
-export const cancelAppointmentByUserUsecase = async (
+export const updateAppointment = async (
     appointmentId: string,
+    updates: Partial<IAppointment>,
     appointmentRepository: IAppointmentRepository,
 ): Promise<Partial<IAppointment>> => {
   try {
@@ -10,7 +11,6 @@ export const cancelAppointmentByUserUsecase = async (
     if(!appointment) {
         throw new Error("Appointment not Found");
     }
-    const updates = { isCancelled : true };
     const updatedAppointment = await appointmentRepository.updateAppointment(appointmentId, updates);
     
     return updatedAppointment;

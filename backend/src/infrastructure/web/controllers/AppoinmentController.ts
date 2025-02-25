@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { SlotRepository } from "../../database/repositories/SlotRepository";
 import { createAppointmentRepository } from "../../database/repositories/AppoinmentRepository";
@@ -6,10 +7,17 @@ import { getAppointmentsByUserUseCase } from "../../../application/useCases/user
 import { cancelAppointmentByUserUsecase } from "../../../application/useCases/user/cancelAppointment";
 import { listAllAppointmentsForAdmin } from "../../../application/useCases/admin/listAllAppointmentsForAdmin";
 import { getAppointmentsByDoctorIdUseCase } from "../../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
+import { updateAppointmentUseCase } from "../../../application/useCases/doctor/updateAppointmentUseCase";
+import { updateSlotStatus } from "../../../application/useCases/user/updateSlotStatus";
+import rescheduleAppointmentUseCase from "../../../application/useCases/user/rescheduleAppointmentUseCase";
+import { updateAppointment } from "../../../application/useCases/user/updateAppointment";
+import { processRefund } from "../services/paymentService";
 
-type TimePeriod = "Morning" | "Afternoon" | "Evening";
+//type TimePeriod = "Morning" | "Afternoon" | "Evening";
+
 
 const slotRepository = new SlotRepository();
+const appointmentRepository = createAppointmentRepository();
 
 export const appoinmentController = {
     createNewAppoinment: async (req: Request, res: Response): Promise<void> => { 
@@ -19,10 +27,7 @@ export const appoinmentController = {
         const userId = req.body.userId as string;
         const date = req.body.date as string;
         const slotId = req.body.slotId as string;
-        const timeSlotId = req.body.timeSlotId as string;
-
-        console.log("APPOINMENT CONTR: ", req.body);
-        
+        const timeSlotId = req.body.timeSlotId as string;        
 
         const appointmentRepository = createAppointmentRepository();
         try {
@@ -50,9 +55,7 @@ export const appoinmentController = {
     }, 
 
     getAppointmentsByUser: async (req: Request, res: Response): Promise<void> => {
-        const { userId } = req.params;
-        console.log("CONTROLLER USERID: ", req.params);
-        
+        const { userId } = req.params;        
     
         const appointmentRepository = createAppointmentRepository();
         
@@ -69,11 +72,61 @@ export const appoinmentController = {
         const { appointmentId } = req.params;
         const appointmentRepository = createAppointmentRepository();
         try {
-            const updatedData = await cancelAppointmentByUserUsecase(appointmentId, appointmentRepository, slotRepository)
-            res.status(200).json({message: "Appointment cancelled Successfully.", updatedData})
+            const updatedAppointment = await cancelAppointmentByUserUsecase(appointmentId, appointmentRepository)
+            const updatedData = updatedAppointment.isCancelled;
+            const slotId = updatedAppointment.slotId;
+            const timeSlotId = updatedAppointment.timeSlotId;
+            const status = "Not Booked";
+            const amount = updatedAppointment.amount;
+            const paymentId = updatedAppointment.paymentId;
+
+            if (!paymentId) {
+                res.status(400).json({ error: "No payment information found for this appointment" });
+                return;
+            }
+
+            await updateSlotStatus(slotId as string, timeSlotId as string, status, slotRepository);
+
+            const refundAmount = amount ? amount - 50 : 0;
+            let refundStatus: "Failed" | "Pending" | "Processed" = "Failed";
+            let refundTransactionId = null;
+
+            if (refundAmount > 0) {
+                const refundResult = await processRefund(paymentId, refundAmount);
+                console.log('====================================');
+                console.log(refundResult);
+                console.log('====================================');
+                if (refundResult.success) {
+                    refundStatus = "Processed";
+                    refundTransactionId = refundResult.refundResponse?.id;
+                }
+            
+            }
+
+            await updateAppointment(appointmentId, {
+                refundAmount, refundStatus, refundTransactionId
+            }, appointmentRepository);
+            
+            res.status(200).json({message: "Appointment cancelled and refund initiated Successfully.", updatedData, refundTransactionId})
         } catch (error) {
             console.error("Error cancelling appointment:", error);            
             res.status(500).json({ error: "Failed to cancel appointment." });
+        }
+    },
+
+    rescheduleAppointmentByUser: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { appointmentId, date, slotId, timeSlotId, time, modeOfVisit } = req.body;
+
+            const updatedAppointment = await rescheduleAppointmentUseCase(
+              appointmentId, date, slotId, timeSlotId, time, modeOfVisit, appointmentRepository, slotRepository
+            );    
+           
+            res.status(200).json({ message: "Appointment rescheduled successfully", updatedAppointment });
+
+        } catch (error) {
+           console.error("Error cancelling appointment:", error);            
+           res.status(500).json({ error: "Failed to cancel appointment." }); 
         }
     },
 
@@ -116,8 +169,28 @@ export const appoinmentController = {
         }
 
 
-    }
+    },
     
+    updateAppointmentStatus: async (req: Request, res: Response) => {
+        const { appointmentId } = req.params;
+        const { isCompleted } = req.body;
+
+        try {
+            const updatedAppointment = await updateAppointmentUseCase(
+                appointmentRepository,
+                appointmentId,
+                isCompleted
+            )
+
+            res.status(200).json({
+              message: "Appointment status updated successfully",
+              updatedAppointment,
+            });
+        } catch (error: any) {
+            console.error("Error updating appointment status:", error);
+            res.status(500).json({ message: error.message || "Server error" });
+        }
+    }
 
 
 

@@ -1,4 +1,4 @@
-import mongoose, { Model, Document } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { IAppointment } from "../../../domain/entities/Appoinment";
 
 const appointmentSchema = new mongoose.Schema<IAppointment>({
@@ -54,6 +54,15 @@ const appointmentSchema = new mongoose.Schema<IAppointment>({
         type: Number, 
         default: 0 
     },
+    refundStatus: {
+      type: String,
+      enum: ["Pending", "Processed", "Failed"],
+      default: "Pending", 
+    },
+    refundTransactionId: {
+      type: String,
+      default: null, 
+    },
     videoCallEnabled: { 
         type: Boolean, 
         default: false 
@@ -65,14 +74,6 @@ const appointmentSchema = new mongoose.Schema<IAppointment>({
     isCompleted: { 
         type: Boolean, 
         default: false 
-    },
-    rating: { 
-        type: Number, 
-        min: 1, 
-        max: 5 
-    },
-    reviewMessage: { 
-        type: String 
     },
     videoCallId: { 
         type: String 

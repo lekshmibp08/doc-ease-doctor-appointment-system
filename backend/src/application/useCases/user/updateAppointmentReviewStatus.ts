@@ -1,6 +1,4 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
-import { IAppointment } from "../../../domain/entities/Appoinment";
-import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
 
 export const updateAppointmentReviewStatus = async (
     appointmentId: string,

@@ -7,7 +7,6 @@ export const getAppointmentsByIdUseCase = async (
 ): Promise<any> => {
   try {
     const appointment = await appointmentRepository.findAppointmentsByIdWithDocDetails(appointmentId);
-    console.log("USECASE APPOINMT: ", appointment?.doctorId);
     
     return appointment;
   } catch (error) {

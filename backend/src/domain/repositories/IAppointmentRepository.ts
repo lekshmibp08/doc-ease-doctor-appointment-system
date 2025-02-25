@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IAppointment } from "../entities/Appoinment";
 
 export interface IAppointmentRepository {
@@ -10,7 +11,7 @@ export interface IAppointmentRepository {
     findAppointmentsByIdWithDocDetails(appointmentId: string): Promise<IAppointment | null>;
 
     updateAppointment(appointmentId: string, updates: Partial<IAppointment>):
-        Promise<IAppointment | null>;
+        Promise<IAppointment>;
     
     getAppointmentsWithPagination: (skip: number, limit: number, searchQuery: any) =>
         Promise<IAppointment[]>;
@@ -19,6 +20,9 @@ export interface IAppointmentRepository {
 
     getAppointmentsByDoctorId: (filter: any, skip: number, limit: number) =>
         Promise<{ appointments: IAppointment[]; totalAppointments: number }>
+
+    findByDoctorIdAndDateRange: (doctorId: string, startDate: Date, endDate: Date) =>
+        Promise<IAppointment[]>
 
     
 }

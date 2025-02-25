@@ -27,10 +27,17 @@ export const createAppointmentRepository = (): IAppointmentRepository => ({
     updateAppointment: async (appointmentId: string, updates: Partial<IAppointment>) => {
         const updatedAppointment = await AppointmentModel.findByIdAndUpdate(
           appointmentId,
-          { $set: updates }, // Apply the updates passed to the function
-          { new: true } // Return the updated document
-        );
-    
+          { $set: updates }, 
+          { new: true } 
+        ).lean();
+        if (!updatedAppointment) {
+          throw new Error("Appointment not found");
+        }
+
+        console.log('====================================');
+        console.log(updatedAppointment);
+        console.log('====================================');
+
         return updatedAppointment;
     },
     getAppointmentsWithPagination: async (skip, limit, searchQuery) => {
@@ -124,6 +131,13 @@ export const createAppointmentRepository = (): IAppointmentRepository => ({
         const totalAppointments = await AppointmentModel.countDocuments(filter);
 
         return { appointments, totalAppointments };
+    },
+
+    findByDoctorIdAndDateRange: async (doctorId: string, startDate: Date, endDate: Date) => {
+        return AppointmentModel.find({
+            doctorId,
+            date: { $gte: startDate, $lte: endDate},
+        }).populate("userId")
     }
 
 

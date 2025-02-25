@@ -6,9 +6,7 @@ export const getAppointmentsByUserUseCase = async (
   appointmentRepository: IAppointmentRepository
 ): Promise<IAppointment[]> => {
   try {
-    const appointments = await appointmentRepository.getAppointmentsByUserId(userId);
-    console.log("USECASE APPOINMT: ", appointments);
-    
+    const appointments = await appointmentRepository.getAppointmentsByUserId(userId);    
     return appointments;
   } catch (error) {
     throw new Error("Failed to fetch appointments");
