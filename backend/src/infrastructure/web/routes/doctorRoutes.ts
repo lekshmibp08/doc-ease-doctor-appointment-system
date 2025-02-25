@@ -42,6 +42,8 @@ router.post("/generate-slots", authenticateUser(['doctor']), slotController.gene
 // Get all appointments for the doctor
 router.get("/appointments", authenticateUser(['doctor']), appoinmentController.getAppointmentsByDoctorId);
 
+router.put("/appointments/:appointmentId", authenticateUser(['doctor']), appoinmentController.updateAppointmentStatus);
+
 // Slot management by doctor
 router.put("/slots/update-status", authenticateUser(['doctor']), slotController.updateSlotStatus);
 
@@ -59,6 +61,7 @@ router.get('/prescriptions/:appointmentId', authenticateUser(['doctor']), prescr
 
 router.put('/prescriptions/:id', authenticateUser(['doctor']), prescriptionController.updatePrescription)
 
+router.post('/dashboard-stats', authenticateUser(['doctor']), doctorController.getDashboardData)
 
 
 

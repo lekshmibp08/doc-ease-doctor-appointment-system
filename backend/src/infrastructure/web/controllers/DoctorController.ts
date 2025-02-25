@@ -1,4 +1,6 @@
-import { Request, Response, NextFunction} from "express";
+ 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Request, Response} from "express";
 import { createOtpRepository } from "../../database/repositories/OtpRepository"; 
 import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
 import { sendOtpForSignup } from "../../../application/useCases/user/sendOtpForSignup";
@@ -7,6 +9,8 @@ import { loginDoctor } from "../../../application/useCases/doctor/loginDoctor";
 import { sendOtpForResetPassword } from "../../../application/useCases/user/sendOtpForResetPassword";
 import { verifyOtpAndResetDoctorPassword } from "../../../application/useCases/doctor/verifyOtpAndResetDoctorPassword";
 import { updateDocProfile } from "../../../application/useCases/doctor/updateDocProfile";
+import { createAppointmentRepository } from "../../database/repositories/AppoinmentRepository";
+import { GetDashboardStatsUseCase } from "../../../application/useCases/doctor/getDashboardStatsUseCase";
 
 export const doctorController = {
     // Send OTP during signup
@@ -58,8 +62,6 @@ export const doctorController = {
   login: async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
-
-      console.log("Req body Backend: ", email);
       
 
       if (!email || !password) {
@@ -117,7 +119,7 @@ export const doctorController = {
     const doctorRepository = createDoctorRepository();
 
     try {
-      const user = await verifyOtpAndResetDoctorPassword(
+      await verifyOtpAndResetDoctorPassword(
         otpRepository,
         doctorRepository,
         { email, newPassword, otp }
@@ -129,44 +131,51 @@ export const doctorController = {
   },
 
 
-    //Update Doctor profile
-    updateDoctorProfile: async (req: Request, res: Response): Promise<void> => {
-      console.log("ENTERED UPDATION");
+  //Update Doctor profile
+  updateDoctorProfile: async (req: Request, res: Response): Promise<void> => {
+    console.log("ENTERED UPDATION");
+    
+    try {
+      const { id } = req.params;      
+      const updatedData = req.body;      
       
-      try {
-        const { id } = req.params;
-        console.log("Body: ", req.body);
-        
-        const updatedData = req.body;
+      const doctorRepository = createDoctorRepository();
+      const updatedDocProfile = await updateDocProfile(doctorRepository, id, updatedData);        
 
-        console.log(updatedData);
-        
-        
-        const doctorRepository = createDoctorRepository();
-        const updatedDocProfile = await updateDocProfile(doctorRepository, id, updatedData);  
-        
-        console.log("CONTROLLER UPDATED DOC: ", updatedDocProfile);
-        
-  
-        res.status(200).json({message: "User Profile Updated Successfully..!", updatedDocProfile});
-        
-      } catch (error: any) {
-        console.error("Error in updateDoctorProfile:", error.message);
-
-        if (error.message === "Doctor not found") {
-          res.status(404).json({ message: "Doctor not found" });
-          return;
-        }
-    
-        if (error.message === "Current password is incorrect") {
-          res.status(400).json({ message: "Current password is incorrect" });
-          return;
-        }
-    
-        res.status(500).json({ message: "Failed to update profile", error: error.message }); 
-        return;     
+      res.status(200).json({message: "User Profile Updated Successfully..!", updatedDocProfile});
+      
+    } catch (error: any) {
+      console.error("Error in updateDoctorProfile:", error.message);
+      if (error.message === "Doctor not found") {
+        res.status(404).json({ message: "Doctor not found" });
+        return;
       }
-    },
+  
+      if (error.message === "Current password is incorrect") {
+        res.status(400).json({ message: "Current password is incorrect" });
+        return;
+      }
+  
+      res.status(500).json({ message: "Failed to update profile", error: error.message }); 
+      return;     
+    }
+  },
+    
+  getDashboardData: async (req: Request, res: Response): Promise<void> => {
+    const { doctorId, startDate, endDate } = req.body;
+    
+    try {
+      const appoinmentRepository = createAppointmentRepository();
+      const stats = await GetDashboardStatsUseCase(
+        appoinmentRepository, doctorId, new Date(startDate), new Date(endDate)
+      )
+      res.status(200).json(stats)
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error)
+    res.status(500).json({ message: "Failed to fetch dashboard stats" })
+    }
+  }
+    
 
 
 };
