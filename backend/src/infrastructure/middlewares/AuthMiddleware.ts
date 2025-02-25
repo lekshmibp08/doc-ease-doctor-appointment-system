@@ -58,7 +58,7 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
       }
 
       // Attach user information to the request object
-      req.user = { id: decoded.id, role: decoded.role };
+      //req.user = { id: decoded.id, role: decoded.role };
 
       next();
     } catch (error: any) {
