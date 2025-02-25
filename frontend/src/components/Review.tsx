@@ -47,7 +47,7 @@ const Review: React.FC<ReviewProps> = ({ doctorId }) => {
   return (
     <div className="mt-8">
       <h3 className="text-xl font-bold mb-4 text-center">Reviews</h3>
-      <div className=" bg-customBgLight1 shadow-lg rounded-lg p-6 mx-auto">
+      <div className="bg-customBgLight1 shadow-lg rounded-lg p-4 sm:p-6 mx-auto">
         {reviews.length === 0 ? (
           <p className="text-center text-gray-500">No reviews available.</p>
         ) : (
@@ -55,13 +55,13 @@ const Review: React.FC<ReviewProps> = ({ doctorId }) => {
             {/* Previous Button */}
             <button
               onClick={handlePrev}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-300 text-gray-700 hover:bg-gray-400 p-3 rounded-full shadow-md z-10 transition duration-200"
+              className="absolute left-0 sm:left-4 top-1/2 transform -translate-y-1/2 bg-gray-300 text-gray-700 hover:bg-gray-400 p-3 rounded-full shadow-md z-10"
             >
               <FaChevronLeft size={20} />
             </button>
 
             {/* Review Slider */}
-            <div className="overflow-hidden w-full max-w-lg">
+            <div className="overflow-hidden w-full max-w-sm sm:max-w-lg">
               <div
                 className="flex transition-transform duration-500 ease-in-out"
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -69,11 +69,11 @@ const Review: React.FC<ReviewProps> = ({ doctorId }) => {
                 {reviews.map((review, index) => (
                   <div
                     key={index}
-                    className="bg-white shadow-md p-4 rounded-lg w-full max-w-[31rem] mx-2 flex-shrink-0 text-center border border-gray-200"
+                    className="bg-white shadow-md p-4 rounded-lg w-full max-w-[18rem] sm:max-w-[31rem] mx-2 flex-shrink-0 text-center"
                   >
                     <p className="font-bold text-lg">{review.userId.fullName}</p>
                     <p className="text-yellow-500 font-semibold mt-1">{review.rating} / 5 ★</p>
-                    <p className="text-sm text-gray-600 mt-2 italic">"{review.comment}"</p>
+                    <p className="text-sm text-gray-600 mt-2 italic">{review.comment}</p>
                   </div>
                 ))}
               </div>
