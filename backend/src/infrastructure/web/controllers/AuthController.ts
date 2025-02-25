@@ -8,11 +8,21 @@ export const authController = {
   logout: (req: Request, res: Response): void => {
     try {
       console.log("BACKEND LOGOUT");
+      const { role } = req.body;
+      let cookieName = "";
+      if (role === "user") {
+        cookieName = "user_refresh_token";
+      } else if (role === "doctor") {
+        cookieName = "doctor_refresh_token";
+      } else {
+        cookieName = "admin_refresh_token";
+      } 
       
       // Clear the auth token cookie
-      res.clearCookie("refresh_token", { httpOnly: true });
+      res.clearCookie(cookieName, { httpOnly: true });
       res.status(200).json({ message: "Logout successful" });
     } catch (error: any) {
+      console.error("Logout error:", error);
       res.status(500).json({ message: "Error during logout", error: error.message });
     }
   },
@@ -106,6 +116,7 @@ export const authController = {
   
       return res.status(200).json({ token: newAccessToken });
     } catch (error) {
+      console.error("Logout error:", error);
       return res.status(403).json({ message: "Invalid or expired refresh token" });
     }
   },

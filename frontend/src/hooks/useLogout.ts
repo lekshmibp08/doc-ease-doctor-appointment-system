@@ -6,15 +6,17 @@ import { useLocation } from "react-router-dom";
 import axios from "../services/axiosConfig";
 
 // Standalone logout function
-export const handleLogout = (basePath: any) => {
+export const handleLogout = async (basePath: any) => {
   if (basePath === "admin") {
+    await axios.post("/api/admin/logout", { role: "admin" }, { withCredentials: true });
     store.dispatch(clearAdminToken());
-    window.location.href = "/admin/login"; // Replace with navigate if required
+    window.location.href = "/admin/login"; 
   } else if (basePath === "doctor") {
+    await axios.post("/api/doctors/logout", { role: "doctor" }, { withCredentials: true });
     store.dispatch(clearDoctorToken());
     window.location.href = "/doctor/login";
   } else {
-    // Default case for "user" or any other undefined base path
+    await axios.post("/api/users/logout", { role: "user" }, { withCredentials: true });
     store.dispatch(clearUserToken());
     window.location.href = "/user/login";
   }
@@ -26,7 +28,6 @@ export const useLogout = () => {
 
   const logout = async () => {
     try {
-      await axios.post("/api/auth/logout");
       const basePath = location.pathname.split("/")[1];
       handleLogout(basePath);
     } catch (error) {
