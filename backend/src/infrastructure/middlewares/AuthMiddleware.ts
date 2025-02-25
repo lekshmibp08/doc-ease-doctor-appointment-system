@@ -11,6 +11,7 @@ interface DecodedToken {
   exp: number;
 }
 
+
 export const authenticateUser = (allowedRoles: string[] = []): RequestHandler => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers.authorization;
@@ -21,8 +22,6 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
     }
     
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    console.log(token);
-    //const token = authHeader.split(" ")[1];
     if (!token) {
       res.status(401).json({ message: "Authentication token is missing" });
       return;
@@ -59,7 +58,7 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
       }
 
       // Attach user information to the request object
-      //req.user = { id: decoded.id, role: decoded.role };
+      req.user = { id: decoded.id, role: decoded.role };
 
       next();
     } catch (error: any) {

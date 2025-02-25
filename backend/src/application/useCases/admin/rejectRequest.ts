@@ -9,7 +9,10 @@ export const rejectRequest = async (doctorRepository: IDoctorRepository, id: str
     }
 
     const updatedDoctor = await doctorRepository.updateDoctor(id, { isRejected: true})  
-    const email = updatedDoctor?.email!     // ! non-null assertion operetor
+    const email = updatedDoctor?.email;
+    if (!email) {
+        throw new Error("Doctor's email is missing. Cannot send email.");
+    }
 
     await sendEmail(
         email,

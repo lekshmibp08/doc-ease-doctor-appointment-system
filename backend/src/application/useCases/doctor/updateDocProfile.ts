@@ -1,5 +1,4 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
-import { Doctor } from "../../../domain/entities/Doctor";
 import bcrypt from "bcrypt";
 
 export const updateDocProfile = async (

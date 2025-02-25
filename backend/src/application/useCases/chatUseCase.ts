@@ -13,16 +13,13 @@ export class ChatUsecase {
     this.messageRepository = new MessageRepository();
   }
 
-  // Get or create a chat
   async getOrCreateChat(userId: string, doctorId: string) {
     let chat: IChat | null = await this.chatRepository.findChatByParticipants(userId, doctorId);
 
-    // If no chat exists, create a new one
     if (!chat) {
       chat = await this.chatRepository.createChat(userId, doctorId);
     }
 
-    // Fetch messages for this chat
     const messages = await this.messageRepository.getMessagesByChatId(chat._id as string);
     return { chat, messages };
   }
@@ -37,7 +34,6 @@ export class ChatUsecase {
     return chats
   }
 
-  // Send a message in an existing chat
   async sendMessage(
     chatId: string,
     senderId: string,
@@ -46,10 +42,8 @@ export class ChatUsecase {
     imageUrl: string
   ) {
     const newMessage: IMessage = await this.messageRepository.createMessage(
-      chatId, senderId, receiverId, text, imageUrl);
-    console.log('====================================');
-    console.log("New msg Created :", newMessage);
-    console.log('====================================');
+      chatId, senderId, receiverId, text, imageUrl
+    );
 
     await this.chatRepository.updateChatLastMessage(chatId, newMessage._id as string);
     

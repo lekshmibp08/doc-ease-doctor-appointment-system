@@ -16,13 +16,10 @@ export const verifyOtpAndRegisterDoc = async (
     throw new Error("Invalid or expired OTP");
   }
 
-  // Delete OTP after successful verification
   await otpRepository.deleteOtp(email);
 
-  // Hash the password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Create a new user
   const doctor: Doctor = { fullName, email, mobileNumber, registerNumber, password: hashedPassword, role: "doctor", isApproved: false, isBlocked: false };
   return await userRepository.create(doctor);
 };

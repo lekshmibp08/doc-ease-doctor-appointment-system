@@ -9,7 +9,10 @@ export const approveDoctor = async (doctorRepository: IDoctorRepository, id: str
     }
 
     const updatedDoctor = await doctorRepository.updateDoctor(id, { isApproved: true})  
-    const email = updatedDoctor?.email!     // ! non-null assertion operetor
+    const email = updatedDoctor?.email;
+    if (!email) {
+        throw new Error("Doctor's email is missing. Cannot send email.");
+    }
 
     if(updatedDoctor?.isApproved) {
         await sendEmail(

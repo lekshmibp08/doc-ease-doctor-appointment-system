@@ -7,7 +7,6 @@ export const authController = {
   // Logout for all roles (User, Doctor, Admin)
   logout: (req: Request, res: Response): void => {
     try {
-      console.log("BACKEND LOGOUT");
       const { role } = req.body;
       let cookieName = "";
       if (role === "user") {
@@ -39,7 +38,6 @@ export const authController = {
 
       const { token, refreshToken, role: userRole, user } = await googleOAuthLogin(fullname, email, profilePicture, role);   
 
-      //console.log("USER USER AUTH: ", user);
       const userData = user._doc;
 
       if(role === 'user') {
@@ -74,10 +72,7 @@ export const authController = {
 
     //const { refresh_token } = req.cookies;
     const { role } = req.body;
-    console.log(req.body);
     
-    console.log("ROLE: ", role);
-
       // Get the refresh token for the appropriate role from the cookies
       let refresh_token;
       if (role === 'user') {
@@ -90,16 +85,12 @@ export const authController = {
         return res.status(400).json({ message: "Invalid role" });
       }
     
-
-  
     if (!refresh_token) {
       return res.status(403).json({ message: "Refresh token not found" });
     }
   
     try {
-      const decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET as string) as jwt.JwtPayload;
-      console.log("DECODED FOR REFRESH: ", decoded);
-      
+      const decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET as string) as jwt.JwtPayload;      
   
       // Use decoded token properties directly
       const { id, email, role } = decoded;
@@ -120,8 +111,4 @@ export const authController = {
       return res.status(403).json({ message: "Invalid or expired refresh token" });
     }
   },
-
-
-  
-
 };

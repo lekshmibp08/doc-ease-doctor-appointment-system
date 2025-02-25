@@ -10,12 +10,12 @@ export const updateAppointmentReviewStatus = async (
     if(!appointment) {
         throw new Error("Appointment not Found");
     }
-    const updates = { isReviewed : true };
+    const updates = { isReviewed : isReviewed };
     const updatedAppointment = await appointmentRepository.updateAppointment(appointmentId, updates);
 
     return updatedAppointment?.isReviewed;
     
-  } catch (error) {
-    throw new Error("Failed to fetch appointments");
+  } catch (error: any) {
+    throw new Error(error.message || "Failed to fetch appointments");
   }
 };

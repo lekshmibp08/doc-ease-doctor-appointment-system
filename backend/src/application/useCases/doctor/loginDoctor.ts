@@ -1,4 +1,4 @@
-import { IUserRepository } from "../../../domain/repositories/IUserRepository";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";

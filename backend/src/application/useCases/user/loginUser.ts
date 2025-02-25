@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -36,11 +37,6 @@ export const loginUser = async (
     process.env.JWT_REFRESH_SECRET as string,
     { expiresIn: "7d" } // Long-lived refresh token
   );
-
-  console.log(token);
-  console.log(refreshToken);
-  
-
 
   return { token, refreshToken, role: user.role, user: rest };
 };

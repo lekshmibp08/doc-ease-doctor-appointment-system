@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IAppointment } from "../entities/Appoinment";
 
 export interface IAppointmentRepository {

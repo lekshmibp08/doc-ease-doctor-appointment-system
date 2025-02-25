@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { createDoctorRepository } from "../../../infrastructure/database/repositories/DoctorRepository";
@@ -51,7 +52,7 @@ export const googleOAuthLogin = async (
     }
   }
 
-  const { password: _, ...rest } = entity
+  const { password: _password, ...rest } = entity;
 
   console.log("REST: ", rest);
 

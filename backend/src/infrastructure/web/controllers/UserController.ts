@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response} from "express";
 import { sendOtpForSignup } from "../../../application/useCases/user/sendOtpForSignup";
 import { verifyOtpAndRegister } from "../../../application/useCases/user/verifyOtpAndRegisterUser";
@@ -71,7 +70,6 @@ export const userController = {
       const { token, refreshToken, role, user  } = await loginUser(userRepository, { email, password });
 
       const userData = user._doc;
-      
 
       // Store the refresh token in an HTTP-only cookie
       res.cookie("user_refresh_token", refreshToken, {
@@ -80,9 +78,6 @@ export const userController = {
         sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
-
-      console.log("Access Token:", token);
-      console.log("Refresh Token Set in Cookie");
 
       res.status(200).json({ message: "Login successful", token, role, userData });
     
@@ -165,9 +160,7 @@ export const userController = {
   sendOtpForForgetPassword: async (req: Request, res: Response): Promise<void> => {
 
     const {email} = req.body;
-    
-    console.log(email);
-    
+        
     const otpRepository = createOtpRepository();
     const userRepository = createUserRepository();
 
@@ -216,6 +209,4 @@ export const userController = {
     }
   },
   
-
-
 };

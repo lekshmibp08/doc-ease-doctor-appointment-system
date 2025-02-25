@@ -8,7 +8,7 @@ export const getAppointmentsByUserUseCase = async (
   try {
     const appointments = await appointmentRepository.getAppointmentsByUserId(userId);    
     return appointments;
-  } catch (error) {
-    throw new Error("Failed to fetch appointments");
+  } catch (error: any) {
+    throw new Error(error.message || "Failed to fetch appointments");
   }
 };

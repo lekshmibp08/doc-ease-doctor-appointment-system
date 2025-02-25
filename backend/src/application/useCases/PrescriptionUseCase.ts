@@ -23,11 +23,6 @@ class PrescriptionUseCase {
     async UpdatePrescription(id: string, prescriptionData: Partial<IPrescription>): Promise<IPrescription | null> {
         return this.prescriptionRepository.update(id, prescriptionData);
     }
-
-   
-
-
-
   
 }
 

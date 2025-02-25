@@ -17,8 +17,7 @@ export const sendOtpForSignup = async (
   };
 
   await otpRepository.saveOtp(otpEntity);
-
-
+  
   await sendEmail(
     email,
     "Your OTP for Signup Verification",

@@ -1,9 +1,4 @@
 import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
-import { Slot } from "../../../domain/entities/Slot";
-import { generateWholeDaySlots } from "../../helper/slotUtils";
-import { filterSlotsByPeriod } from "../../helper/slotFilter";
-
-type TimePeriod = "Morning" | "Afternoon" | "Evening";
 
 export const fetchSlotUseCase  = async (
     slotRepository: ISlotRepository,

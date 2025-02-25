@@ -32,7 +32,7 @@ export const paymentService = {
 export const processRefund = async (paymentId: string, refundAmount: number) => {
     try {
         const refundResponse = await razorpay.payments.refund(paymentId, {
-            amount: refundAmount * 100, // Convert to paise
+            amount: refundAmount * 100, 
             speed: "normal",
         });
         return { success: true, refundResponse };

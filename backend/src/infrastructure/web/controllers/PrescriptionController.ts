@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express"
 import PrescriptionUseCase from "../../../application/useCases/PrescriptionUseCase"
 import { getAppointmentsByIdUseCase } from "../../../application/useCases/user/getAppointmentByIdUseCase";

@@ -1,5 +1,4 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
-import { IAppointment } from "../../../domain/entities/Appoinment";
 
 export const getAppointmentsByIdUseCase = async (
   appointmentId: string,
@@ -9,7 +8,7 @@ export const getAppointmentsByIdUseCase = async (
     const appointment = await appointmentRepository.findAppointmentsByIdWithDocDetails(appointmentId);
     
     return appointment;
-  } catch (error) {
-    throw new Error("Failed to fetch appointments");
+  } catch (error: any) {
+    throw new Error(error.message || "Failed to fetch appointments");
   }
 };

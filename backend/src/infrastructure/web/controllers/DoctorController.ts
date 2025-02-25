@@ -1,5 +1,5 @@
  
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { Request, Response} from "express";
 import { createOtpRepository } from "../../database/repositories/OtpRepository"; 
 import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
@@ -63,7 +63,6 @@ export const doctorController = {
     try {
       const { email, password } = req.body;
       
-
       if (!email || !password) {
         res.status(400).json({ message: "Email and Password are required" });
         return;
@@ -93,9 +92,7 @@ export const doctorController = {
   //Send OTP for forget Password
   sendOtpForForgetPassword: async (req: Request, res: Response): Promise<void> => {
     const {email} = req.body;
-    
-    console.log(email);
-    
+        
     const otpRepository = createOtpRepository();
     const doctorRepository = createDoctorRepository();
 
@@ -133,7 +130,6 @@ export const doctorController = {
 
   //Update Doctor profile
   updateDoctorProfile: async (req: Request, res: Response): Promise<void> => {
-    console.log("ENTERED UPDATION");
     
     try {
       const { id } = req.params;      
@@ -172,10 +168,7 @@ export const doctorController = {
       res.status(200).json(stats)
     } catch (error) {
       console.error("Error fetching dashboard stats:", error)
-    res.status(500).json({ message: "Failed to fetch dashboard stats" })
+      res.status(500).json({ message: "Failed to fetch dashboard stats" })
     }
   }
-    
-
-
 };

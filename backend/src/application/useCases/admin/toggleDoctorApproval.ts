@@ -10,7 +10,12 @@ export const toggleApproval = async (doctorRepository: IDoctorRepository, id: st
 
     const updatedStatus = !doctor.isApproved;    
     const updatedDoctor = await doctorRepository.updateDoctor(id, { isApproved: updatedStatus})  
-    const email = updatedDoctor?.email!     // ! non-null assertion operetor
+    const email = updatedDoctor?.email;
+    
+    if (!email) {
+        throw new Error("Doctor's email is missing. Cannot send email.");
+    }
+
 
     if(!updatedDoctor?.isApproved) {
         console.log(            `Dear Practitioner,\n\nYour application has been rejected for the following reason:\n${reason}\n\nPlease re-apply after resolving the issues.\n\nBest regards,\nAdmin Team`,

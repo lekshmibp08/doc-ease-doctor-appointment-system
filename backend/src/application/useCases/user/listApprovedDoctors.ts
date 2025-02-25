@@ -17,7 +17,6 @@ export const listApprovedDoctors = async (
     sort?: string;
   }
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const query: any = { isBlocked: false, isApproved: true };
 
   // Apply search on fullName and specialization
@@ -77,7 +76,7 @@ export const listApprovedDoctors = async (
   }
 
   // Define sorting
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const sortOptions: any = {};
   if (criteria.sort === "experience") sortOptions.experience = -1;
   else if (criteria.sort === "fees") sortOptions.fees = 1;

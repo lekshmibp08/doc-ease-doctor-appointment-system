@@ -23,10 +23,6 @@ export const slotController = {
   },
 
   async fetchSlot (req: Request, res: Response): Promise<void> {        
-    //const doctorId = req.query.doctorId as string;
-    //const date = req.query.date as string;
-    //const period = req.query.timePeriod as string;
-    //const timePeriod = period as TimePeriod;
 
     try {
       console.log("Received params:", req.query); 
@@ -37,34 +33,6 @@ export const slotController = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
-  //fetchSlot: async (req: Request, res: Response): Promise<void> => {        
-  //  const doctorId = req.query.doctorId as string;
-  //  const date = req.query.date as string;
-  //  const period = req.query.timePeriod as string;
-  //  const timePeriod = period as TimePeriod;
-//
-  //  try {
-  //    console.log("Received params:", req.query); 
-  //    const { filteredSlots, slotDataAll, slotId } = await fetchOrCreateSlotUseCase(slotRepository, doctorId, date, timePeriod);
-  //    res.status(200).json({ slotDataFiltered: filteredSlots, slotDataAll, slotId });
-  //  } catch (error) {
-  //    console.error("Error:", error);
-  //    res.status(500).json({ message: "Internal server error" });
-  //  }
-  //},
-
-  // generateSlots: async (req: Request, res: Response): Promise<void> => {        
-  //   const { doctorId, date, startTime, endTime } = req.body;
-// 
-  //   try {
-  //     console.log("Received params:", req.body); 
-  //     const { slotDataAll } = await generateSlotUseCase(slotRepository, doctorId, date, startTime, endTime);
-  //     res.status(200).json({ message: "Slots generated successfully.", slotDataAll });
-  //   } catch (error: any) {
-  //     console.error("Error generating slots:", error);
-  //     res.status(500).json({ message: "An error occurred while generating slots.", error: error.message });
-  //   }
-  // },
 
   updateSlotStatus: async (req: Request, res: Response): Promise<void> => {
     const { slotId, timeSlotId, status } = req.body;
@@ -81,12 +49,9 @@ export const slotController = {
 
   fetchSlotsForUser: async (req: Request, res: Response): Promise<void> => {
     const { doctorId } = req.params;
-    const date = req.query.date as string;
-    console.log("DOC ID AND DATE:", doctorId, date);
-    
+    const date = req.query.date as string;    
     try {
       const existingSlot = await fetchSlotUseCase(slotRepository, doctorId, date);
-      console.log("CONTROLLER SLOT:", existingSlot);
       res.status(200).json({ timeSlots: existingSlot?.timeSlots, slotId: existingSlot?._id });
     } catch (error) {
       console.error("Error:", error);

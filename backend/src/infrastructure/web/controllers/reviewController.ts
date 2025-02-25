@@ -51,10 +51,7 @@ export const reviewController = {
   getReviewsByDoctorId: async (req: Request, res: Response) => {
     try {
       const { doctorId } = req.params
-      console.log('====================================');
-      console.log(req.params);
-      console.log('====================================');
-
+     
       const reviews = await reviewUseCase.getReviewsByDoctorId(doctorId)
       res.status(200).json({ success: true, reviews })
     } catch (error) {

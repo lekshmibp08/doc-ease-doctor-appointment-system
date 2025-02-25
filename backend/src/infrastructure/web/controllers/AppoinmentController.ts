@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { Request, Response } from "express";
 import { SlotRepository } from "../../database/repositories/SlotRepository";
 import { createAppointmentRepository } from "../../database/repositories/AppoinmentRepository";
@@ -12,8 +12,6 @@ import { updateSlotStatus } from "../../../application/useCases/user/updateSlotS
 import rescheduleAppointmentUseCase from "../../../application/useCases/user/rescheduleAppointmentUseCase";
 import { updateAppointment } from "../../../application/useCases/user/updateAppointment";
 import { processRefund } from "../services/paymentService";
-
-//type TimePeriod = "Morning" | "Afternoon" | "Evening";
 
 
 const slotRepository = new SlotRepository();
@@ -93,9 +91,7 @@ export const appoinmentController = {
 
             if (refundAmount > 0) {
                 const refundResult = await processRefund(paymentId, refundAmount);
-                console.log('====================================');
-                console.log(refundResult);
-                console.log('====================================');
+                
                 if (refundResult.success) {
                     refundStatus = "Processed";
                     refundTransactionId = refundResult.refundResponse?.id;
@@ -140,7 +136,9 @@ export const appoinmentController = {
             
             const appointmentRepository = createAppointmentRepository();
     
-            const { appointments, totalAppointments, totalPages } = await listAllAppointmentsForAdmin(appointmentRepository, pageNumber, pageSize, searchQuery);
+            const { appointments, totalAppointments, totalPages } = await listAllAppointmentsForAdmin(
+                appointmentRepository, pageNumber, pageSize, searchQuery
+            );
             res.status(200).json({ appointments, totalAppointments, totalPages, currentPage: pageNumber });            
         } catch (error: any) {
             res.status(500).json({ message: "Failed to fetch users", error: error.message });
@@ -191,8 +189,4 @@ export const appoinmentController = {
             res.status(500).json({ message: error.message || "Server error" });
         }
     }
-
-
-
-
 }

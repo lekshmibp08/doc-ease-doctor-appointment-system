@@ -1,5 +1,5 @@
  
-import { Request, Response, NextFunction} from "express";
+import { Request, Response } from "express";
 import { createUserRepository } from "../../database/repositories/UserRepository";
 import { loginAdmin } from "../../../application/useCases/admin/loginAdmin";
 import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
@@ -15,7 +15,7 @@ import { AdminDashboardRepository } from "../../database/repositories/AdminDashb
 
 export const adminController = {
   // Admin Login
-  login: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  login: async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
 
@@ -39,8 +39,7 @@ export const adminController = {
       
       res.status(200).json({ message: "Login successful", token, refreshToken, role });
     } catch (error: any) {
-      next(error);
-      //res.status(401).json({ message: error.message });
+      res.status(401).json({ message: error.message });
     }
   },
 
@@ -106,7 +105,6 @@ export const adminController = {
     try {
       const { id } = req.params;
       
-      
       const doctorRepository = createDoctorRepository();
 
       await approveDoctor(doctorRepository, id);
@@ -123,10 +121,7 @@ export const adminController = {
   rejectDoctor: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const reason = req.body.reason;
-
-      console.log(reason);
-      
+      const reason = req.body.reason;      
       
       const doctorRepository = createDoctorRepository();
 
@@ -135,9 +130,7 @@ export const adminController = {
       res.status(200).json(result);
       
     } catch (error: any) {
-      console.error('Error toggling doctor block status:', error.message);
       res.status(500).json({ message: error.message || 'Internal server error' });
-
     }
   },
 
@@ -152,9 +145,7 @@ export const adminController = {
       res.status(200).json(result);
       
     } catch (error: any) {
-      console.error('Error toggling doctor block status:', error.message);
       res.status(500).json({ message: error.message || 'Internal server error' });
-
     }
   },
 
@@ -170,9 +161,7 @@ export const adminController = {
       res.status(200).json(result);
       
     } catch (error: any) {
-      console.error('Error toggling user block status:', error.message);
       res.status(500).json({ message: error.message || 'Internal server error' });
-
     }
   },
 
@@ -193,9 +182,5 @@ export const adminController = {
       res.status(500).json({ message: "Failed to fetch admin dashboard stats" })
     }
   }
-
-
-
-
 
 };
