@@ -1,27 +1,17 @@
-import type React from "react"
-import { useRef, useState, useEffect } from "react"
-import { useReactToPrint } from "react-to-print"
+import { X } from "lucide-react";
+import React, { useRef, useState, useEffect } from "react"
+import { Prescription } from "../types/interfaces";
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 import axios from "../services/axiosConfig"
 import { format } from "date-fns"
+
 
 interface PrescriptionViewProps {
   appointmentId: string
   onClose: () => void
 }
 
-interface Prescription {
-  patientName: string
-  age: string
-  diagnosis: string
-  medications: Array<{
-    name: string
-    dosage: string
-    frequency: string
-    duration: string
-  }>
-  advice: string
-  followUpDate: string
-}
 
 interface Doctor {
   fullName: string
@@ -35,17 +25,22 @@ interface Doctor {
 const PrescriptionView: React.FC<PrescriptionViewProps> = ({ appointmentId, onClose }) => {
   const [prescription, setPrescription] = useState<Prescription | null>(null)
   const [doctor, setDoctor] = useState<Doctor | null>(null)
-  const componentRef = useRef<HTMLDivElement>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
+
 
   useEffect(() => {
     const fetchPrescription = async () => {
       try {
+        setIsLoading(true)
         const response = await axios.get(`/api/users/prescriptions/${appointmentId}`)
-        console.log("Prescription Data:", response.data)
         setPrescription(response.data.prescription)
         setDoctor(response.data.doctor)
       } catch (error) {
         console.error("Error fetching prescription:", error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -53,36 +48,48 @@ const PrescriptionView: React.FC<PrescriptionViewProps> = ({ appointmentId, onCl
   }, [appointmentId])
 
 
+const generatePDF = async () => {
+  if (!contentRef.current) return;
 
-useEffect(() => {
-  console.log("Component Mounted, Ref:", componentRef.current);
+  try {
+    setIsGeneratingPDF(true);
 
-  // Check ref again when prescription is loaded
-  if (prescription) {
-    console.log("Prescription Loaded, Component Ref:", componentRef.current);
-  }
-}, [prescription]);
-
-const handlePrint = useReactToPrint({
-  content: () => {
-    console.log("Component Ref Before Print:", componentRef.current);
-    return componentRef.current || null;
-  },
-  documentTitle: `Prescription_${appointmentId}`,
-  onBeforeGetContent: () => {
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        console.log("Component Ref (Delayed Check):", componentRef.current);
-        resolve(); 
-      }, 500); 
+    // Capture high-quality canvas
+    const canvas = await html2canvas(contentRef.current, {
+      scale: 2, // Higher scale for better text clarity
+      useCORS: true,
+      backgroundColor: '#ffffff',
     });
-  },
-  onPrintError: (error: any) => console.error("Print error:", error),
-});
-  
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    // PDF Dimensions
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    // Maintain aspect ratio
+    const imgWidth = pdfWidth - 20; // Keeping margin
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    // Ensure content fits page
+    if (imgHeight > pdfHeight - 20) {
+      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, pdfHeight - 20);
+    } else {
+      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+    }
+
+    pdf.save(`Prescription-${appointmentId}.pdf`);
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    alert('Error generating PDF. Please try again.');
+  } finally {
+    setIsGeneratingPDF(false);
+  }
+};
 
 
-  if (!prescription || !doctor) {
+  if (isLoading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-xl">
@@ -92,10 +99,35 @@ const handlePrint = useReactToPrint({
     )
   }
 
+  if (!prescription || !doctor) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="relative bg-white p-6 rounded-lg shadow-xl w-96 text-center">
+          <button 
+            onClick={onClose} 
+            className="absolute top-3 right-3 text-red-500 hover:text-gray-700 
+                       focus:outline-none focus:ring-2 focus:ring-gray-300"
+            disabled={isGeneratingPDF}
+          >
+            <X size={24} />
+          </button>
+
+          <p className="text-xl font-semibold text-gray-800">
+            No prescription data available.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start overflow-y-auto p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl my-8">
-        <div ref={componentRef} className="p-8">
+        {/* Printable content */}
+        <div 
+          ref={contentRef}
+          className="p-8"
+        >
           {/* Doctor's Information Header */}
           <header className="border-b-2 border-gray-300 pb-4 mb-6">
             <h1 className="text-3xl font-bold text-blue-800">{doctor.fullName}</h1>
@@ -175,11 +207,21 @@ const handlePrint = useReactToPrint({
             <p>This prescription is electronically generated and is valid without a signature.</p>
           </footer>
         </div>
-        <div className="flex justify-end p-4 bg-gray-100 rounded-b-lg">
-          <button onClick={handlePrint} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 mr-2">
-            Download PDF
+
+        {/* Controls - will not be printed */}
+        <div className="flex justify-end p-4 bg-gray-100 rounded-b-lg print:hidden">
+          <button 
+            onClick={generatePDF} 
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 mr-2 disabled:bg-blue-300"
+            disabled={isGeneratingPDF}
+          >
+             {isGeneratingPDF ? 'Generating PDF...' : 'Download PDF'}
           </button>
-          <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400">
+          <button 
+            onClick={onClose} 
+            className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 disabled:bg-gray-200"
+            disabled={isGeneratingPDF}
+          >
             Close
           </button>
         </div>
@@ -189,4 +231,3 @@ const handlePrint = useReactToPrint({
 }
 
 export default PrescriptionView
-
