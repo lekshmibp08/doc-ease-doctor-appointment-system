@@ -16,6 +16,7 @@ interface IDoctorDocument extends Document, Doctor {
     latitude: number;
     longitude: number;
   } | null; 
+  locationName: string 
   addressLine: string;
   isRejected: boolean;
   createdAt: Date;
@@ -109,11 +110,16 @@ const DoctorSchema = new Schema<IDoctorDocument>(
         type: Number,
       },
     },
+    locationName: {
+      type: String,
+      default: "",
+    },
 
   },
   {
     timestamps: true,
   }
 );
+
 
 export default mongoose.model<IDoctorDocument>("Doctor", DoctorSchema);

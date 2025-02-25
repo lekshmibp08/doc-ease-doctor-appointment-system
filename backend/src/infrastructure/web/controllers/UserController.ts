@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction} from "express";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Request, Response} from "express";
 import { sendOtpForSignup } from "../../../application/useCases/user/sendOtpForSignup";
 import { verifyOtpAndRegister } from "../../../application/useCases/user/verifyOtpAndRegisterUser";
 import { createOtpRepository } from "../../database/repositories/OtpRepository";
@@ -86,9 +87,6 @@ export const userController = {
       res.status(200).json({ message: "Login successful", token, role, userData });
     
     } catch (error: any) {
-      console.log('====================================');
-      console.log(error);
-      console.log('====================================');
       res.status(401).json({ message: error.message });
     }
   },
@@ -96,7 +94,7 @@ export const userController = {
   // List all approved doctors
   getDoctors: async (req: Request, res: Response) => {
     try {
-      const { page = 1, size = 8, search, location, gender, experience, availability, fees, department, sort } = req.query;      
+      const { page = 1, size, search, locationName, latitude, longitude, gender, experience, availability, fees, department, sort } = req.query;      
   
       const doctorRepository = createDoctorRepository();
 
@@ -104,7 +102,9 @@ export const userController = {
         page: Number(page),
         size: Number(size),
         search: search as string,
-        location: location as string,
+        locationName: locationName as string,
+        latitude: Number(latitude),
+        longitude: Number(longitude),
         gender: gender as string,
         experience: experience as string,
         availability: availability as string,
@@ -124,7 +124,6 @@ export const userController = {
     try {
       const doctorRepository = createDoctorRepository();
       const specializations = await fetchSpecializationsUseCase(doctorRepository)
-      console.log("[specializations controller]: -----> ", specializations);  
       res.json({ specializations });
       
     } catch (error: any) {
@@ -193,7 +192,7 @@ export const userController = {
     const userRepository = createUserRepository();
 
     try {
-      const user = await verifyOtpAndResetPassword(
+      await verifyOtpAndResetPassword(
         otpRepository,
         userRepository,
         { email, newPassword, otp }

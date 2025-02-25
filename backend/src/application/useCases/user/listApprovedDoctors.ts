@@ -6,7 +6,9 @@ export const listApprovedDoctors = async (
     page: number;
     size: number;
     search?: string;
-    location?: string;
+    locationName?: string;
+    latitude: number;
+    longitude: number;
     gender?: string;
     experience?: string;
     availability?: string;
@@ -15,6 +17,7 @@ export const listApprovedDoctors = async (
     sort?: string;
   }
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const query: any = { isBlocked: false, isApproved: true };
 
   // Apply search on fullName and specialization
@@ -25,8 +28,28 @@ export const listApprovedDoctors = async (
     ];
   }
 
-  // Apply filters
-  if (criteria.location) query.location = criteria.location;
+  // Apply Location filters
+  if (criteria.locationName) {
+    const locationParts = criteria.locationName.split(",").map((part) => part.trim());
+    query.$or = locationParts.map((part) => ({ locationName: { $regex: new RegExp(part, "i") } }));
+  }
+  
+  if (criteria.latitude !== 0 && criteria.longitude !== 0) {
+    query.$expr = {
+      $lt: [
+        {
+          $sqrt: {
+            $add: [
+              { $pow: [{ $subtract: [criteria.latitude, "$locationCoordinates.latitude"] }, 2] },
+              { $pow: [{ $subtract: [criteria.longitude, "$locationCoordinates.longitude"] }, 2] }
+            ]
+          }
+        },
+        0.05 
+      ]
+    };
+  }
+
   if (criteria.gender) query.gender = criteria.gender;
 
   // Parse experience filter
@@ -54,6 +77,7 @@ export const listApprovedDoctors = async (
   }
 
   // Define sorting
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sortOptions: any = {};
   if (criteria.sort === "experience") sortOptions.experience = -1;
   else if (criteria.sort === "fees") sortOptions.fees = 1;
@@ -61,6 +85,7 @@ export const listApprovedDoctors = async (
   // Pagination
   const skip = (criteria.page - 1) * criteria.size;
   const limit = criteria.size;
+
 
   // Fetch doctors using the repository
   const { doctors, totalDocs } = await doctorRepository.getDoctorsByCriteria(
