@@ -1,26 +1,28 @@
+ 
 import { Request, Response, NextFunction} from "express";
 import { createUserRepository } from "../../database/repositories/UserRepository";
 import { loginAdmin } from "../../../application/useCases/admin/loginAdmin";
 import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
 import { listDoctors } from "../../../application/useCases/admin/listDoctors";
 import { listUsers } from "../../../application/useCases/admin/listUsers";
-import { toggleApproval } from "../../../application/useCases/admin/toggleDoctorApproval";
 import { toggleBlockUser } from "../../../application/useCases/admin/toggleBlockUser";
 import { toggleBlockDoctor } from "../../../application/useCases/admin/toggleBlockDoctor";
 import { fetchPendingDoctors } from "../../../application/useCases/admin/fetchPendingDoctors";
 import { approveDoctor } from "../../../application/useCases/admin/approveDoctor";
 import { rejectRequest } from "../../../application/useCases/admin/rejectRequest";
-
+import { GetAdminDashboardStatsUseCase } from "../../../application/useCases/admin/getAdminDashboardStats";
+import { AdminDashboardRepository } from "../../database/repositories/AdminDashboardRepository";
 
 export const adminController = {
   // Admin Login
-  login: async (req: Request, res: Response): Promise<void> => {
+  login: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        res.status(400).json({ message: "Email and Password are required" });
-        return;
+        throw { status: 400, message: "Email and Password are required" };
+        //res.status(400).json({ message: "Email and Password are required" });
+        //return;
       }
 
       const userRepository = createUserRepository();
@@ -37,7 +39,8 @@ export const adminController = {
       
       res.status(200).json({ message: "Login successful", token, refreshToken, role });
     } catch (error: any) {
-      res.status(401).json({ message: error.message });
+      next(error);
+      //res.status(401).json({ message: error.message });
     }
   },
 
@@ -106,7 +109,7 @@ export const adminController = {
       
       const doctorRepository = createDoctorRepository();
 
-      const result = await approveDoctor(doctorRepository, id);
+      await approveDoctor(doctorRepository, id);
 
       res.status(200).json({message: "Doctor Approved Successfully..!"});
       
@@ -170,6 +173,24 @@ export const adminController = {
       console.error('Error toggling user block status:', error.message);
       res.status(500).json({ message: error.message || 'Internal server error' });
 
+    }
+  },
+
+  getAdminDashboardStats: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { startDate, endDate } = req.body;
+      const adminDashboardRepository = new AdminDashboardRepository();
+      const getAdminDashboardStatsUseCase = new GetAdminDashboardStatsUseCase(adminDashboardRepository);
+
+      const stats = await getAdminDashboardStatsUseCase.execute(
+        new Date(startDate), new Date(endDate)
+      );
+
+      res.status(200).json(stats);
+      
+    } catch (error) {
+      console.error("Error fetching admin dashboard stats:", error)
+      res.status(500).json({ message: "Failed to fetch admin dashboard stats" })
     }
   }
 

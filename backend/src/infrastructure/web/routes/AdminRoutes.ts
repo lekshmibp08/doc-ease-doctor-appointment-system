@@ -37,6 +37,8 @@ router.get("/appointments", authenticateUser(["admin"]), appoinmentController.ge
 //Block and unblock User
 router.patch("/users/block/:id", authenticateUser(["admin"]), adminController.blockAndUnblockUser);
 
+router.post("/dashboard-stats", authenticateUser(["admin"]), adminController.getAdminDashboardStats);
+
 // Logout route
 router.post("/logout", authController.logout);
 
