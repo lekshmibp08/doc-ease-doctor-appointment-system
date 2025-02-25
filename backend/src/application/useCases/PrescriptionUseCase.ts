@@ -8,7 +8,7 @@ class PrescriptionUseCase {
     }
 
     // Create new prescription
-    async createPrescription(prescriptionData: any): Promise<IPrescription> {
+    async createPrescription(prescriptionData: Partial<IPrescription>): Promise<IPrescription> {
         const result = await this.prescriptionRepository.create(prescriptionData)
         return result;
     };
@@ -20,7 +20,7 @@ class PrescriptionUseCase {
     }
 
     // Update Prescription
-    async UpdatePrescription(id: string, prescriptionData: any): Promise<IPrescription | null> {
+    async UpdatePrescription(id: string, prescriptionData: Partial<IPrescription>): Promise<IPrescription | null> {
         return this.prescriptionRepository.update(id, prescriptionData);
     }
 
