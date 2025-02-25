@@ -1,3 +1,4 @@
+ 
 import { useState, useEffect } from 'react';
 import "../styles/responsive-table.css"
 import DatePicker from "react-datepicker";
@@ -7,6 +8,7 @@ import axios from '../services/axiosConfig';
 import Pagination from './Pagination';
 import { IAppointment } from '../types/interfaces';
 import PrescriptionForm from '../components/PrescriptionForm';
+import Swal from 'sweetalert2';
 
 
 const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
@@ -30,8 +32,6 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
             },
         });
 
-        console.log(response.data);
-
         setAppointments(response.data.appointments);
         setTotalPages(response.data.totalPages);
       } catch (error) {
@@ -49,9 +49,7 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
       const response = await axios.get(`/api/doctors/prescriptions/
         ${appointment._id}`)
       setExistingPrescription(response.data.prescription);
-      console.log('====================================');
-      console.log(response.data);
-      console.log('====================================');
+      
     } catch (error: any) {
       if (error.response?.status === 404) {
         setExistingPrescription(null);
@@ -61,6 +59,39 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
     }
     setShowPrescriptionForm(true)
   }
+
+  const confirmCompleteAppointment = (appointmentId: string) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to mark this appointment as completed?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Mark as Completed!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleCompleteAppointment(appointmentId);
+      }
+    });
+  };
+
+  const handleCompleteAppointment = async (appointmentId: string) => {
+    try {
+      await axios.put(`/api/doctors/appointments/${appointmentId}`, {
+        isCompleted: true,
+      });
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((appointment) =>
+          appointment._id === appointmentId
+            ? { ...appointment, isCompleted: true }
+            : appointment
+        )
+      );
+    } catch (error) {
+      console.error("Error updating appointment status:", error);
+    }
+  };
 
 
   return (<>
@@ -128,8 +159,17 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
                       </button>
                     }
                   </td>
-                  <td data-label="Action" className="p-3 border font-semibold">
-                    <button>Cancel</button>
+                  <td data-label="Action" className="p-3 border font-semibold text-center">
+                    {!appointment.isCompleted ? (
+                      <button
+                        onClick={() => confirmCompleteAppointment(appointment._id)}
+                        className="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600"
+                      >
+                        Mark as Completed
+                      </button>
+                    ) : (
+                      <span className="text-green-600 font-semibold">Completed</span>
+                    )}
                   </td>
                 </tr>
               ))}
