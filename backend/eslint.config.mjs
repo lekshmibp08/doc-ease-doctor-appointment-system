@@ -12,7 +12,6 @@ export default [
   pluginReact.configs.flat.recommended,
   {
     rules: {
-      "react/react-in-jsx-scope": "off", // ✅ Disables the outdated rule
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
