@@ -1,4 +1,3 @@
-import DoctorModel from "../../infrastructure/database/models/DoctorModel";
 import { Doctor } from "../entities/Doctor";
 
 export type IDoctorRepository = {

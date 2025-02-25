@@ -1,4 +1,4 @@
-import mongoose, { Schema, type Document } from "mongoose"
+import mongoose, { Schema } from "mongoose"
 import { IReview } from "../../../domain/entities/Review"
 
 
