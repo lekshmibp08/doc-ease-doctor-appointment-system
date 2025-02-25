@@ -31,7 +31,7 @@ router.post("/logout", authController.logout);
 router.get("/doctors", authenticateUser(['user']), userController.getDoctors);
 
 // List all Specializations
-router.get("/doctors/specializations", authenticateUser(['user']), userController.listSpecializations);
+router.get("/doctors/specializations", userController.listSpecializations);
 
 // update user profile
 router.patch("/profile/update/:id", authenticateUser(['user']), userController.updateUserProfile);
@@ -55,6 +55,8 @@ router.post("/book-appointment", authenticateUser(['user']), appoinmentControlle
 router.get("/appointments/:userId", authenticateUser(['user']), appoinmentController.getAppointmentsByUser);
 
 router.put("/appointments/:appointmentId", authenticateUser(['user']), appoinmentController.cancelAppointmentByUser);
+
+router.put("/reschedule-appointment", authenticateUser(['user']), appoinmentController.rescheduleAppointmentByUser);
 
 router.get('/prescriptions/:appointmentId', authenticateUser(['user']), prescriptionController.getPrescriptionForUser)
 
