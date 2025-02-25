@@ -2,13 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Globally hide horizontal scrollbar */
+html,
+body {
+    overflow-x: hidden !important;
+    width: 100vw !important;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
 
-/* Hide scrollbar for Chrome, Safari, Edge */
-.scrollbar-hidden::-webkit-scrollbar {
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
     display: none;
 }
 
-/* Hide scrollbar for Firefox */
+/* Utility class to hide scrollbar in specific divs */
 .scrollbar-hidden {
     scrollbar-width: none;
+    /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Edge */
 }
