@@ -1,4 +1,7 @@
+ 
+import React from 'react';
 import axios from "../services/axiosConfig";
+//import normal_axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../Redux/store";
 import * as Yup from "yup";
@@ -6,16 +9,15 @@ import Swal from "sweetalert2";
 import { useState } from "react";
 import { setDoctorToken } from "../Redux/slices/doctorSlice";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_API_URL = import.meta.env.VITE_CLOUDINARY_API_URL;
 
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const GOOGLE_MAPS_LIBRARIES: ("places")[] = ["places"];
 
 
-const mapContainerStyle = {
-  width: "100%",
-  height: "400px",
-};
 
 const DoctorProfileDetails = () => {
   const { token, currentUser } = useSelector((state: RootState) => state.doctorAuth);
@@ -35,6 +37,7 @@ const DoctorProfileDetails = () => {
     registerNumber: currentUser?.registerNumber || "",
     gallery: currentUser?.gallery || [],
     locationCoordinates: currentUser?.locationCoordinates || null,
+    locationName: currentUser?.locationName || "",
     documents: currentUser?.documents || [],
   });
 
@@ -42,8 +45,9 @@ const DoctorProfileDetails = () => {
 
   // Load Google Maps script
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyDvf2x8A90__qY5WQIaXhv-ayz_H5uIHF0",
-    libraries: ["places"],
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+    //libraries: ["places"],
+    libraries: GOOGLE_MAPS_LIBRARIES,
   });
 
   // Yup Validation Schema
@@ -185,9 +189,7 @@ const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
           CLOUDINARY_API_URL,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
-        );
-        console.log(response);
-        
+        );        
         return response.data.secure_url;
       })
     );
@@ -203,7 +205,7 @@ const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 // Fetch Location
-const handleMapClick = (event: google.maps.MapMouseEvent) => {
+const handleMapClick = async (event: google.maps.MapMouseEvent) => {
   if (!event.latLng) return;
 
   const lat = event.latLng.lat();
@@ -216,6 +218,23 @@ const handleMapClick = (event: google.maps.MapMouseEvent) => {
       longitude: lng,
     },
   }));
+  try {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`;
+    const response = await axios.get(url);
+    
+    if (response.data.results && response.data.results.length > 0) {
+      const locationName = response.data.results[0].formatted_address;
+      setFormData((prev) => ({
+        ...prev,
+        locationName,
+      }));
+    } else {
+      console.error("NO LOCATION")
+      Swal.fire("Error!", "No location found.", "error");
+    }
+  } catch (error) {
+    console.error("Error fetching location name:", error)
+  }
 };
 
   const handleUpdateDetails = async (e: React.FormEvent) => {
@@ -223,9 +242,7 @@ const handleMapClick = (event: google.maps.MapMouseEvent) => {
     console.log("FORM DATA: ", formData);
 
     try {
-      await validationSchema.validate(formData, { abortEarly: false });
-      console.log("VALIDATED");
-      
+      await validationSchema.validate(formData, { abortEarly: false });      
       const res = await axios.patch(
         `/api/doctors/profile/update/${currentUser?._id}`,
         formData
@@ -238,7 +255,6 @@ const handleMapClick = (event: google.maps.MapMouseEvent) => {
         currentUser: updatedDoctorData,
       }));
 
-      console.log("Form Submitted Successfully:", updatedDoctorData);
       setErrors({});
       Swal.fire("Updated!", "Details updated successfully!", "success");
     } catch (validationError: any) {
@@ -249,7 +265,6 @@ const handleMapClick = (event: google.maps.MapMouseEvent) => {
         });
         setErrors(newErrors);
       } else {
-        console.error("Unexpected Validation Error: ", validationError);
         Swal.fire("Error!", "Validation failed. Please check your inputs.", "error");
       }
     }
@@ -475,6 +490,7 @@ const handleMapClick = (event: google.maps.MapMouseEvent) => {
             <div className="mt-4">
               <p>Latitude: {formData.locationCoordinates?.latitude}</p>
               <p>Longitude: {formData.locationCoordinates?.longitude}</p>
+              <p>Location Name: {formData.locationName}</p>
             </div>
           </div>
 
