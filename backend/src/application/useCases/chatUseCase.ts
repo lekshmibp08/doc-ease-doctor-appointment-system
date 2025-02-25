@@ -38,8 +38,18 @@ export class ChatUsecase {
   }
 
   // Send a message in an existing chat
-  async sendMessage(chatId: string, senderId: string, receiverId: string, text: string) {
-    const newMessage: IMessage = await this.messageRepository.createMessage(chatId, senderId, receiverId, text);
+  async sendMessage(
+    chatId: string,
+    senderId: string,
+    receiverId: string,
+    text: string,
+    imageUrl: string
+  ) {
+    const newMessage: IMessage = await this.messageRepository.createMessage(
+      chatId, senderId, receiverId, text, imageUrl);
+    console.log('====================================');
+    console.log("New msg Created :", newMessage);
+    console.log('====================================');
 
     await this.chatRepository.updateChatLastMessage(chatId, newMessage._id as string);
     
@@ -51,4 +61,43 @@ export class ChatUsecase {
     const messages = await this.messageRepository.getMessagesByChatId(chatId);
     return messages;
   }
+
+  // Mark Messages as read
+  async markMessagesAsRead(chatId: string, userId: string) {
+    await this.messageRepository.markMessagesAsRead(chatId, userId)
+  }
+
+  // Find unread message count For User
+  async getUnreadMessageCountsForUser(userId: string) {
+    const chats = await this.chatRepository.findChatByUserId(userId)
+    const unreadCounts: { [key: string]: number } = {}
+
+    if (chats) {
+      for (const chat of chats) {
+        const count = await this.messageRepository.getUnreadCountForUser(chat._id as string, userId)
+        if (count > 0) {
+          unreadCounts[chat._id as string] = count
+        }
+      }
+    }
+
+    return unreadCounts
+  }
+  // Find unread message count For Doctor
+  async getUnreadMessageCountsForDoc(doctorId: string) {
+    const chats = await this.chatRepository.findChatByDoctorId(doctorId)
+    const unreadCounts: { [key: string]: number } = {}
+
+    if (chats) {
+      for (const chat of chats) {
+        const count = await this.messageRepository.getUnreadCountForDoc(chat._id as string, doctorId)
+        if (count > 0) {
+          unreadCounts[chat._id as string] = count
+        }
+      }
+    }
+
+    return unreadCounts
+  }
+
 }

@@ -15,7 +15,7 @@ export class ChatRepository implements IChatRepository {
   // Find all chats for the User
   async findChatByUserId(userId: string): Promise<IChat[] | null> {
     return await ChatModel.find({ userId }).populate([
-      { path: "doctorId", select: "fullName" },
+      { path: "doctorId"},
       { path: "lastMessage", select: "text" },
     ]);
   }
@@ -23,7 +23,7 @@ export class ChatRepository implements IChatRepository {
   // Find all chats for the Doctor
   async findChatByDoctorId(doctorId: string): Promise<IChat[] | null> {
     return await ChatModel.find({ doctorId }).populate([
-      { path: "userId", select: "fullName" },
+      { path: "userId"},
       { path: "lastMessage", select: "text" },
     ]);
   }
