@@ -26,17 +26,34 @@ export interface IPractitioner {
   createdAt: Date;
   updatedAt: Date;
 }
-  
-  
 
-// User Interface
-//export interface IUser {
-//    _id: string;
-//    fullName: string;
-//    email: string;
-//    mobileNumber: string;
-//    isBlocked: boolean;
-//}
+
+export interface Medication {
+  name: string
+  dosage: string
+  frequency: string
+  duration: string
+}
+
+export interface Prescription {
+  _id?: string
+  patientName: string
+  age: string
+  diagnosis: string
+  medications: Medication[]
+  advice: string
+  followUpDate: string
+}
+
+export interface PrescriptionFormProps {
+  appointmentId: string
+  patientName: any
+  age: any
+  existingPrescription: Prescription | null
+  onClose: () => void
+}
+
+
 
 // Pagination Props Interface
 export interface IPaginationProps {
@@ -67,20 +84,7 @@ export interface IUser {
     isBlocked: boolean;
 }
 
-// Props for UserAccountDetails component
-//export interface IUserAccountDetailsProps {
-//    formData: IUserFormData;
-//    setImage: (file: File) => void;
-//    fileRef: React.RefObject<HTMLInputElement>;
-//    handleUpdateProfile: () => void;
-//}
 
-// Props for UserProfileDetails component
-//export interface IUserProfileDetailsProps {
-//    formData: IUserFormData;
-//    handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-//    handleUpdateDetails: () => void;
-//}
 
 export interface IAppointment {
   _id: string;
@@ -117,3 +121,96 @@ export interface IReview {
   comment: string
   createdAt: Date
 }
+
+export interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor?: string;
+    borderColor?: string;
+    borderWidth?: number;
+  }[];
+}
+
+
+export interface DashboardChartsProps {
+  appointmentData: ChartData;
+  revenueData: ChartData;
+}
+
+export interface GenerateSlotsModalProps {
+  showGenerateModal: boolean;
+  setShowGenerateModal: (show: boolean) => void;
+  repeat: string;
+  setRepeat: (repeat: string) => void;
+  duration: number | undefined;
+  handleDurationChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  durationError: string;
+  selectedDays: string[];
+  toggleDaySelection: (day: string) => void;
+  dayTimeSettings: { [key: string]: { startTime: string; endTime: string } };
+  handleTimeChange: (day: string, field: "startTime" | "endTime", value: string) => void;
+  timeErrors: { [key: string]: string };
+  handleGenerateSlots: () => void;
+  daysOfWeek: string[];
+}
+
+export interface DoctorLocationProps {
+  addressLine: string,
+  locationCoordinates?: {
+    latitude: number,
+    longitude: number
+  },
+  locationName: string
+}
+
+export interface Chat {
+  _id: string
+  userId: {
+    _id: string
+    fullName: string
+    profilePicture: string
+  }
+  doctorId: {
+    _id: string
+    fullName: string
+    profilePicture: string
+  }
+  lastMessage: {
+    text: string
+  }
+  createdAt: string
+}
+
+export interface Message {
+  _id: string
+  chatId: string
+  senderId: string
+  receiverId: string
+  text: string
+  imageUrl: string
+  timestamp: string
+  read: boolean
+}
+
+export interface StatCardProps {
+  title: string
+  value: string | number
+  type: "patients" | "appointments" | "consultations" | "revenue"
+}
+
+export interface Slot {
+  _id: string;
+  time: string;
+  status: string;
+  isAvailable: boolean;
+}
+
+export interface AppointmentContainerProps {
+  doctorId?: string;
+  modesOfConsultation: string[];
+  fee: number;
+}
+
+
