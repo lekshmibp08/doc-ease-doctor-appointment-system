@@ -1,10 +1,12 @@
 import { NavLink } from 'react-router-dom';
+import { useLogout } from '../hooks/useLogout';
 
 interface ISidebarProps {
   isOpen: boolean;
 }
 
 const Sidebar = ({ isOpen }: ISidebarProps) => {
+  const logout = useLogout();
   return (
     <aside
       className={`bg-customBgLight text-black font-bold w-64 
@@ -64,16 +66,12 @@ const Sidebar = ({ isOpen }: ISidebarProps) => {
         >
           Appointments
         </NavLink>
-        <NavLink
-          to="/reports"
-          className={({ isActive }) =>
-            `py-2 px-4 rounded bg-white text-black ${
-              isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'
-            }`
-          }
+        <button
+          onClick={logout}
+          className="py-2 px-4 rounded text-left bg-white text-black hover:bg-customTeal hover:text-white"          
         >
-          Reports
-        </NavLink>
+          Log Out
+        </button>
       </nav>
     </aside>
   );
