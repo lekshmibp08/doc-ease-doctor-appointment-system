@@ -4,6 +4,7 @@ export interface IMessage {
   chatId: string;        
   senderId: string;      
   receiverId: string;    
-  text: string;          
+  text?: string;  
+  imageUrl?: string;
   timestamp?: Date;     
 }

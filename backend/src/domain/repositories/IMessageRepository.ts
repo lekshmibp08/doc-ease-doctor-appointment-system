@@ -5,7 +5,8 @@ export interface IMessageRepository {
         chatId: string,
         senderId: string,
         receiverId: string,
-        text: string
+        text: string,
+        imageUrl: string
     ): Promise<IMessage>;
     getMessagesByChatId(chatId: string): Promise<IMessage[]>;
     
