@@ -1,4 +1,3 @@
-import React from 'react';
 import UserHeader from '../../components/UserHeader';
 import UserAppointmentTable from '../../components/UserAppointmentTable';
 import Footer from '../../components/Footer';

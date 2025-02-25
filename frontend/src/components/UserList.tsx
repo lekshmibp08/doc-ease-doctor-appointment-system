@@ -27,10 +27,7 @@ const UserList: React.FC = () => {
             search: search || "",
           },
         });
-
-        console.log(response.data);
         
-
         setUsers(response.data.users);
         setTotalPages(response.data.totalPages);
       } catch (error) {
@@ -46,8 +43,6 @@ const UserList: React.FC = () => {
     setSearch(e.target.value);
     setCurrentPage(1); // Reset to page 1 on new search
   };
-
- 
 
   const handleBlockUser = async (id: string, isBlocked: boolean) => {
     const result = await Swal.fire({

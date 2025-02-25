@@ -39,18 +39,12 @@ const UserLogin = () => {
       const response = await axios.post('/api/users/login', formData, { withCredentials: true });
 
       const { token, userData } = response.data;
-      console.log('Login Successful:', response.data);
-      // Log token and userData for debugging
-      console.log("Access Token:", token);
-      console.log("User Data:", userData);
 
       dispatch(setUserToken({ token, currentUser: userData }));
 
       navigate('/doctors', { replace: true });
     } catch (error: any) {
-      
-        console.error(' Login Error:', error || 'Network Error');
-        setError(error.response.data.message || 'Network Error');
+      setError(error.response.data.message || 'Network Error');
     }
   };
 

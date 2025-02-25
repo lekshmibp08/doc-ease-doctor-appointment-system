@@ -1,3 +1,4 @@
+ 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import DatePicker from "react-datepicker";
@@ -7,6 +8,7 @@ import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 import { useNavigate } from 'react-router-dom';
+import { Slot, AppointmentContainerProps } from '../types/interfaces';
 
 declare global {
   interface Window {
@@ -14,18 +16,6 @@ declare global {
   }
 }
 
-interface Slot {
-  _id: string;
-  time: string;
-  status: string;
-  isAvailable: boolean;
-}
-
-interface AppointmentContainerProps {
-  doctorId?: string;
-  modesOfConsultation: string[];
-  fee: number;
-}
 
 const AppointmentContainer = ({
   doctorId,
@@ -53,7 +43,6 @@ const AppointmentContainer = ({
         },
       });
   
-      console.log("SLOT RESPONSE: ", response.data);
       setLoading(false); 
   
       // Check if the response data is empty
@@ -61,14 +50,8 @@ const AppointmentContainer = ({
         setSlots([]); 
         setSlotId(''); 
       } else {
-        console.log("WORKING");
-        console.log("SLOTID :", response.data.slotId);
-        
-        
         setSlots(response.data.timeSlots);
-        setSlotId(response.data.slotId);
-        console.log(slotId);
-        
+        setSlotId(response.data.slotId);        
       }
     } catch (error) {
       console.error("Error fetching slots:", error);
@@ -77,20 +60,20 @@ const AppointmentContainer = ({
   };
 
   useEffect(() => {
-    fetchSlots(); // Fetch slots whenever selectedDate or doctorId changes
+    fetchSlots(); 
   }, [selectedDate, doctorId]);
 
   const filterSlotsByTime = (timeOfDay: 'morning' | 'afternoon' | 'evening') => {
     return slots.filter((slot) => {
       const [time, period] = slot.time.split(' ');
-      const [hours, minutes] = time.split(':').map(Number);
+      const [hours] = time.split(':').map(Number);
   
       // Convert 12-hour time to 24-hour time for easier comparison
       const hour24 = period === 'PM' && hours !== 12 ? hours + 12 : period === 'AM' && hours === 12 ? 0 : hours;
   
-      if (timeOfDay === 'morning') return hour24 >= 7 && hour24 < 12; // 7:30 AM - 11:30 AM
-      if (timeOfDay === 'afternoon') return hour24 >= 12 && hour24 < 17; // 12:00 PM - 4:30 PM
-      if (timeOfDay === 'evening') return hour24 >= 17 && hour24 <= 20; // 5:00 PM - 8:00 PM
+      if (timeOfDay === 'morning') return hour24 >= 7 && hour24 < 12; 
+      if (timeOfDay === 'afternoon') return hour24 >= 12 && hour24 < 17; 
+      if (timeOfDay === 'evening') return hour24 >= 17 && hour24 <= 20; 
       return false;
     });
   };
@@ -108,7 +91,6 @@ const AppointmentContainer = ({
 
   //Pay Now Button Handler
   const handlePayNow = async () => {
-    console.log("handlePayNow: ",slotId);
     
     if (!selectedSlot) {
       Swal.fire({
@@ -156,8 +138,6 @@ const AppointmentContainer = ({
   
           try {
             // Save Appointment Details
-            console.log("handlePayNow appointmentData: ",slotId);
-
             const appointmentData = {
               doctorId: doctorId,
               userId: currentUser?._id,
@@ -174,7 +154,6 @@ const AppointmentContainer = ({
               '/api/users/book-appointment', 
               appointmentData
             );
-            console.log("Appointment created successfully:", res.data); 
             
             Swal.fire({
               icon: 'success',

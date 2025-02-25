@@ -27,20 +27,15 @@ const OAuth = () => {
             profilePicture: result.user.photoURL,
             role: role,
           })
-
           
           const { token, userData } = res.data;
-
-          
 
           if (role === "doctor") {
             dispatch(setDoctorToken({token, currentUser: userData}));
           } else {
             dispatch(setUserToken({token, currentUser: userData}));
           }
-    
-          console.log("Google login successful for role:", role);            
-            
+                
         } catch (error) {
             console.log('Could not login with Google', error);           
         }

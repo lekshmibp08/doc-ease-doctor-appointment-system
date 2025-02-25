@@ -29,7 +29,6 @@ const UserAccountDetails = () => {
   const dispatch = useDispatch();
 
   const fileRef = useRef<HTMLInputElement>(null);
-  const [image, setImage] = useState<File | undefined>(undefined);
   const [imageError, setImageError] = useState(false);
   const [imagePercent, setImagePercent] = useState(0);
 
@@ -63,11 +62,10 @@ const UserAccountDetails = () => {
 
       // Return the URL to be used for Formik
       return secure_url;
-    } catch (error) {
+    } catch (error: any) {
       setImageError(true);
-      Swal.fire("Error!", "Error uploading image", "error");      
-      console.error("Error uploading image:", error);
-      return null; // If the upload fails, return null
+      Swal.fire("Error!", error.message || "Error uploading image", "error");      
+      return null;
     }
   };
 
@@ -92,9 +90,7 @@ const UserAccountDetails = () => {
         updatedData
       );
       
-      const updatedUserData = res.data.updatedUser;
-      console.log("Profile updated:", updatedUserData);
-  
+      const updatedUserData = res.data.updatedUser;  
       dispatch(setUserToken({
         token: token ?? "", 
         currentUser: updatedUserData
@@ -111,8 +107,6 @@ const UserAccountDetails = () => {
       Swal.fire("Updated!", "Profile updated successfully!", "success");      
   
     } catch (error: any) {
-      console.error("Error updating profile:", error);
-
       const errorMessage = error.response?.data?.message || "Failed to update profile. Please try again.";
       Swal.fire("Error!", errorMessage, "error");
     }
@@ -142,9 +136,7 @@ const UserAccountDetails = () => {
                 onChange={async (e: any) => {
                   const file = e.target.files[0];
                   if (file) {
-                    setImage(file);
 
-                    // Call handleFileUpload and get the URL after the upload
                     const uploadedImageUrl = await handleFileUpload(file);
                     if (uploadedImageUrl) {
                       setFieldValue("profilePicture", uploadedImageUrl);

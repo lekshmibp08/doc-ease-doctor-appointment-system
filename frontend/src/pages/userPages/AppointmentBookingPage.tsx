@@ -4,12 +4,13 @@ import axios from '../../services/axiosConfig';
 import UserHeader from '../../components/UserHeader';
 import Footer from '../../components/Footer';
 import AppointmentContainer from '../../components/AppointmentContainer';
+import { IPractitioner } from '@/types/interfaces';
 
 
 const AppointmentBookingPage = () => {
 
     const { doctorId } = useParams<{ doctorId: string }>(); 
-    const [doctor, setDoctor] = useState<any>(null);
+    const [doctor, setDoctor] = useState<Partial<IPractitioner> | null>(null);
 
     useEffect(() => {
         const fetchDoctorDetails = async () => {

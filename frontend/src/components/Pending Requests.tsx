@@ -64,26 +64,23 @@ const PendingRequests = () => {
 
   // Reject doctor
   const rejectDoctor = async (id: string) => {
-        const { value: reason } = await Swal.fire({
-          title: "Reject Practitioner",
-          input: "textarea",
-          inputPlaceholder: "Enter the reason for rejection...",
-          inputAttributes: { "aria-label": "Rejection reason" },
-          showCancelButton: true,
-          confirmButtonText: "Submit",
-          cancelButtonText: "Cancel",
-          preConfirm: (input) => {
-            if (!input || input.trim() === "") {
-              Swal.showValidationMessage("Rejection reason is required");
-            }
-            return input;
-          },
-        });    
-    
-        console.log(reason);
-        
-    
-        if (!reason) return; 
+    const { value: reason } = await Swal.fire({
+      title: "Reject Practitioner",
+      input: "textarea",
+      inputPlaceholder: "Enter the reason for rejection...",
+      inputAttributes: { "aria-label": "Rejection reason" },
+      showCancelButton: true,
+      confirmButtonText: "Submit",
+      cancelButtonText: "Cancel",
+      preConfirm: (input) => {
+        if (!input || input.trim() === "") {
+          Swal.showValidationMessage("Rejection reason is required");
+        }
+        return input;
+      },
+    });            
+
+    if (!reason) return; 
     try {
       await axios.patch(`/api/admin/doctors/reject/${id}`, {reason});
       Swal.fire("Success", "Doctor rejected successfully", "success");

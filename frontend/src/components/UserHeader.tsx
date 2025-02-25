@@ -5,13 +5,14 @@ import { RootState } from '../Redux/store';
 import { useNavigate } from 'react-router-dom';
 
 interface UserHeaderProps {
-  role: 'user' | 'doctor'; // Add a role prop to differentiate between user and doctor
-  onToggleSidebar?: () => void; // Optional callback for toggling the sidebar
+  role: 'user' | 'doctor'; 
+  onToggleSidebar?: () => void; 
 }
 
+// eslint-disable-next-line react/prop-types
 const UserHeader: React.FC<UserHeaderProps> = ({ role, onToggleSidebar }) => {
   const navigate = useNavigate();
-  const { token, currentUser } = useSelector((state: RootState) =>
+  const { currentUser } = useSelector((state: RootState) =>
     role === 'user' ? state.userAuth : state.doctorAuth
   );
 

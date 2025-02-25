@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Slot } from "../types/interfaces";
 import "../styles/responsive-table.css";
 import DatePicker from "react-datepicker";
 import axios from "../services/axiosConfig";
@@ -6,22 +7,15 @@ import "react-datepicker/dist/react-datepicker.css";
 import Swal from "sweetalert2";
 import GenerateSlotsModal from "./GenerateSlotsModal";
 
-interface Slot {
-  _id: string;
-  time: string;
-  status: string;
-  isAvailable: boolean;
-}
+
 
 const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [timePeriod, setTimePeriod] = useState("Morning");
   const [slots, setSlots] = useState<Slot[]>([]);
-  //const [slotId, setSlotId] = useState("");
   const [loading, setLoading] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [slotIdFetched, setSlotIdFetched] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState(new Date());
   const [repeat, setRepeat] = useState("Weekly");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [duration, setDuration] = useState<number | undefined>(undefined);
@@ -129,7 +123,7 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
     try {
       const res = await axios.post("/api/doctors/generate-slots", {
         doctorId,
-        startDate: startDate.toISOString().split("T")[0],
+        startDate: selectedDate.toISOString().split("T")[0],
         repeat,
         availableDays: selectedDays.map((day) => ({
           day: day.slice(0, 2).toUpperCase(),
@@ -143,7 +137,6 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
         icon: "success",
         title: "Slots Generated",
         text: res.data.message,
-        //text: "New slots have been successfully created!",
         confirmButtonText: "Okay",
       });
 

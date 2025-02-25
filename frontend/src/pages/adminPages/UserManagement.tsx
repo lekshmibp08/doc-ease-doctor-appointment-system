@@ -16,10 +16,8 @@ const UserManagement = () => {
           {/* Sidebar */}
           <Sidebar isOpen={isSidebarOpen} />
           {/* Main Content */}
-          <div className="flex-1 bg-gray-100 p-6">
-            
+          <div className="flex-1 bg-gray-100 p-6">  
             <UserList/>
-            
           </div>
         </div>
         <Footer />

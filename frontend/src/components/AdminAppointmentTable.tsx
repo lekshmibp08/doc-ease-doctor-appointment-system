@@ -21,10 +21,7 @@ const AdminAppointmentTable: React.FC = () => {
             size: 8,
             search: search || "",
           },
-        });
-
-        console.log(response.data);
-        
+        });        
 
         setAppointments(response.data.appointments);
         setTotalPages(response.data.totalPages);

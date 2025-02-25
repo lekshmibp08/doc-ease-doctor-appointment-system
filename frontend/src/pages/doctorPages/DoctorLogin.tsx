@@ -40,16 +40,12 @@ const DoctorLoginPage = () => {
       const response = await axios.post('/api/doctors/login', formData, { withCredentials: true });
 
       const { token, userData } = response.data;
-
-      console.log("TOKEN ----------> ", token);
       
       dispatch(setDoctorToken({token, currentUser: userData}));
 
-      console.log('Login Successful:', userData);
       navigate('/doctor/dashboard', { replace: true });
 
     } catch (error: any) {  
-        console.error('Error:', error.message || 'Network Error');
         setError(error.response.data.message || 'Network Error')
     }
   };
@@ -90,7 +86,7 @@ const DoctorLoginPage = () => {
       >
       
         <div className="max-w-sm w-full bg-customTeal bg-opacity-50 text-white rounded-lg shadow-lg p-6">
-          <h3 className="text-2xl font-bold mb-6 text-white text-center">Doctor's Login</h3>
+          <h3 className="text-2xl font-bold mb-6 text-white text-center">Doctor&apos;s Login</h3>
 
           {error && <div className="text-red-600 text-lg mb-4 text-center">{error}</div>}
 

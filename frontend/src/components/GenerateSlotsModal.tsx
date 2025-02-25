@@ -1,21 +1,6 @@
 import React from "react";
+import { GenerateSlotsModalProps } from "../types/interfaces";
 
-interface GenerateSlotsModalProps {
-  showGenerateModal: boolean;
-  setShowGenerateModal: (show: boolean) => void;
-  repeat: string;
-  setRepeat: (repeat: string) => void;
-  duration: number | undefined;
-  handleDurationChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  durationError: string;
-  selectedDays: string[];
-  toggleDaySelection: (day: string) => void;
-  dayTimeSettings: { [key: string]: { startTime: string; endTime: string } };
-  handleTimeChange: (day: string, field: "startTime" | "endTime", value: string) => void;
-  timeErrors: { [key: string]: string };
-  handleGenerateSlots: () => void;
-  daysOfWeek: string[];
-}
 
 const GenerateSlotsModal: React.FC<GenerateSlotsModalProps> = ({
   showGenerateModal,

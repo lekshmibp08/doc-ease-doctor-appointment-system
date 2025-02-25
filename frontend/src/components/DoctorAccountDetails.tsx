@@ -49,7 +49,6 @@ const DoctorAccountDetails = () => {
   const dispatch = useDispatch();
 
   const fileRef = useRef<HTMLInputElement>(null);
-  const [image, setImage] = useState<File | undefined>(undefined);
   const [imageError, setImageError] = useState(false);
   const [imagePercent, setImagePercent] = useState(0);
 
@@ -78,15 +77,12 @@ const DoctorAccountDetails = () => {
         }
       );
 
-      // Getting the URL of the uploaded image from Cloudinary
       const { secure_url } = response.data;
-
-      // Return the URL to be used for Formik
       return secure_url;
     } catch (error) {
       setImageError(true);
       console.error("Error uploading image:", error);
-      return null; // If the upload fails, return null
+      return null; 
     }
   };
 
@@ -114,7 +110,6 @@ const DoctorAccountDetails = () => {
       );
       
       const updatedUserData = res.data.updatedDocProfile;
-      console.log("Profile updated:", res);
   
       dispatch(setDoctorToken({
         token: token ?? "", 
@@ -166,9 +161,6 @@ const DoctorAccountDetails = () => {
                 onChange={async (e: any) => {
                   const file = e.target.files[0];
                   if (file) {
-                    setImage(file);
-
-                    // Call handleFileUpload and get the URL after the upload
                     const uploadedImageUrl = await handleFileUpload(file);
                     if (uploadedImageUrl) {
                       setFieldValue("profilePicture", uploadedImageUrl);

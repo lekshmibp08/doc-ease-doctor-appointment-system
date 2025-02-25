@@ -1,5 +1,7 @@
+import { useNavigate } from "react-router-dom";
 
 const HowItWorks = () => {
+  const navigate = useNavigate();
   const steps = [
     { title: 'Choose Your Doctor', icon: 'fas fa-user-md' },
     { title: 'Select your date And book the appointment', icon: 'fas fa-calendar-alt' },
@@ -13,7 +15,9 @@ const HowItWorks = () => {
       <h2 className="text-2xl md:text-3xl font-bold mb-4">
         Wondering <span className="font-extrabold">how it works?</span>
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 cursor-pointer"
+        onClick={() => navigate('/doctors')}
+      >
         {steps.map((step, index) => (
           <div
             key={index}

@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useLogout } from '../hooks/useLogout';
 
 interface IDoctorSidebarProps {
     isOpen: boolean;
@@ -6,6 +7,7 @@ interface IDoctorSidebarProps {
   }
 
 const DoctorSidebar = ({ isOpen }: IDoctorSidebarProps) => {
+  const logout = useLogout();
   return (
     <aside
       className={`bg-customBgLight text-black font-bold w-64 
@@ -55,16 +57,12 @@ const DoctorSidebar = ({ isOpen }: IDoctorSidebarProps) => {
         >
           Appointments
         </NavLink>
-        <NavLink
-          to="/logout"
-          className={({ isActive }) =>
-            `py-2 px-4 rounded bg-white text-black ${
-              isActive ? '!bg-customTeal text-white' : 'hover:bg-customTeal hover:text-white'
-            }`
-          }
+        <button
+          onClick={logout}
+          className="py-2 px-4 rounded text-left bg-white text-black hover:bg-customTeal hover:text-white"          
         >
           Log Out
-        </NavLink>
+        </button>
       </nav>
     </aside>
   );

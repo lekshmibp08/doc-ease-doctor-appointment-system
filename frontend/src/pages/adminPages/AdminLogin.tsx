@@ -22,7 +22,7 @@ const AdminLogin = () => {
       if (token) {
         navigate('/admin/dashboard', { replace: true });
       }
-    }, [token, navigate]); // Runs whenever the token or navigate changes
+    }, [token, navigate]);
   
   
     const handleChange = (e: any) => {
@@ -42,19 +42,14 @@ const AdminLogin = () => {
         const {fullName} = jwtDecode<any>(token);
         
         dispatch(setAdminToken({token, currentUser: fullName}));
-        
-        console.log('Admin Login Successful:', response);
-        
+                
         navigate('/admin/dashboard', { replace: true });
   
       } catch (error: any) {       
           setError(error.message || 'Network Error');
-          console.error('Error:', error.message || 'Network Error');
       }
     };
   
-
-
   return (
     <div className="min-h-screen flex flex-col items-center bg-customBgLight">
       {/* Header Section */}

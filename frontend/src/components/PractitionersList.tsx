@@ -70,10 +70,6 @@ const PractitionersList = () => {
     }
   }
 
-
-
-
-
   return (
     <div className="p-6 bg-customBgLight">
       <div className="flex justify-between items-center mb-4">

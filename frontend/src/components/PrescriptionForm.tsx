@@ -1,31 +1,8 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import axios from "../services/axiosConfig"
+import { Prescription, PrescriptionFormProps, Medication } from "../types/interfaces"
 
-interface Medication {
-  name: string
-  dosage: string
-  frequency: string
-  duration: string
-}
-
-interface Prescription {
-  _id?: string
-  patientName: string
-  age: string
-  diagnosis: string
-  medications: Medication[]
-  advice: string
-  followUpDate: string
-}
-
-interface PrescriptionFormProps {
-  appointmentId: string
-  patientName: any
-  age: any
-  existingPrescription: Prescription | null
-  onClose: () => void
-}
 
 const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   appointmentId,
@@ -44,9 +21,7 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
   })
 
   useEffect(() => {
-    console.log('====================================');
-    console.log("Existing Prescr: ", existingPrescription);
-    console.log('====================================');
+   
     if (existingPrescription) {
       setPrescription(existingPrescription)
     }

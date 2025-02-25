@@ -46,31 +46,24 @@ const UserProfileDetails = () => {
     state: Yup.string().required("State is required"),
   });
 
-  // Handle input changes with real-time validation
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
 
-    // Update input value
     setFormData({
       ...formData,
       [id]: value,
     });
 
     try {
-      // Validate the specific field using validateAt
       await validationSchema.validateAt(id, { [id]: value });
-      // Clear the error if validation passes
       setErrors({ ...errors, [id]: "" });
     } catch (err: any) {
-      // Update the error message for the field
       setErrors({ ...errors, [id]: err.message });
     }
   };
 
   const handleUpdateDetails = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("FORM DATA: ", formData);
-    
+    e.preventDefault();    
 
     try {
       await validationSchema.validate(formData, { abortEarly: false });
@@ -86,7 +79,6 @@ const UserProfileDetails = () => {
         currentUser: updatedUserData
       }));  
 
-      console.log("Form Submitted Successfully:", res.data.updatedUser);
       setErrors({});
       Swal.fire("Updated!", res.data.message, "success");
     } catch (validationError: any) {

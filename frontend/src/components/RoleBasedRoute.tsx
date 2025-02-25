@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 
 interface IRoleBasedRouteProps {
-  allowedRole: 'user' | 'doctor' | 'admin'; // Explicitly define allowed roles
+  allowedRole: 'user' | 'doctor' | 'admin'; 
   children: JSX.Element;
 }
 
@@ -18,9 +18,6 @@ const RoleBasedRoute = ({ allowedRole, children }: IRoleBasedRouteProps) => {
   if (allowedRole === 'doctor') token = doctorToken;
   if (allowedRole === 'admin') token = adminToken;
 
-  console.log("Allowed Role: ", allowedRole);
-  console.log("Token: ", token);
-
   if (!token || token.trim() === "") {
     const loginPath =
       allowedRole === 'admin'
@@ -29,7 +26,6 @@ const RoleBasedRoute = ({ allowedRole, children }: IRoleBasedRouteProps) => {
         ? '/doctor/login'
         : '/user/login';
 
-    console.log("Redirecting to login path:", loginPath);
     return <Navigate to={loginPath} replace />;
   }
 

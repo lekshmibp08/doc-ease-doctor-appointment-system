@@ -15,7 +15,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ appointmentId, doctorId, userId
   const [rating, setRating] = useState<number>(0)
   const [comment, setComment] = useState<string>("")
   const [reviewId, setReviewId] = useState<string | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
 
 
   useEffect(() => {
@@ -33,9 +32,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ appointmentId, doctorId, userId
         }
       } catch (error) {
         console.error("Error fetching review:", error)
-      } finally {
-        setLoading(false)
-      }
+      } 
     }
 
     fetchReview()
@@ -46,9 +43,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ appointmentId, doctorId, userId
     e.preventDefault()
     try {
       if (reviewId) {
-        console.log('====================================');
-        console.log("ENTERED TO UPDATION");
-        console.log('====================================');
         await axios.put(`/api/users/reviews/${reviewId}`, {
           rating, comment
         })
