@@ -16,15 +16,29 @@ export const paymentService = {
   async createOrder(amount: number) {
     try {
       const options = {
-        amount: amount * 100, // Convert to paise
+        amount: amount * 100, 
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
       };
       
       const order = await razorpay.orders.create(options);
       return order;
-    } catch (error) {
-      throw new Error("Error creating order");
+    } catch (error: any) {
+      throw new Error(error.message || "Error creating order");
     }
   },
 };
+
+export const processRefund = async (paymentId: string, refundAmount: number) => {
+    try {
+        const refundResponse = await razorpay.payments.refund(paymentId, {
+            amount: refundAmount * 100, // Convert to paise
+            speed: "normal",
+        });
+        return { success: true, refundResponse };
+    } catch (error) {
+        console.error("Razorpay Refund Error:", error);
+        return { success: false, error };
+    }
+};
+ 
