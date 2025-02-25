@@ -8,6 +8,7 @@ import PrescriptionView from './PrescriptionView';
 import { Star } from "lucide-react";
 import ReviewForm from './ReviewForm';
 import Swal from 'sweetalert2';
+import RescheduleModal from './RescheduleModal';
 
 const UserAppointmentTable: React.FC = () => {
 
@@ -17,58 +18,68 @@ const UserAppointmentTable: React.FC = () => {
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null)
   const [showReviewForm, setShowReviewForm] = useState(false)
   const [selectedAppointmentForReview, setSelectedAppointmentForReview] = useState<IAppointment | null>(null)
+  const [showRescheduleModel, setShowRescheduleModel] = useState(false);
+  const [selectedAppointmentForReschedule, setSelectedAppointmentForReschedule] = useState<IAppointment | null>(null);
 
 
   const fetchAppointments = async () => {
     const userId = currentUser?._id;
     
     try {
-        const response = await axios.get(`/api/users/appointments/${userId}`);
-        console.log("FETCHED APPOINTMENTS: ",response.data.appointments);
-        
+        const response = await axios.get(`/api/users/appointments/${userId}`);        
         setAppointments(response.data.appointments); 
-        
     } catch (error) {
         console.error(error);        
     }
   };
-
   useEffect(() => {
     fetchAppointments();    
   },[currentUser?._id]);
-  
 
-  const handleCancelAppointment = async (appoinmentId: string) => {
+  const handleCancelOrReschedule = async (appointment: IAppointment) => {
     const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "You want to cancell the  Appointment..?",
+      title: "What do you want to do?",
+      text: "You can either cancel the appointment or reschedule it.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, Cancel it!",
-    });    
-    if(result.isConfirmed) {
+      showDenyButton: true,
+      confirmButtonText: "Cancel Appointment",
+      denyButtonText: "Reschedule",
+    });
+
+    if (result.isConfirmed) {
       try {
-        const response = await axios.put(`/api/users/appointments/${appoinmentId}`);
-        console.log(response.data.updatedData);
-        const isCancelled = response.data.updatedData;
-        console.log("isCancelled: ", isCancelled);
-        
+        const response = await axios.put(`/api/users/appointments/${appointment._id}`);
         setAppointments((prev) => 
-          prev.map((appoinment) => 
-            appoinment._id === appoinmentId ? {...appoinment, isCancelled } : appoinment
+          prev.map((app) => 
+            app._id === appointment._id ? { ...appointment, isCancelled: true } : appointment
           )
         );
-        
-        Swal.fire("Cancelled!", response.data.message, "success");        
-        
+
+        Swal.fire({
+          title: "Cancelled!",
+          text: `${response.data.message}\nRefund Transaction ID: ${response.data.refundTransactionId}`,
+          icon: "success",
+        });
+
       } catch (error: any) {
-        console.error('Error blocking/unblocking User:', error);
-        Swal.fire("Error!", error.message, "error");        
+        Swal.fire("Error!", error.message, "error");
       }
-
+    } else if (result.isDenied) {
+      setSelectedAppointmentForReschedule(appointment)
+      setShowRescheduleModel(true);
     }
-
+    
   }
+
+  const handleRescheduleSubmit = (updatedAppointment: IAppointment) => {
+    setAppointments((prev) =>
+      prev.map((app) =>
+        app._id === updatedAppointment._id ? updatedAppointment : app
+      )
+    );
+    setShowRescheduleModel(false);
+  };
 
   const handlePrescription = async (appointmentId: string) => {
     setSelectedAppointmentId(appointmentId);
@@ -97,7 +108,6 @@ const UserAppointmentTable: React.FC = () => {
                 <th className="p-2 border border-gray-300">Booking<br />Date</th>
                 <th className="p-2 border border-gray-300">Slot</th>
                 <th className="p-2 border border-gray-300">Status</th>
-                <th className="p-2 border border-gray-300">Ticket</th>
                 <th className="p-2 border border-gray-300">Cancel</th>
                 <th className="p-2 border border-gray-300">Rate Now</th>
               </tr>
@@ -124,18 +134,20 @@ const UserAppointmentTable: React.FC = () => {
                     {appointment.isCompleted &&
                       <button
                         onClick={() => handlePrescription(appointment._id)}
-                        className="text-blue-600 underline cursor-pointer 
-                        bg-transparent border-none text-sm"
+                        className="text-blue-600 cursor-pointer 
+                        bg-transparent border-none text-sm hover:underline"
                       >                        
                         Open Prescription                       
                       </button>
                     }
                   </td>
+                  { /*
                   <td className="p-2 border border-gray-300">
                     <button className="px-4 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-xs md:text-sm">
                       Open
                     </button>
                   </td>
+                  */ }
                   <td className="p-2 border border-gray-300">
                     {appointment.isCancelled ? (
                       <span className="text-red-500 font-semibold">Cancelled</span>
@@ -146,7 +158,7 @@ const UserAppointmentTable: React.FC = () => {
                             ? "bg-red-500 text-white hover:bg-red-600"
                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
-                        onClick={() => handleCancelAppointment(appointment._id)}
+                        onClick={() => handleCancelOrReschedule(appointment)}
                         disabled={new Date(appointment.date) <= new Date()}
                       >
                         Cancel
@@ -195,6 +207,15 @@ const UserAppointmentTable: React.FC = () => {
           doctorId={(selectedAppointmentForReview.doctorId as any)._id}
           onClose={() => setShowReviewForm(false)}
           onSubmit={handleReviewSubmit}
+        />
+      )}
+
+      {showRescheduleModel && selectedAppointmentForReschedule && (
+        <RescheduleModal
+          doctorId={(selectedAppointmentForReschedule.doctorId as any)._id}
+          appointmentId={selectedAppointmentForReschedule._id}
+          onClose={() => setShowRescheduleModel(false)}
+          onRescheduleSuccess={handleRescheduleSubmit}
         />
       )}
 
