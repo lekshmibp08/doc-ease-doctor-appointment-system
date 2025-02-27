@@ -19,11 +19,12 @@ dotenv.config({ path: `${__dirname}/../.env` });
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
+const FRONT_END_URL = process.env.FRONT_END_URL;
 
 // Middleware
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: FRONT_END_URL, 
   credentials: true
 }));
 app.use(express.json());
