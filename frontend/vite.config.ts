@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const BASE_URL = process.env.VITE_BASE_URL
+//const BASE_URL = process.env.VITE_BASE_URL
 
 export default defineConfig({
   plugins: [react()],
@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     proxy: { 
       "/api": {
-        target: BASE_URL || "http://localhost:5000",
+        target: "https://doc-ease.mooo.com",
         secure: false,
         changeOrigin: true,
       },
