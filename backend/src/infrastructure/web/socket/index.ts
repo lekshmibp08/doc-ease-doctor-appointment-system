@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Server as SocketIOServer } from "socket.io";
-import { ChatUsecase } from "../../../application/useCases/chatUseCase";
+import { ChatUsecase } from "../../../application/useCases/ChatUseCase";
 import dotenv from "dotenv";
 dotenv.config();
 
