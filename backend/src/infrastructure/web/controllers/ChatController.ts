@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ChatUsecase } from "../../../application/useCases/ChatUseCase";
+import { ChatUsecase } from "../../../application/useCases/chatUseCase";
 
 export const chatController = {
   // Create or fetch chat
