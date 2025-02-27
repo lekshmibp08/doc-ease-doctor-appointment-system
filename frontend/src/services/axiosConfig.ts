@@ -5,11 +5,12 @@ import { refreshAdminToken, clearAdminToken } from '../Redux/slices/adminSlice';
 import { refreshDoctorToken, clearDoctorToken } from '../Redux/slices/doctorSlice';
 import {handleLogout} from '../hooks/useLogout';
 import Swal from 'sweetalert2';
+const BASE_URL = import.meta.env.BASE_URL
 
 
 // Base Axios instance
 const axios = axiosInstance.create({
-  baseURL: 'http://localhost:5000', 
+  baseURL: BASE_URL, 
   timeout: 10000, 
   headers: {
     'Content-Type': 'application/json',

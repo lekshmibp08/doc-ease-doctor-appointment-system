@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import io from "socket.io-client"
+const BASE_URL = import.meta.env.BASE_URL 
 
-const ENDPOINT = "http://localhost:5000"
+const ENDPOINT = BASE_URL
 
 interface VideoCallProps {
   chatId: string

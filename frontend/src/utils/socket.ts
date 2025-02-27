@@ -1,10 +1,11 @@
 import { io, type Socket } from "socket.io-client"
+const BASE_URL = import.meta.env.BASE_URL 
 
 let socket: Socket | null = null
 
 export const getSocket = () => {
   if (!socket) {
-    socket = io("http://localhost:5000", {
+    socket = io(BASE_URL, {
       transports: ["websocket"],
       upgrade: false,
       reconnection: true,

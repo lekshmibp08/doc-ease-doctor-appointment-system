@@ -1,4 +1,3 @@
-// ChatService.ts (Updated for better structure and code clarity)
 import { ChatRepository } from "../../infrastructure/database/repositories/ChatRepository";
 import { MessageRepository } from "../../infrastructure/database/repositories/MessageRepository";
 import { IChat } from "../../domain/entities/Chat";
