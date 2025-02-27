@@ -1,6 +1,6 @@
 
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import axios from "../services/axiosConfig"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/Redux/store"
@@ -64,6 +64,13 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
 
   const [showChatList, setShowChatList] = useState(true)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
+  
 
   useEffect(() => {
     const handleResize = () => {
@@ -391,6 +398,7 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
                     </div>
                   </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Message Input */}
