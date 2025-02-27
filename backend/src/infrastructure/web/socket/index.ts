@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Server as SocketIOServer } from "socket.io";
 import { ChatUsecase } from "../../../application/useCases/ChatUseCase";
+import dotenv from "dotenv";
+dotenv.config();
+
+const FRONT_END_URL = process.env.FRONT_END_URL;
+
 
 let io: SocketIOServer;
 
@@ -10,7 +15,7 @@ export const initializeSocket = (server: any) => {
     pingInterval: 25000,
     
     cors: {
-      origin: "http://localhost:5173",
+      origin: FRONT_END_URL || "http://localhost:5173",
       methods: ["GET", "POST"],
     },
     path: "/socket.io",
