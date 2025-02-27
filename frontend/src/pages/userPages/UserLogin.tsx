@@ -36,7 +36,7 @@ const UserLogin = () => {
 
     try {
       dispatch(clearUserToken());
-      const response = await axios.post('/api/users/login', formData, { withCredentials: true });
+      const response = await axios.post('api/users/login', formData, { withCredentials: true });
 
       const { token, userData } = response.data;
 
