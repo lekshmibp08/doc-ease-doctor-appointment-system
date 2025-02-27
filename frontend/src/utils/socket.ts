@@ -1,5 +1,5 @@
 import { io, type Socket } from "socket.io-client"
-const BASE_URL = import.meta.env.BASE_URL 
+const BASE_URL = import.meta.env.VITE_BASE_URL 
 
 let socket: Socket | null = null
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import io from "socket.io-client"
-const BASE_URL = import.meta.env.BASE_URL 
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 const ENDPOINT = BASE_URL
 

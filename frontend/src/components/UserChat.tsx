@@ -8,7 +8,7 @@ import io from "socket.io-client"
 import { ArrowLeft, Check } from "lucide-react"
 import VideoCall from "./VideoCall"
 
-const ENDPOINT = import.meta.env.BASE_URL
+const ENDPOINT = import.meta.env.VITE_BASE_URL
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
 const CLOUDINARY_API_URL = import.meta.env.VITE_CLOUDINARY_API_URL
