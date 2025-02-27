@@ -82,7 +82,7 @@ const DoctorLoginPage = () => {
       <Header />
       <main
         className="flex-1 flex items-center justify-center relative bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/public/background-1.png')" }}
+        style={{ backgroundImage: "url('/background-1.png')" }}
       >
       
         <div className="max-w-sm w-full bg-customTeal bg-opacity-50 text-white rounded-lg shadow-lg p-6">
