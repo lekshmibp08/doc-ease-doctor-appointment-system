@@ -17,6 +17,7 @@ const DepartmentSlider: React.FC = () => {
           (specialization: string) => specialization.trim() !== ""
         );
         setSpecializations(validSpecializations);
+        
       } catch (error) {
         console.error("Error fetching specializations:", error);
       }
