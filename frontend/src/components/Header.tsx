@@ -37,8 +37,10 @@ const Header = () => {
         </div>
         {renderSubtitle()}
       </div>
-      <Link to={determineSignupPath()}>
-        <button className="bg-[#9fc7cf] text-black font-semibold px-4 py-2 rounded-md hover:opacity-90 transition">
+      <Link to={determineSignupPath()} className="w-full sm:w-auto flex justify-center">
+        <button className="bg-[#9fc7cf] text-black font-semibold px-3 py-1 sm:px-4 sm:py-2 
+          text-sm sm:text-base rounded-md hover:opacity-90 transition"
+        >
           Create An Account
         </button>
       </Link>
