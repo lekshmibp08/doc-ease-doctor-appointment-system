@@ -12,11 +12,6 @@ const DepartmentSlider: React.FC = () => {
     const fetchSpecializations = async () => {
       try {
         const response = await axios.get("/api/users/doctors/specializations");
-
-        console.log('====================================');
-        console.log(response.data);
-        console.log('====================================');
-
         const validSpecializations = response.data.specializations.filter(
           (specialization: string) => specialization.trim() !== ""
         );

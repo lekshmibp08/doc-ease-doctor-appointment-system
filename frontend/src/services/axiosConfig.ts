@@ -122,11 +122,15 @@ axios.interceptors.response.use(
         }
         try {
           
-          const { data } = await axios.post(refreshConfig.refreshEndpoint, {
+          const { data } = await axiosInstance.post(refreshConfig.refreshEndpoint, {
             role: refreshConfig.role,
-          }, { withCredentials: true });
-  
+          }, { withCredentials: true, baseURL: BASE_URL, });
+
           const newAccessToken = data.token;          
+          console.log('====================================');
+          console.log(newAccessToken);
+          console.log('====================================');
+  
   
           // Update Redux and sessionStorage with the new token
           store.dispatch(refreshConfig.refreshAction(newAccessToken));
