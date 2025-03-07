@@ -446,6 +446,9 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if(e.key === 'Enter') sendMessage()
+                    }}
                     placeholder="Type a message"
                     className="flex-1 p-2 border border-gray-300 rounded-lg"
                   />
