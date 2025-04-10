@@ -7,7 +7,7 @@ import morgan from 'morgan'
 
 import connectDB from "./infrastructure/database/connection";
 import userRoutes from "./infrastructure/web/routes/UserRoutes";
-import doctorRoutes from "./infrastructure/web/routes/DoctorRoutes"
+import doctorRoutes from "./infrastructure/web/routes/doctorRoutes"
 import adminRoutes from "./infrastructure/web/routes/AdminRoutes"
 import authRoutes from "./infrastructure/web/routes/AuthRoutes"
 import { notFound, errorHandler } from "./infrastructure/middlewares/ErrorMiddleWare "
