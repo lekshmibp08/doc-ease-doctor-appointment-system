@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Swal from 'sweetalert2';
@@ -23,7 +23,7 @@ interface RescheduleModalProps {
   onRescheduleSuccess: (updatedAppointment: IAppointment) => void;
 }
 
-const RescheduleModal = ({ doctorId, appointmentId, onClose, onRescheduleSuccess }: RescheduleModalProps) => {
+const RescheduleModal: React.FC <RescheduleModalProps>= ({ doctorId, appointmentId, onClose, onRescheduleSuccess }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [visitType, setVisitType] = useState<string>('');
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
