@@ -9,7 +9,6 @@ import {
   rescheduleAppointment
 } from '../services/api/userApi'
 
-
 interface Slot {
   _id: string;
   time: string;
