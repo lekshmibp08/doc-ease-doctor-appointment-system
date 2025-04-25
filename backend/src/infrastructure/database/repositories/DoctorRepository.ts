@@ -30,7 +30,7 @@ export const createDoctorRepository = (): IDoctorRepository => ({
     return await DoctorModel.find({ isApproved: true }, "-password");
   },
   findDoctorById: async (id) => {
-    return await DoctorModel.findById(id, "-password");
+    return await DoctorModel.findById(id);
   },
   updateDoctor: async (id, updates) => {
     const updatedDoctor = await DoctorModel.findByIdAndUpdate(id, updates, { new: true});

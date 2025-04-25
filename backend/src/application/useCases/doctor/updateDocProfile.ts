@@ -7,9 +7,6 @@ export const updateDocProfile = async (
   updatedData: any
 ): Promise<any> => {
 
-    console.log("USECASE ID: ", id);
-    console.log("USECASE data: ", updatedData);
-
     const existingDoctor = await doctorRepository.findDoctorById(id);
     if(!existingDoctor) {
       throw new Error("Doctor not found");
@@ -34,7 +31,6 @@ export const updateDocProfile = async (
     updatedData.isRejected = false;
 
     const updatedDocProfile = await doctorRepository.updateDoctor(id, updatedData);
-    console.log("USECASE UPDATED USER: ", updatedDocProfile);
     
     return updatedDocProfile;  
 };
