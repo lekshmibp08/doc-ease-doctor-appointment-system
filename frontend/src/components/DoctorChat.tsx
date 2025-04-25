@@ -1,12 +1,17 @@
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
 import { Chat, Message } from "../types/interfaces"
-import axios from "../services/axiosConfig"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/Redux/store"
 import io from "socket.io-client"
 import { Check, ArrowLeft } from "lucide-react"
 import VideoCall from "./VideoCall"
+import { 
+  sendMessagebyDoc,
+  fetchChatData,
+  getMessagesByChatId,
+  uploadImageForSend
+} from "../services/api/doctorApi"
 
 
 const ENDPOINT = import.meta.env.VITE_BASE_URL || "http://localhost:5000"
@@ -81,14 +86,15 @@ const DoctorChat: React.FC = () => {
 
   useEffect(() => {
     const fetchChats = async () => {
-      try {
-        const response = await axios.get("/api/doctors/get-chats", {
-          params: { doctorId },
-        })
-        setAllChats(response.data.chats)
-        setUnreadCounts(response.data.unreadCounts)
-      } catch (error) {
-        console.error("Error fetching chats:", error)
+      if (doctorId) {
+        try {
+          const response = await fetchChatData(doctorId);
+          setAllChats(response.data.chats)
+          setUnreadCounts(response.data.unreadCounts)
+        } catch (error) {
+          console.error("Error fetching chats:", error)
+        }
+
       }
     }
     fetchChats()
@@ -102,9 +108,7 @@ const DoctorChat: React.FC = () => {
     setCurrentChat(chat)
     socket.emit("join chat", chat._id)
     try {
-      const response = await axios.get(`/api/doctors/get-messages`, {
-        params: { chatId: chat._id },
-      })
+      const response = await getMessagesByChatId(chat._id);
       setMessages(response.data)
       
       socket.emit("mark messages as read", { chatId: chat._id, receiverId: doctorId })
@@ -130,7 +134,7 @@ const DoctorChat: React.FC = () => {
     }
 
     try {
-      const response = await axios.post("/api/doctors/send-message", messageData)
+      const response = await sendMessagebyDoc(messageData)
       socket.emit("send message", messageData)
       setMessages((prevMessages) => [...prevMessages, response.data])
       setNewMessage("")
@@ -154,9 +158,7 @@ const DoctorChat: React.FC = () => {
       formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET)
       formData.append("cloud_name", CLOUDINARY_CLOUD_NAME)
 
-      const response = await axios.post(CLOUDINARY_API_URL, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
+      const response = await uploadImageForSend(formData, CLOUDINARY_API_URL)
 
       if (!response.data.secure_url) {
         throw new Error("Image upload to Cloudinary failed")

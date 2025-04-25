@@ -3,7 +3,7 @@ import React, { useRef, useState, useEffect } from "react"
 import { Prescription } from "../types/interfaces";
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
-import axios from "../services/axiosConfig"
+import { getPrescription } from '../services/api/userApi'
 import { format } from "date-fns"
 
 
@@ -34,9 +34,9 @@ const PrescriptionView: React.FC<PrescriptionViewProps> = ({ appointmentId, onCl
     const fetchPrescription = async () => {
       try {
         setIsLoading(true)
-        const response = await axios.get(`/api/users/prescriptions/${appointmentId}`)
-        setPrescription(response.data.prescription)
-        setDoctor(response.data.doctor)
+        const data = await getPrescription(appointmentId)
+        setPrescription(data.prescription)
+        setDoctor(data.doctor)
       } catch (error) {
         console.error("Error fetching prescription:", error)
       } finally {

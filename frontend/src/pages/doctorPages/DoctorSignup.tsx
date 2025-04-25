@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
-import axios from "../../services/axiosConfig";
+import { 
+  sendOtpToDoctor, 
+  verifyOtpAndRegisterDoctor 
+} from '../../services/api/doctorApi';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -72,7 +75,7 @@ const DoctorSignup = () => {
   const handleRegister = async (values: any) => {
     setError('');
     try {
-      const response = await axios.post('/api/doctors/send-otp', { email: values.email });
+      const response = await sendOtpToDoctor({ email: values.email });
       setMessage(response.data.message);
       setStep(2); // Move to Step 2
       setTimer(120); // Reset timer for 2 minutes
@@ -86,7 +89,7 @@ const DoctorSignup = () => {
     setError('');
     setMessage('');
     try {
-      const response = await axios.post('/api/doctors/verify-otp-and-register', values);
+      const response = await verifyOtpAndRegisterDoctor(values);
       setMessage(response.data.message);
       navigate('/doctor/login'); 
     } catch (err: any) {

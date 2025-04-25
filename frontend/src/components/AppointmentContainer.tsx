@@ -3,12 +3,16 @@ import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from '../services/axiosConfig';
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 import { useNavigate } from 'react-router-dom';
 import { Slot, AppointmentContainerProps } from '../types/interfaces';
+import { 
+  getDoctorSlots, 
+  createOrder, 
+  bookAppointment 
+} from '../services/api/userApi'
 
 declare global {
   interface Window {
@@ -37,25 +41,22 @@ const AppointmentContainer = ({
   const fetchSlots = async () => {
     setLoading(true); 
     try {
-      const response = await axios.get(`/api/users/slots/${doctorId}`, {
-        params: {
-          date: selectedDate.toISOString().split("T")[0],
-        },
-      });
+      const data = await getDoctorSlots(doctorId, selectedDate.toISOString().split("T")[0]);
   
       setLoading(false); 
   
       // Check if the response data is empty
-      if (Object.keys(response.data).length === 0 || !response.data.timeSlots) {
+      if (Object.keys(data).length === 0 || !data.timeSlots) {
         setSlots([]); 
         setSlotId(''); 
       } else {
-        setSlots(response.data.timeSlots);
-        setSlotId(response.data.slotId);        
+        setSlots(data.timeSlots);
+        setSlotId(data.slotId);        
       }
     } catch (error) {
       console.error("Error fetching slots:", error);
       setSlots([]); 
+      setLoading(false);
     }
   };
 
@@ -115,9 +116,7 @@ const AppointmentContainer = ({
       const totalAmount = fee + 50;
   
       // Step 1: Create Order
-      const { data: order } = await axios.post('/api/users/create-order', {
-        amount: totalAmount,
-      });
+      const order = await createOrder(totalAmount);
   
       // Step 2: Configure Razorpay
       const options = {
@@ -150,18 +149,15 @@ const AppointmentContainer = ({
               amount: totalAmount,
               paymentId: response.razorpay_payment_id,
             };
-            const res = await axios.post(
-              '/api/users/book-appointment', 
-              appointmentData
-            );
+            const res = await bookAppointment(appointmentData);
             
             Swal.fire({
               icon: 'success',
               title: 'Payment Successful',
               html: `
               <h3>Your appointment has been successfully created!</h3>
-              <p><strong>Date:</strong> ${format(new Date(res.data.newAppoinment.date), 'dd MMM yyyy, EEEE')}</p>
-              <p><strong>Time:</strong> ${res.data.newAppoinment.time}</p>
+              <p><strong>Date:</strong> ${format(new Date(res.newAppoinment.date), 'dd MMM yyyy, EEEE')}</p>
+              <p><strong>Time:</strong> ${res.newAppoinment.time}</p>
               <div class="mt-4">
                 <button id="go-home" class="swal2-confirm swal2-styled">Go to Home</button>
                 <button id="show-appointments" class="swal2-confirm swal2-styled">Show Appointments</button>

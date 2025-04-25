@@ -6,6 +6,7 @@ import { setUserToken } from "../Redux/slices/userSlice";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
+import { updateUserProfile } from '../services/api/userApi'
 
 // Form validation schema with Yup
 const validationSchema = Yup.object({
@@ -73,6 +74,7 @@ const UserAccountDetails = () => {
     const { currentPassword, password, profilePicture } = values;
   
     const updatedData: any = {
+      userId: currentUser?._id,
       currentPassword
     };
   
@@ -83,14 +85,11 @@ const UserAccountDetails = () => {
     if (profilePicture) {
       updatedData.profilePicture = profilePicture;
     }
-  
+    
     try {
-      const res = await axios.patch(
-        `/api/users/profile/update/${currentUser?._id}`,
-        updatedData
-      );
-      
-      const updatedUserData = res.data.updatedUser;  
+      const res = await updateUserProfile(updatedData);
+       
+      const updatedUserData = res.updatedUser;  
       dispatch(setUserToken({
         token: token ?? "", 
         currentUser: updatedUserData

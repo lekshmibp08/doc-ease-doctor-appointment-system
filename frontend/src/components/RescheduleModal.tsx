@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from '../services/axiosConfig';
 import Swal from 'sweetalert2';
 import { IAppointment } from '@/types/interfaces';
+import {
+  fetchDoctorSlots,
+  fetchDoctorModes,
+  rescheduleAppointment
+} from '../services/api/userApi'
 
 
 interface Slot {
@@ -34,16 +38,16 @@ const RescheduleModal = ({ doctorId, appointmentId, onClose, onRescheduleSuccess
     const fetchSlots = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`/api/users/slots/${doctorId}`, {
-          params: { date: selectedDate.toISOString().split("T")[0] },
-        });
-        setSlots(response.data.timeSlots || []);
-        setSlotId(response.data.slotId);
+        const date = selectedDate.toISOString().split("T")[0]
+        const { timeSlots, slotId } = await fetchDoctorSlots(doctorId, date)
+        setSlots(timeSlots || []);
+        setSlotId(slotId);
       } catch (error) {
         console.error("Error fetching slots:", error);
         setSlots([]);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchSlots();
   }, [selectedDate, doctorId]);
@@ -68,8 +72,8 @@ const RescheduleModal = ({ doctorId, appointmentId, onClose, onRescheduleSuccess
     const fetchDoctorDetails = async () => {
       if (!doctorId) return;
       try {
-        const response = await axios.get(`/api/users/doctor/${doctorId}`);
-        setModesOfConsultation(response.data.modesOfConsultation || []);
+        const modes = await fetchDoctorModes(doctorId)
+        setModesOfConsultation(modes)
       } catch (error) {
         console.error("Error fetching doctor details:", error);
       }
@@ -94,7 +98,7 @@ const RescheduleModal = ({ doctorId, appointmentId, onClose, onRescheduleSuccess
     }
 
     try {
-      const response = await axios.put('/api/users/reschedule-appointment', {
+      const res = await rescheduleAppointment({
         appointmentId,
         date: selectedDate,
         slotId,
@@ -102,9 +106,9 @@ const RescheduleModal = ({ doctorId, appointmentId, onClose, onRescheduleSuccess
         timeSlotId: selectedSlot._id,
         time: selectedSlot.time,
         modeOfVisit: visitType,
-      });
+      })
       Swal.fire("Success!", "Appointment rescheduled successfully", "success");
-      onRescheduleSuccess(response.data.updatedAppointment);
+      onRescheduleSuccess(res.updatedAppointment);
       onClose();
     } catch (error) {
       console.error("Error rescheduling appointment:", error);

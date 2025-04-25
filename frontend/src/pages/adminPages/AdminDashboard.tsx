@@ -8,7 +8,7 @@ import { startOfMonth, endOfMonth } from "date-fns"
 import AdminHeader from "../../components/AdminHeader"
 import Footer from "../../components/Footer"
 import Sidebar from "../../components/Sidebar"
-import axios from "../../services/axiosConfig"
+import { getDashboardStats } from '../../services/api/adminApi'
 
 interface AdminDashboardStats {
   totalUsers: number
@@ -38,9 +38,7 @@ export default function AdminDashboard() {
   const fetchDashboardStats = async (start: Date, end: Date) => {
     setLoading(true)
     try {
-      const response = await axios.post("/api/admin/dashboard-stats", {
-        startDate: start, endDate: end,
-      })
+      const response = await getDashboardStats(start, end);
       setStats(response.data)
     } catch (error) {
       console.error("Error fetching admin dashboard stats:", error)

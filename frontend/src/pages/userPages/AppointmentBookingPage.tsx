@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from '../../services/axiosConfig';
+import { getDoctorDetails } from '../../services/api/userApi';
 import UserHeader from '../../components/UserHeader';
 import Footer from '../../components/Footer';
 import AppointmentContainer from '../../components/AppointmentContainer';
@@ -15,8 +15,8 @@ const AppointmentBookingPage = () => {
     useEffect(() => {
         const fetchDoctorDetails = async () => {
           try {
-            const response = await axios.get(`/api/users/doctor/${doctorId}`);            
-            setDoctor(response.data);
+            const doctorData = await getDoctorDetails(doctorId);
+            setDoctor(doctorData);
                         
           } catch (err) {
             console.log('Failed to fetch doctor details: ',err);

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../services/axiosConfig';
 import { format } from "date-fns";
 import Pagination from './Pagination';
 import { IAppointment } from '../types/interfaces';
-
+import { fetchAppointments } from '../services/api/adminApi';
 
 
 const AdminAppointmentTable: React.FC = () => {
@@ -15,13 +14,7 @@ const AdminAppointmentTable: React.FC = () => {
   useEffect(() => {
     const fetchAllAppointments = async () => {        
       try {
-        const response = await axios.get('/api/admin/appointments', {
-          params: {
-            page: currentPage,
-            size: 8,
-            search: search || "",
-          },
-        });        
+        const response = await fetchAppointments(currentPage, search);
 
         setAppointments(response.data.appointments);
         setTotalPages(response.data.totalPages);

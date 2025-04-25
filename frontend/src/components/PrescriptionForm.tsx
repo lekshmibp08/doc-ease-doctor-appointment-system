@@ -1,7 +1,14 @@
 import type React from "react"
 import { useState, useEffect } from "react"
-import axios from "../services/axiosConfig"
-import { Prescription, PrescriptionFormProps, Medication } from "../types/interfaces"
+import { 
+  Prescription, 
+  PrescriptionFormProps, 
+  Medication 
+} from "../types/interfaces"
+import { 
+  updatePrescription, 
+  createPrescription 
+} from '../services/api/doctorApi'
 
 
 const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
@@ -54,9 +61,9 @@ const PrescriptionForm: React.FC<PrescriptionFormProps> = ({
     e.preventDefault()
     try {
       if (existingPrescription) {
-        await axios.put(`/api/doctors/prescriptions/${existingPrescription._id}`, { prescription })
+        await updatePrescription(existingPrescription._id, prescription);
       } else {
-        await axios.post("/api/doctors/prescriptions", { appointmentId, prescription })
+        await createPrescription(appointmentId, prescription);
       }
       onClose()
     } catch (error) {

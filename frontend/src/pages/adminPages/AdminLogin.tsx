@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
-import axios from '../../services/axiosConfig';
 import Footer from '../../components/Footer';
 import AdminHeader from '../../components/AdminHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
 import { useNavigate } from 'react-router-dom';
 import { setAdminToken, clearAdminToken } from '../../Redux/slices/adminSlice';
+import { adminLogin } from '../../services/api/adminApi'
 
 const AdminLogin = () => {
 
-    const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<{ 
+    email: string; password: string 
+  }>({
+    email: '',
+    password: ''
+  });
     const [error, setError] = useState('');
   
     const token = useSelector((state: RootState) => state.adminAuth.token )
@@ -35,7 +40,7 @@ const AdminLogin = () => {
       
       try {
         dispatch(clearAdminToken());
-        const response = await axios.post('/api/admin/login', formData, { withCredentials: true });
+        const response = await adminLogin(formData);
   
         const { token } = response.data;
 

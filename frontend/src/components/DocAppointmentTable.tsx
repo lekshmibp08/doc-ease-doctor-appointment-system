@@ -4,12 +4,15 @@ import "../styles/responsive-table.css"
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-import axios from '../services/axiosConfig';
 import Pagination from './Pagination';
 import { IAppointment } from '../types/interfaces';
 import PrescriptionForm from '../components/PrescriptionForm';
 import Swal from 'sweetalert2';
-
+import { 
+  fetchAppointments,
+  fetchPrescriptionByAppointmentId, 
+  completeAppointmentById
+} from '../services/api/doctorApi';
 
 const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
@@ -23,14 +26,8 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
   useEffect(() => {
     const fetchAllAppointments = async () => {        
       try {
-        const response = await axios.get('/api/doctors/appointments', {
-            params: {
-            page: currentPage,
-            size: 8,
-            date: selectedDate.toISOString().split("T")[0],
-            doctorId: doctorId
-            },
-        });
+        const date = selectedDate.toISOString().split("T")[0];
+        const response = await fetchAppointments(doctorId, currentPage, date);
 
         setAppointments(response.data.appointments);
         setTotalPages(response.data.totalPages);
@@ -46,8 +43,7 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
   const handlePrescription = async (appointment: any) => {
     setSelectedAppointment(appointment)
     try {
-      const response = await axios.get(`/api/doctors/prescriptions/
-        ${appointment._id}`)
+      const response = await fetchPrescriptionByAppointmentId(appointment._id);
       setExistingPrescription(response.data.prescription);
       
     } catch (error: any) {
@@ -78,9 +74,7 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
 
   const handleCompleteAppointment = async (appointmentId: string) => {
     try {
-      await axios.put(`/api/doctors/appointments/${appointmentId}`, {
-        isCompleted: true,
-      });
+      await completeAppointmentById(appointmentId);
       setAppointments((prevAppointments) =>
         prevAppointments.map((appointment) =>
           appointment._id === appointmentId

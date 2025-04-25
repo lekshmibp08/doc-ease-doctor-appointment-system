@@ -1,7 +1,10 @@
  
 import React from 'react';
-import axios from "../services/axiosConfig";
-//import normal_axios from "axios";
+import { 
+  updateDoctorProfile,
+  uploadFileToCloudinary,
+  fetchLocationName,
+} from '../services/api/doctorApi';
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../Redux/store";
 import * as Yup from "yup";
@@ -145,13 +148,12 @@ const DoctorProfileDetails = () => {
           formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
           formData.append("cloud_name", CLOUDINARY_CLOUD_NAME);
 
-          const response = await axios.post(
-            CLOUDINARY_API_URL,
-            formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
-          );
+          const config = {
+            headers: { "Content-Type": "multipart/form-data" }
+          };
+      
+          return await uploadFileToCloudinary(CLOUDINARY_API_URL, formData, config);
 
-          return response.data.secure_url;
         })
       );
 
@@ -185,12 +187,11 @@ const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
         formData.append("cloud_name", CLOUDINARY_CLOUD_NAME);
 
-        const response = await axios.post(
-          CLOUDINARY_API_URL,
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );        
-        return response.data.secure_url;
+        const config = {
+          headers: { "Content-Type": "multipart/form-data" }
+        };
+
+        return await uploadFileToCloudinary(CLOUDINARY_API_URL, formData, config);
       })
     );
 
@@ -219,8 +220,7 @@ const handleMapClick = async (event: google.maps.MapMouseEvent) => {
     },
   }));
   try {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`;
-    const response = await axios.get(url);
+    const response = await fetchLocationName(lat, lng, GOOGLE_MAPS_API_KEY);
     
     if (response.data.results && response.data.results.length > 0) {
       const locationName = response.data.results[0].formatted_address;
@@ -243,12 +243,7 @@ const handleMapClick = async (event: google.maps.MapMouseEvent) => {
 
     try {
       await validationSchema.validate(formData, { abortEarly: false });      
-      const res = await axios.patch(
-        `/api/doctors/profile/update/${currentUser?._id}`,
-        formData
-      );
-
-      const updatedDoctorData = res.data.updatedDocProfile;
+      const updatedDoctorData = await updateDoctorProfile(currentUser?._id, formData);
     
       dispatch(setDoctorToken({
         token: token ?? "",

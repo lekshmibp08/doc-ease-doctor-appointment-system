@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IReview } from "@/types/interfaces";
-import axios from "../services/axiosConfig";
+import { getDoctorReviews } from '../services/api/userApi'
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 interface ReviewProps {
@@ -13,8 +13,8 @@ const Review: React.FC<ReviewProps> = ({ doctorId }) => {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`/api/users/reviews/${doctorId}`);
-      setReviews(response.data.reviews);
+      const data = await getDoctorReviews(doctorId);
+      setReviews(data);
     } catch (error) {
       console.log("Error in fetching reviews: ", error);
     }

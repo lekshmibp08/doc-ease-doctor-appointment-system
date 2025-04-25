@@ -2,10 +2,14 @@ import { useState, useEffect } from "react";
 import { Slot } from "../types/interfaces";
 import "../styles/responsive-table.css";
 import DatePicker from "react-datepicker";
-import axios from "../services/axiosConfig";
 import "react-datepicker/dist/react-datepicker.css";
 import Swal from "sweetalert2";
 import GenerateSlotsModal from "./GenerateSlotsModal";
+import { 
+  fetchDoctorSlots,
+  generateDoctorSlots,
+  updateSlotStatus, 
+} from '../services/api/doctorApi'
 
 
 
@@ -28,16 +32,11 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
   const fetchSlots = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/api/doctors/slots", {
-        params: {
-          doctorId,
-          date: selectedDate.toISOString().split("T")[0],
-          timePeriod,
-        },
-      });
+      const date = selectedDate.toISOString().split("T")[0];
+      const { slotDataFiltered, slotId } = await fetchDoctorSlots(doctorId, date, timePeriod);
 
-      setSlots(response.data.slotDataFiltered);
-      setSlotIdFetched(response.data.slotId);
+      setSlots(slotDataFiltered);
+      setSlotIdFetched(slotId);
     } catch (error) {
       console.error("Error fetching slots:", error);
       setSlots([]);
@@ -121,22 +120,25 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
     }
 
     try {
-      const res = await axios.post("/api/doctors/generate-slots", {
+      const startDate = selectedDate.toISOString().split("T")[0];
+      const availableDays = selectedDays.map((day) => ({
+        day: day.slice(0, 2).toUpperCase(),
+        startTime: dayTimeSettings[day].startTime,
+        endTime: dayTimeSettings[day].endTime,
+      }));
+
+      const res = await generateDoctorSlots({
         doctorId,
-        startDate: selectedDate.toISOString().split("T")[0],
+        startDate,
         repeat,
-        availableDays: selectedDays.map((day) => ({
-          day: day.slice(0, 2).toUpperCase(),
-          startTime: dayTimeSettings[day].startTime,
-          endTime: dayTimeSettings[day].endTime,
-        })),
+        availableDays,
         duration,
       });
 
       Swal.fire({
         icon: "success",
         title: "Slots Generated",
-        text: res.data.message,
+        text: res.message,
         confirmButtonText: "Okay",
       });
 
@@ -155,13 +157,11 @@ const DocSlotTable = ({ doctorId }: { doctorId: string }) => {
 
   const handleAvailabilityChange = async (timeSlotId: string, status: string) => {
     try {
-      const response = await axios.put("/api/doctors/slots/update-status", {
-        slotId: slotIdFetched,
-        timeSlotId,
-        status,
-      });
-
-      const isAvailable = response.data.updation;
+      if (slotIdFetched === null) {
+        console.error("Slot ID is null");
+        return;
+      }
+      const isAvailable = await updateSlotStatus(slotIdFetched, timeSlotId, status);
 
       setSlots((prevSlots) =>
         prevSlots.map((slot) =>

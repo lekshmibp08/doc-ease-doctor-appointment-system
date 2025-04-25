@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from '../services/axiosConfig';
+import { 
+  getUserAppointments, 
+  cancelAppointment 
+} from '../services/api/userApi'
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 import { IAppointment } from '../types/interfaces';
@@ -22,12 +25,10 @@ const UserAppointmentTable: React.FC = () => {
   const [selectedAppointmentForReschedule, setSelectedAppointmentForReschedule] = useState<IAppointment | null>(null);
 
 
-  const fetchAppointments = async () => {
-    const userId = currentUser?._id;
-    
+  const fetchAppointments = async () => {    
     try {
-        const response = await axios.get(`/api/users/appointments/${userId}`);        
-        setAppointments(response.data.appointments); 
+      const data = await getUserAppointments(currentUser?._id);    
+      setAppointments(data); 
     } catch (error) {
         console.error(error);        
     }
@@ -49,7 +50,7 @@ const UserAppointmentTable: React.FC = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await axios.put(`/api/users/appointments/${appointment._id}`);
+        const response = await cancelAppointment(appointment._id);
         setAppointments((prev) => 
           prev.map((app) => 
             app._id === appointment._id ? { ...appointment, isCancelled: true } : appointment
@@ -58,7 +59,7 @@ const UserAppointmentTable: React.FC = () => {
 
         Swal.fire({
           title: "Cancelled!",
-          text: `${response.data.message}\nRefund Transaction ID: ${response.data.refundTransactionId}`,
+          text: `${response.message}\nRefund Transaction ID: ${response.refundTransactionId}`,
           icon: "success",
         });
 

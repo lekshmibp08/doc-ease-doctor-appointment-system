@@ -213,4 +213,35 @@ export interface AppointmentContainerProps {
   fee: number;
 }
 
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  newPassword: string;
+  otp: string;
+}
+
+export interface DoctorRegisterPayload {
+  email: string;
+}
+
+export interface DoctorVerifyPayload {
+  fullName: string;
+  email: string;
+  mobileNumber: string;
+  registerNumber: string;
+  password: string;
+  confirmPassword: string;
+  otp: string;
+}
+
+export interface UpdateDoctorProfilePayload {
+  doctorId: string;
+  currentPassword: string;
+  password?: string;
+  profilePicture?: string;
+}
 

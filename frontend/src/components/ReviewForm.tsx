@@ -1,6 +1,10 @@
 import type React from "react"
 import { useEffect, useState } from "react"
-import axios from "../services/axiosConfig"
+import {
+  getReviewByAppointment,
+  submitReview,
+  updateReview,
+} from '../services/api/userApi'
 import { Star } from "lucide-react"
 
 interface ReviewFormProps {
@@ -20,12 +24,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ appointmentId, doctorId, userId
   useEffect(() => {
     const fetchReview = async () => {
       try {
-        const response = await axios.get(`/api/users/reviews`, {
-          params: { appointmentId },
-        })
-        let review;
-        if (response.data) {
-          review = response.data.review[0]
+        const review = await getReviewByAppointment(appointmentId)
+        
+        if (review) {
           setRating(review.rating)
           setComment(review.comment)
           setReviewId(review._id) 
@@ -43,11 +44,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ appointmentId, doctorId, userId
     e.preventDefault()
     try {
       if (reviewId) {
-        await axios.put(`/api/users/reviews/${reviewId}`, {
-          rating, comment
-        })
+        await updateReview(reviewId, { rating, comment })
       } else {
-        await axios.post("/api/users/reviews", {
+        await submitReview({
           appointmentId,
           userId,
           doctorId,

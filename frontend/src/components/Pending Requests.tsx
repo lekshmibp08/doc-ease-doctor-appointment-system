@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../services/axiosConfig';
 import Swal from "sweetalert2";
 import Pagination from './Pagination';
 import { IPractitioner } from '../types/interfaces';
 import { useNavigate } from 'react-router-dom';
+import { 
+  getPendingRequests,
+  approveDoctorById,
+  rejectDoctorById 
+} from '../services/api/adminApi'
 
 
 const PendingRequests = () => {
@@ -16,13 +20,7 @@ const PendingRequests = () => {
   // Fetch pending doctors
   const fetchPendingDoctors  = async () => {
     try {
-      const response = await axios.get('/api/admin/doctors/pending', {
-        params: {
-          page: currentPage,
-          size: 8,
-          search: search || "",
-        },
-      });
+      const response = await getPendingRequests(currentPage, search)
 
       setPendingDoctors(response.data.doctors);
       setTotalPages(response.data.totalPages);
@@ -52,7 +50,7 @@ const PendingRequests = () => {
     });   
     if (result.isConfirmed){
       try {
-        await axios.patch(`/api/admin/doctors/approve/${id}`);
+        await approveDoctorById(id);
         Swal.fire("Success", "Doctor approved successfully", "success");
         fetchPendingDoctors();
       } catch (error) {
@@ -82,7 +80,7 @@ const PendingRequests = () => {
 
     if (!reason) return; 
     try {
-      await axios.patch(`/api/admin/doctors/reject/${id}`, {reason});
+      await rejectDoctorById(id, reason);
       Swal.fire("Success", "Doctor rejected successfully", "success");
       fetchPendingDoctors(); 
     } catch (error) {

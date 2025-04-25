@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../services/axiosConfig';
 import Swal from "sweetalert2";
 import Pagination from './Pagination';
 import { IPractitioner } from '../types/interfaces';
+import { getAllDoctors, toggleDoctorBlockStatus } from '../services/api/adminApi'
 
 
 const PractitionersList = () => {
@@ -14,14 +14,7 @@ const PractitionersList = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await axios.get('/api/admin/doctors', {
-          params: {
-            page: currentPage,
-            size: 8,
-            search: search || "",
-          },
-        });
-
+        const response = await getAllDoctors(currentPage, 8, search || "");
         setPractitioners(response.data.doctors);
         setTotalPages(response.data.totalPages);
       } catch (error) {
@@ -49,7 +42,7 @@ const PractitionersList = () => {
 
     if (result.isConfirmed){
       try {
-        const response = await axios.patch(`/api/admin/doctors/block/${id}`);
+        const response = await toggleDoctorBlockStatus(id);
         const { isBlocked } = response.data;
   
         setPractitioners((prev) =>
@@ -58,9 +51,9 @@ const PractitionersList = () => {
           )
         );   
         if (isBlocked) {
-          Swal.fire("Approved!", response.data.message, "success");
+          Swal.fire("Blocked!", response.data.message, "success");
         } else {
-          Swal.fire("Rejected!", response.data.message, "success");
+          Swal.fire("Unblocked!", response.data.message, "success");
         }
       } catch (error) {
         console.error("Error processing request:", error);

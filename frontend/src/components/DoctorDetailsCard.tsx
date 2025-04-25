@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import type { IPractitioner } from "../types/interfaces"
 import ChatButton from "./ChatButton"
 import { useEffect, useState } from "react"
-import axios from "../services/axiosConfig"
+import { fetchDoctorReviews } from '../services/api/userApi'
 import { Star, StarHalf } from "lucide-react"
 
 interface DoctorDetailsCardProps {
@@ -17,8 +17,7 @@ const DoctorDetailsCard: React.FC<DoctorDetailsCardProps> = ({ doctor }) => {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`/api/users/reviews/${doctor._id}`)
-      const reviews = response.data.reviews
+      const reviews = await fetchDoctorReviews(doctor._id);
 
       if (reviews.length > 0) {
         const totalRating = reviews.reduce((sum: number, review: any) => (sum += review.rating), 0)

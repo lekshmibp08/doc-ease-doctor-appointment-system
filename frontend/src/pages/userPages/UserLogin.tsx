@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from '../../services/axiosConfig';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import OAuth from '../../components/OAuth';
@@ -8,6 +7,11 @@ import { setUserToken, clearUserToken } from '../../Redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
+import {
+  loginUser,
+  sendForgotPasswordOtp,
+  verifyOtpAndResetPassword,
+} from '../../services/api/userApi'
 
 const UserLogin = () => {
   const [formData, setFormData] = useState({});
@@ -36,7 +40,7 @@ const UserLogin = () => {
 
     try {
       dispatch(clearUserToken());
-      const response = await axios.post('api/users/login', formData, { withCredentials: true });
+      const response = await loginUser(formData);
 
       const { token, userData } = response.data;
 
@@ -50,7 +54,7 @@ const UserLogin = () => {
 
   const handleSendOTP = async (email: string): Promise<string> => {
     try {
-      const response = await axios.post('/api/users/forget-password/send-otp', { email });
+      const response = await sendForgotPasswordOtp(email);
       return response.data.message || 'OTP sent successfully.';
     } catch (error: any) {
       throw new Error(
@@ -65,7 +69,7 @@ const UserLogin = () => {
     otp: string;
   }): Promise<string> => {
     try {
-      const response = await axios.patch('/api/users/forget-password/verify-and-reset', data);
+      const response = await verifyOtpAndResetPassword(data);
       return response.data.message || 'Password reset successful!';
     } catch (error: any) {
       throw new Error(

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { IPractitioner } from '../types/interfaces';
-import axios from '../services/axiosConfig';
+import { 
+  getDoctorSpecializations, 
+  getDoctors 
+} from '../services/api/userApi'
 import Pagination from './Pagination';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Loader2 } from "lucide-react"
@@ -39,10 +42,7 @@ const DoctorsPage = () => {
   useEffect(() => {
     const fetchSpecializations = async () => {      
       try {
-        const response = await axios.get('/api/users/doctors/specializations');
-        const validSpecializations = response.data.specializations.filter(
-          (specialization: string) => specialization.trim() !== ""
-        );
+        const validSpecializations = await getDoctorSpecializations();
         setSpecializations(validSpecializations);
       } catch (err) {
         console.error('Failed to load specializations', err);
@@ -59,23 +59,21 @@ const DoctorsPage = () => {
       try {
         setLoading(true);
         setError('');
-        const response = await axios.get('/api/users/doctors', {
-          params: {
-            page: currentPage,
-            size: 9,
-            search: search || "",
-            locationName: locationInput.includes(",") ? "" : locationInput,
-            latitude: filters.latitude,
-            longitude: filters.longitude,
-            gender: filters.gender,
-            experience: filters.experience,
-            fees: filters.fees,
-            department: filters.department || specialization,
-            sort: sort,
-          },
+        const data = await getDoctors({
+          page: currentPage,
+          size: 9,
+          search,
+          locationName: locationInput.includes(",") ? "" : locationInput,
+          latitude: filters.latitude,
+          longitude: filters.longitude,
+          gender: filters.gender,
+          experience: filters.experience,
+          fees: filters.fees,
+          department: filters.department || specialization,
+          sort,
         });
-        setDoctors(response.data.doctors);
-        setTotalPages(response.data.totalPages);
+        setDoctors(data.doctors);
+        setTotalPages(data.totalPages);
         setLoading(false);
       } catch (err) {
         console.log(err);        

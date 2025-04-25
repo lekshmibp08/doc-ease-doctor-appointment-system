@@ -1,10 +1,10 @@
-import axios from "../services/axiosConfig";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../Redux/store";
 import * as Yup from "yup";
 import { useState } from "react";
 import { setUserToken } from "../Redux/slices/userSlice";
+import { updateUserProfileDetails } from '../services/api/userApi'
 
 const UserProfileDetails = () => {
   const { token, currentUser } = useSelector((state: RootState) => state.userAuth);
@@ -67,12 +67,9 @@ const UserProfileDetails = () => {
 
     try {
       await validationSchema.validate(formData, { abortEarly: false });
-      const res = await axios.patch(
-        `/api/users/profile/update/${currentUser?._id}`,
-        formData
-      );
+      const res = await updateUserProfileDetails(currentUser?._id, formData);
 
-      const updatedUserData = res.data.updatedUser;
+      const updatedUserData = res.updatedUser;
 
       dispatch(setUserToken({
         token: token ?? "", 
@@ -80,7 +77,7 @@ const UserProfileDetails = () => {
       }));  
 
       setErrors({});
-      Swal.fire("Updated!", res.data.message, "success");
+      Swal.fire("Updated!", res.message, "success");
     } catch (validationError: any) {
       const newErrors: Record<string, string> = {};
       validationError.inner.forEach((err: any) => {

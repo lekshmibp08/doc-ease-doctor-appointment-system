@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import axios from '../../services/axiosConfig';
 import { useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store'; 
 import OAuth from '../../components/OAuth';
+import { sendOtpToEmail, verifyOtpAndRegister } from '../../services/api/userApi'
 
 // Validation schema for the first step (Registration)
 const step1ValidationSchema = Yup.object().shape({
@@ -34,7 +34,7 @@ const UserSignup = () => {
   const [step, setStep] = useState(1);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [timer, setTimer] = useState(120); // Timer in seconds
+  const [timer, setTimer] = useState(60); // Timer in seconds
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,7 +69,7 @@ const UserSignup = () => {
   const handleRegister = async (values: any) => {
     setError('');
     try {
-      const response = await axios.post('/api/users/send-otp', { email: values.email });
+      const response = await sendOtpToEmail(values.email);
       setMessage(response.data.message);
       setStep(2); // Move to Step 2
       setTimer(120); // Reset timer for 2 minutes
@@ -83,7 +83,7 @@ const UserSignup = () => {
     setError('');
     setMessage('');
     try {
-      const response = await axios.post('/api/users/verify-otp-and-register', values);
+      const response = await verifyOtpAndRegister(values);
       setMessage(response.data.message);
       navigate('/user/login'); 
     } catch (err: any) {

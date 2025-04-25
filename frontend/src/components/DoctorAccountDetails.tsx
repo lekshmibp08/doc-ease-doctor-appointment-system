@@ -1,4 +1,3 @@
-import axios from "../services/axiosConfig";
 import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../Redux/store";
@@ -6,8 +5,12 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import { setDoctorToken } from "../Redux/slices/doctorSlice";
+import {
+  uploadDoctorProfileImage, 
+  updateDoctorProfile
+} from '../services/api/doctorApi'
 
-// Form validation schema with Yup
+
 const validationSchema = Yup.object({
   currentPassword: Yup.string()
     .test(
@@ -53,37 +56,9 @@ const DoctorAccountDetails = () => {
   const [imagePercent, setImagePercent] = useState(0);
 
   const handleFileUpload = async (image: File) => {
-    const data = new FormData();
-    data.append("file", image);
-    data.append("upload_preset", "DocEase");
-    data.append("cloud_name", "dgpy8wkiw");
-
-    try {
-      const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/dgpy8wkiw/image/upload",
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent: any) => {
-            if (progressEvent.total) {
-              const percent = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              setImagePercent(percent);
-            }
-          },
-        }
-      );
-
-      const { secure_url } = response.data;
-      return secure_url;
-    } catch (error) {
-      setImageError(true);
-      console.error("Error uploading image:", error);
-      return null; 
-    }
+    const secure_url = await uploadDoctorProfileImage(image, setImagePercent);
+    if (!secure_url) setImageError(true);
+    return secure_url;
   };
 
   const handlesubmit = async (values: any, { resetForm, setFieldValue }: any) => {    
@@ -104,12 +79,7 @@ const DoctorAccountDetails = () => {
   
     try {
         
-      const res = await axios.patch(
-        `/api/doctors/profile/update/${currentUser?._id}`,
-        updatedData
-      );
-      
-      const updatedUserData = res.data.updatedDocProfile;
+      const updatedUserData = await updateDoctorProfile(currentUser?._id, updatedData);
   
       dispatch(setDoctorToken({
         token: token ?? "", 

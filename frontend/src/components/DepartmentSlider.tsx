@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
+import { getDoctorSpecializations } from '../services/api/userApi'
 import axios from "../services/axiosConfig";
 import { Link } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
@@ -11,10 +12,7 @@ const DepartmentSlider: React.FC = () => {
   useEffect(() => {
     const fetchSpecializations = async () => {
       try {
-        const response = await axios.get("/api/users/doctors/specializations");
-        const validSpecializations = response.data.specializations.filter(
-          (specialization: string) => specialization.trim() !== ""
-        );
+        const validSpecializations = await getDoctorSpecializations();
         setSpecializations(validSpecializations);
         
       } catch (error) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../services/axiosConfig';
 import Swal from "sweetalert2";
 import Pagination from './Pagination';
+import { getAllUsers, toggleUserBlock } from '../services/api/adminApi'
 
 interface User {
     _id: string;
@@ -20,13 +20,7 @@ const UserList: React.FC = () => {
   useEffect(() => {
     const fetchUsers = async () => {        
       try {
-        const response = await axios.get('/api/admin/users', {
-          params: {
-            page: currentPage,
-            size: 8,
-            search: search || "",
-          },
-        });
+        const response = await getAllUsers(currentPage, 8, search || "");
         
         setUsers(response.data.users);
         setTotalPages(response.data.totalPages);
@@ -54,7 +48,7 @@ const UserList: React.FC = () => {
     });
     if (result.isConfirmed){
       try {
-        const response = await axios.patch(`/api/admin/users/block/${id}`);
+        const response = await toggleUserBlock(id);
         const { isBlocked } = response.data;
 
         setUsers((prev) =>

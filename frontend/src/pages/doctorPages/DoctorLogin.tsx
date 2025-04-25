@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from '../../services/axiosConfig';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import OAuth from '../../components/OAuth';
@@ -8,10 +7,19 @@ import { setDoctorToken, clearDoctorToken } from '../../Redux/slices/doctorSlice
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
+import { 
+  doctorLogin, 
+  sendDoctorOtp, 
+  resetDoctorPassword 
+} from '../../services/api/doctorApi'
+import { LoginPayload } from '../../types/interfaces';
 
 const DoctorLoginPage = () => {
 
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<LoginPayload>({
+    email: '',
+    password: '',
+  });
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
 
@@ -24,7 +32,7 @@ const DoctorLoginPage = () => {
     if (token) {
       navigate('/doctor/dashboard', { replace: true });
     }
-  }, [token, navigate]); // Runs whenever the token or navigate changes
+  }, [token, navigate]); 
 
 
   const handleChange = (e: any) => {
@@ -37,7 +45,7 @@ const DoctorLoginPage = () => {
     
     try {
       clearDoctorToken();
-      const response = await axios.post('/api/doctors/login', formData, { withCredentials: true });
+      const response = await doctorLogin(formData);
 
       const { token, userData } = response.data;
       
@@ -52,7 +60,7 @@ const DoctorLoginPage = () => {
 
   const handleSendOTP = async (email: string): Promise<string> => {
     try {
-      const response = await axios.post('/api/doctors/forget-password/send-otp', { email });
+      const response = await sendDoctorOtp(email);
       return response.data.message || 'OTP sent successfully.';
     } catch (error: any) {
       throw new Error(
@@ -67,7 +75,7 @@ const DoctorLoginPage = () => {
     otp: string;
   }): Promise<string> => {
     try {
-      const response = await axios.patch('/api/doctors/forget-password/verify-and-reset', data);
+      const response = await resetDoctorPassword(data);
       return response.data.message || 'Password reset successful!';
     } catch (error: any) {
       throw new Error(
