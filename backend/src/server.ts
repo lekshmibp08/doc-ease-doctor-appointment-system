@@ -6,13 +6,13 @@ import http from 'http';
 import morgan from 'morgan'
 
 import connectDB from "./infrastructure/database/connection";
-import userRoutes from "./infrastructure/web/routes/UserRoutes";
-import doctorRoutes from "./infrastructure/web/routes/doctorRoutes"
-import adminRoutes from "./infrastructure/web/routes/AdminRoutes"
-import authRoutes from "./infrastructure/web/routes/AuthRoutes"
-import { notFound, errorHandler } from "./infrastructure/middlewares/ErrorMiddleWare "
+import userRoutes from "./interfaces/routes/UserRoutes";
+import doctorRoutes from "./interfaces/routes/doctorRoutes"
+import adminRoutes from "./interfaces/routes/AdminRoutes"
+import authRoutes from "./interfaces/routes/AuthRoutes"
+import { notFound, errorHandler } from "./interfaces/middlewares/ErrorMiddleWare "
 //import { setupSlotMaintenanceJob } from "./infrastructure/jobs/slotJob";
-import { initializeSocket } from "./infrastructure/web/socket";
+import { initializeSocket } from "./infrastructure/socket";
 
 dotenv.config({ path: `${__dirname}/../.env` });
 
