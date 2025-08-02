@@ -1,11 +1,11 @@
 import express from "express";
-import { doctorController } from "../controllers/DoctorController";
-import { authController } from "../controllers/AuthController";
-import { slotController } from "../controllers/SlotController";
-import { authenticateUser } from "../../middlewares/AuthMiddleware";
-import { appoinmentController } from "../controllers/AppoinmentController";
-import { chatController } from "../controllers/ChatController";
-import { prescriptionController } from "../controllers/PrescriptionController";
+import { doctorController } from "../controllers/DoctorController"; 
+import { authController } from "../controllers/AuthController"; 
+import { slotController } from "../controllers/SlotController"; 
+import { authenticateUser } from "../middlewares/AuthMiddleware"; 
+import { appoinmentController } from "../controllers/AppoinmentController"; 
+import { chatController } from "../controllers/ChatController"; 
+import { prescriptionController } from "../controllers/PrescriptionController"; 
 
 const router = express.Router();
 

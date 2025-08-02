@@ -1,5 +1,5 @@
 import { SlotRepository } from "../../infrastructure/database/repositories/SlotRepository";
-import SlotService from "../../infrastructure/web/services/SlotService";
+import SlotService from "../../infrastructure/services/SlotService";
 import { filterSlotsByPeriod } from "../helper/slotFilter";
 import { Slot } from "../../domain/entities/Slot";
 

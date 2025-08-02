@@ -1,5 +1,5 @@
 import { Request, Response, RequestHandler } from "express";
-import { paymentService } from "../services/paymentService";
+import { paymentService } from "../../infrastructure/services/paymentService";
 
 export const paymentController = {
   createOrder: (async (req: Request, res: Response): Promise<void> => {

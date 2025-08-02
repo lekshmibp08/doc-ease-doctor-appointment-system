@@ -1,8 +1,8 @@
 import type { Request, Response } from "express"
-import { ReviewUseCase } from "../../../application/useCases/ReviewUseCase" 
-import { ReviewRepository } from "../../database/repositories/ReviewRepository" 
-import { createAppointmentRepository } from "../../database/repositories/AppoinmentRepository"
-import { updateAppointmentReviewStatus } from "../../../application/useCases/user/updateAppointmentReviewStatus"
+import { ReviewUseCase } from "../../application/useCases/ReviewUseCase" 
+import { ReviewRepository } from "../../infrastructure/database/repositories/ReviewRepository" 
+import { createAppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository"
+import { updateAppointmentReviewStatus } from "../../application/useCases/user/updateAppointmentReviewStatus"
 
 const reviewRepository = new ReviewRepository()
 const reviewUseCase = new ReviewUseCase(reviewRepository)

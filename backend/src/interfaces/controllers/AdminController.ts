@@ -1,20 +1,24 @@
  
 import { Request, Response } from "express";
-import { createUserRepository } from "../../database/repositories/UserRepository";
-import { loginAdmin } from "../../../application/useCases/admin/loginAdmin";
-import { createDoctorRepository } from "../../database/repositories/DoctorRepository";
-import { listDoctors } from "../../../application/useCases/admin/listDoctors";
-import { listUsers } from "../../../application/useCases/admin/listUsers";
-import { toggleBlockUser } from "../../../application/useCases/admin/toggleBlockUser";
-import { toggleBlockDoctor } from "../../../application/useCases/admin/toggleBlockDoctor";
-import { fetchPendingDoctors } from "../../../application/useCases/admin/fetchPendingDoctors";
-import { approveDoctor } from "../../../application/useCases/admin/approveDoctor";
-import { rejectRequest } from "../../../application/useCases/admin/rejectRequest";
-import { GetAdminDashboardStatsUseCase } from "../../../application/useCases/admin/getAdminDashboardStats";
-import { AdminDashboardRepository } from "../../database/repositories/AdminDashboardRepository";
+//import { createUserRepository } from "../../infrastructure/database/repositories/UserRepository";
+import { loginAdmin } from "../../application/useCases/admin/loginAdmin";
+import { createDoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
+import { listDoctors } from "../../application/useCases/admin/listDoctors";
+import { listUsers } from "../../application/useCases/admin/listUsers";
+import { toggleBlockUser } from "../../application/useCases/admin/toggleBlockUser";
+import { toggleBlockDoctor } from "../../application/useCases/admin/toggleBlockDoctor";
+import { fetchPendingDoctors } from "../../application/useCases/admin/fetchPendingDoctors";
+import { approveDoctor } from "../../application/useCases/admin/approveDoctor";
+import { rejectRequest } from "../../application/useCases/admin/rejectRequest";
+import { GetAdminDashboardStatsUseCase } from "../../application/useCases/admin/getAdminDashboardStats";
+import { AdminDashboardRepository } from "../../infrastructure/database/repositories/AdminDashboardRepository";
+import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
+
+const userRepository = new UserRepository();
 
 export const adminController = {
   // Admin Login
+  
   login: async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
@@ -25,7 +29,6 @@ export const adminController = {
         //return;
       }
 
-      const userRepository = createUserRepository();
 
       const { token, refreshToken, role } = await loginAdmin(userRepository, { email, password });
 
@@ -91,7 +94,6 @@ export const adminController = {
       const pageSize = parseInt(size as string);
       const searchQuery = search ? String(search) : '';
 
-      const userRepository = createUserRepository();
       const { users, totalUsers, totalPages } = await listUsers(userRepository, pageNumber, pageSize, searchQuery);
 
       res.status(200).json({ users, totalUsers, totalPages, currentPage: pageNumber });
@@ -154,7 +156,6 @@ export const adminController = {
   blockAndUnblockUser: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const userRepository = createUserRepository();
 
       const result = await toggleBlockUser(userRepository, id);
 

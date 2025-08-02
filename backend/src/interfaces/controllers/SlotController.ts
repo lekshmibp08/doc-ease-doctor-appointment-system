@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { SlotRepository } from "../../database/repositories/SlotRepository";
-import { updateSlotUseCase } from "../../../application/useCases/doctor/updateSlotUseCase";
-import { fetchSlotUseCase } from "../../../application/useCases/user/fetchSlotUseCase";
-import { updateSlotTimeUseCase } from "../../../application/useCases/doctor/updateSlotTimeUseCase";
-import SlotUseCase from "../../../application/useCases/SlotUseCase";
+import { SlotRepository } from "../../infrastructure/database/repositories/SlotRepository";
+import { updateSlotUseCase } from "../../application/useCases/doctor/updateSlotUseCase";
+import { fetchSlotUseCase } from "../../application/useCases/user/fetchSlotUseCase";
+import { updateSlotTimeUseCase } from "../../application/useCases/doctor/updateSlotTimeUseCase";
+import SlotUseCase from "../../application/useCases/SlotUseCase";
 
 //type TimePeriod = "Morning" | "Afternoon" | "Evening";
 
@@ -11,7 +11,6 @@ const slotRepository = new SlotRepository();
 
 export const slotController = {
 
-  /** Generate Slots **/
   async generateSlots (req: Request, res: Response): Promise<void> {
     try {      
       await SlotUseCase.generateSlots(req.body);

@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import PrescriptionUseCase from "../../../application/useCases/PrescriptionUseCase"
-import { getAppointmentsByIdUseCase } from "../../../application/useCases/user/getAppointmentByIdUseCase";
-import { createAppointmentRepository } from "../../database/repositories/AppoinmentRepository";
+import PrescriptionUseCase from "../../application/useCases/PrescriptionUseCase"
+import { getAppointmentsByIdUseCase } from "../../application/useCases/user/getAppointmentByIdUseCase";
+import { createAppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
 
 
 export const prescriptionController = {

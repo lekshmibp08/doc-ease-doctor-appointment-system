@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
-import { createUserRepository } from "../database/repositories/UserRepository";
-import { createDoctorRepository } from "../database/repositories/DoctorRepository";
+import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
+import { createDoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
 
 
 interface DecodedToken {
@@ -37,7 +37,7 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
         return;
       }
 
-      const userRepository = createUserRepository();
+      const userRepository = new UserRepository();
       const doctorRepository = createDoctorRepository();
 
       let user;

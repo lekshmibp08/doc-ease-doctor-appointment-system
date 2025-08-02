@@ -2,7 +2,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { createDoctorRepository } from "../../../infrastructure/database/repositories/DoctorRepository";
-import { createUserRepository } from "../../../infrastructure/database/repositories/UserRepository";
+import { UserRepository } from "../../../infrastructure/database/repositories/UserRepository";
 
 export const googleOAuthLogin = async (
   fullName: string,
@@ -34,7 +34,7 @@ export const googleOAuthLogin = async (
       });
     }
   } else {
-    const userRepository = createUserRepository();
+    const userRepository = new UserRepository;
     entity = await userRepository.findByEmail(email);    
 
     if (!entity) {

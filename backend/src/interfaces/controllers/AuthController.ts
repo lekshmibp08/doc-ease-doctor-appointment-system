@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { googleOAuthLogin } from "../../../application/useCases/auth/googleOAuthLogin";
+import { googleOAuthLogin } from "../../application/useCases/auth/googleOAuthLogin";
 import jwt from "jsonwebtoken";
 
 

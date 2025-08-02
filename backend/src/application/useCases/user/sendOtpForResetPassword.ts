@@ -1,6 +1,6 @@
 import { IOtpRepository } from "../../../domain/repositories/IOtpRepository";
 import { Otp } from "../../../domain/entities/Otp";
-import { sendEmail } from "../../../infrastructure/web/services/EmailService";
+import { sendEmail } from "../../../infrastructure/services/EmailService";
 
 export const sendOtpForResetPassword = async (
   otpRepository: IOtpRepository,

@@ -1,14 +1,14 @@
 import express from "express";
-import { adminController } from "../controllers/AdminController";
+import { adminController } from "../controllers/AdminController"; 
 import { authController } from "../controllers/AuthController";
-import { authenticateUser } from "../../middlewares/AuthMiddleware";
+import { authenticateUser } from "../middlewares/AuthMiddleware";
 import { appoinmentController } from "../controllers/AppoinmentController";
 
 const router = express.Router();
 
 
 // Login route
-router.post("/login", adminController.login);
+//router.post("/login", adminController.login);
 
 // Refresh token endpoint
 router.post("/refresh-token", authController.refreshAccessToken);
