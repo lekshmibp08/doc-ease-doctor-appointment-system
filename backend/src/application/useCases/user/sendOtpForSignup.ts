@@ -1,26 +1,27 @@
 import { IOtpRepository } from "../../../domain/repositories/IOtpRepository";
 import { Otp } from "../../../domain/entities/Otp";
-import { sendEmail } from "../../../infrastructure/web/services/EmailService";
+import { sendEmail } from "../../../infrastructure/services/EmailService";
 
-export const sendOtpForSignup = async (
-  otpRepository: IOtpRepository,
-  email: string
-): Promise<void> => {
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+export class SendOtpForSignupUseCase {
+  constructor(private otpRepository: IOtpRepository) {}
 
-  console.log('OTP : ', otp);
-  
-  const otpEntity: Otp = {
-    email,
-    otp,
-    expiresAt: new Date(Date.now() + 5 * 60 * 1000), // OTP expires in 15 minutes
-  };
+  async execute(email: string): Promise<void> {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-  await otpRepository.saveOtp(otpEntity);
-  
-  await sendEmail(
-    email,
-    "Your OTP for Signup Verification",
-    `Your OTP is ${otp}. It expires in 2 minutes.`
-  );
-};
+    console.log("OTP : ", otp);
+
+    const otpEntity: Otp = {
+      email,
+      otp,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+    };
+
+    await this.otpRepository.saveOtp(otpEntity);
+
+    await sendEmail(
+      email,
+      "Your OTP for Signup Verification",
+      `Your OTP is ${otp}. It expires in 2 minutes.`
+    );
+  }
+}
