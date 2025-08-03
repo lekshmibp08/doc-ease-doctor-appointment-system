@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { LoginAdmin } from "../../application/useCases/admin/loginAdminUseCase";
 import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
 import { ListDoctorsUseCase } from "../../application/useCases/admin/listDoctorsUseCase";
-import { listUsers } from "../../application/useCases/admin/listUsers";
+import { ListUsersUseCase } from "../../application/useCases/admin/listUsersUseCase";
 import { toggleBlockUser } from "../../application/useCases/admin/toggleBlockUser";
 import { toggleBlockDoctor } from "../../application/useCases/admin/toggleBlockDoctor";
 import { FetchPendingDoctors } from "../../application/useCases/admin/fetchPendingDoctorsUseCase";
@@ -17,6 +17,7 @@ const doctorRepository = new DoctorRepository();
 const loginAdmin = new LoginAdmin(userRepository);
 const listDoctorsUseCase = new ListDoctorsUseCase(doctorRepository);
 const fetchPendingDoctors = new FetchPendingDoctors(doctorRepository);
+const listUsersUseCase = new ListUsersUseCase(userRepository);
 
 export const adminController = {
   // Admin Login
@@ -57,11 +58,8 @@ export const adminController = {
       const pageSize = parseInt(size as string);
       const searchQuery = search ? String(search) : "";
 
-      const { doctors, totalDoctors, totalPages } = await listDoctorsUseCase.execute(
-        pageNumber,
-        pageSize,
-        searchQuery
-      );
+      const { doctors, totalDoctors, totalPages } =
+        await listDoctorsUseCase.execute(pageNumber, pageSize, searchQuery);
 
       res
         .status(200)
@@ -82,11 +80,8 @@ export const adminController = {
     const searchQuery = search ? String(search) : "";
 
     try {
-      const { doctors, totalDoctors, totalPages } = await fetchPendingDoctors.execute(
-        pageNumber,
-        pageSize,
-        searchQuery
-      );
+      const { doctors, totalDoctors, totalPages } =
+        await fetchPendingDoctors.execute(pageNumber, pageSize, searchQuery);
 
       res
         .status(200)
@@ -109,8 +104,7 @@ export const adminController = {
       const pageSize = parseInt(size as string);
       const searchQuery = search ? String(search) : "";
 
-      const { users, totalUsers, totalPages } = await listUsers(
-        userRepository,
+      const { users, totalUsers, totalPages } = await listUsersUseCase.execute(
         pageNumber,
         pageSize,
         searchQuery
