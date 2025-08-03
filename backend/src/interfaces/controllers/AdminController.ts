@@ -7,7 +7,7 @@ import { toggleBlockUser } from "../../application/useCases/admin/toggleBlockUse
 import { toggleBlockDoctor } from "../../application/useCases/admin/toggleBlockDoctor";
 import { FetchPendingDoctors } from "../../application/useCases/admin/fetchPendingDoctorsUseCase";
 import { ApproveDoctorUsecase } from "../../application/useCases/admin/approveDoctorUseCase";
-import { rejectRequest } from "../../application/useCases/admin/rejectRequest";
+import { RejectRequestUseCase } from "../../application/useCases/admin/rejectRequestUseCase";
 import { GetAdminDashboardStatsUseCase } from "../../application/useCases/admin/getAdminDashboardStats";
 import { AdminDashboardRepository } from "../../infrastructure/database/repositories/AdminDashboardRepository";
 import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
@@ -19,6 +19,7 @@ const listDoctorsUseCase = new ListDoctorsUseCase(doctorRepository);
 const fetchPendingDoctors = new FetchPendingDoctors(doctorRepository);
 const listUsersUseCase = new ListUsersUseCase(userRepository);
 const approveDoctorUsecase = new ApproveDoctorUsecase(doctorRepository);
+const rejectRequestUseCase = new RejectRequestUseCase(doctorRepository);
 
 export const adminController = {
   // Admin Login
@@ -143,7 +144,7 @@ export const adminController = {
       const { id } = req.params;
       const reason = req.body.reason;
 
-      const result = await rejectRequest(doctorRepository, id, reason);
+      const result = await rejectRequestUseCase.execute(id, reason);
 
       res.status(200).json(result);
     } catch (error: any) {
