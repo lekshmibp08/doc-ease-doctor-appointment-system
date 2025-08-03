@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { LoginAdmin } from "../../application/useCases/admin/loginAdminUseCase";
 import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
-import { listDoctors } from "../../application/useCases/admin/listDoctors";
+import { ListDoctorsUseCase } from "../../application/useCases/admin/listDoctorsUseCase";
 import { listUsers } from "../../application/useCases/admin/listUsers";
 import { toggleBlockUser } from "../../application/useCases/admin/toggleBlockUser";
 import { toggleBlockDoctor } from "../../application/useCases/admin/toggleBlockDoctor";
-import { fetchPendingDoctors } from "../../application/useCases/admin/fetchPendingDoctors";
+import { fetchPendingDoctors } from "../../application/useCases/admin/fetchPendingDoctorsUseCase";
 import { approveDoctor } from "../../application/useCases/admin/approveDoctor";
 import { rejectRequest } from "../../application/useCases/admin/rejectRequest";
 import { GetAdminDashboardStatsUseCase } from "../../application/useCases/admin/getAdminDashboardStats";
@@ -15,6 +15,7 @@ import { UserRepository } from "../../infrastructure/database/repositories/UserR
 const userRepository = new UserRepository();
 const doctorRepository = new DoctorRepository();
 const loginAdmin = new LoginAdmin(userRepository);
+const listDoctorsUseCase = new ListDoctorsUseCase(doctorRepository);
 
 export const adminController = {
   // Admin Login
@@ -55,8 +56,7 @@ export const adminController = {
       const pageSize = parseInt(size as string);
       const searchQuery = search ? String(search) : "";
 
-      const { doctors, totalDoctors, totalPages } = await listDoctors(
-        doctorRepository,
+      const { doctors, totalDoctors, totalPages } = await listDoctorsUseCase.execute(
         pageNumber,
         pageSize,
         searchQuery
