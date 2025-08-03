@@ -22,9 +22,12 @@ const approveDoctorUsecase = new ApproveDoctorUsecase(doctorRepository);
 const rejectRequestUseCase = new RejectRequestUseCase(doctorRepository);
 const toggleBlockDoctorUseCase = new ToggleBlockDoctorUseCase(doctorRepository);
 const toggleBlockUseruseCase = new ToggleBlockUseruseCase(userRepository);
+const adminDashboardRepository = new AdminDashboardRepository();
+const getAdminDashboardStatsUseCase = new GetAdminDashboardStatsUseCase(
+  adminDashboardRepository
+);
 
 export const adminController = {
-  // Admin Login
 
   login: async (req: Request, res: Response): Promise<void> => {
     try {
@@ -192,10 +195,6 @@ export const adminController = {
   ): Promise<void> => {
     try {
       const { startDate, endDate } = req.body;
-      const adminDashboardRepository = new AdminDashboardRepository();
-      const getAdminDashboardStatsUseCase = new GetAdminDashboardStatsUseCase(
-        adminDashboardRepository
-      );
 
       const stats = await getAdminDashboardStatsUseCase.execute(
         new Date(startDate),
