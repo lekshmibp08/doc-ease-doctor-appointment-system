@@ -1,25 +1,34 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 
-export const fetchPendingDoctors = async (doctorRepository: IDoctorRepository, page: number, size: number, search: string) => {
-  const skip = (page - 1) * size;
-  const limit = size;
+export class FetchPendingDoctors {
+  constructor(private doctorRepository: IDoctorRepository) {}
 
-  const query = search
-    ? { $or: [
-        { fullName: { $regex: search, $options: "i" } }, 
-        { registerNumber: { $regex: search, $options: "i" } }
-    ],
-    isApproved: false  
-    }
-    : { isApproved: false };
+  async execute(page: number, size: number, search: string) {
+    const skip = (page - 1) * size;
+    const limit = size;
 
-  const doctors = await doctorRepository.getDoctorsWithPagination(skip, limit, query);
-  const totalDoctors = await doctorRepository.countDoctors(query);
-  const totalPages = Math.ceil(totalDoctors / size);
+    const query = search
+      ? {
+          $or: [
+            { fullName: { $regex: search, $options: "i" } },
+            { registerNumber: { $regex: search, $options: "i" } },
+          ],
+          isApproved: false,
+        }
+      : { isApproved: false };
 
-  return {
-    doctors,
-    totalDoctors,
-    totalPages,
-  };
-};
+    const doctors = await this.doctorRepository.getDoctorsWithPagination(
+      skip,
+      limit,
+      query
+    );
+    const totalDoctors = await this.doctorRepository.countDoctors(query);
+    const totalPages = Math.ceil(totalDoctors / size);
+
+    return {
+      doctors,
+      totalDoctors,
+      totalPages,
+    };
+  }
+}

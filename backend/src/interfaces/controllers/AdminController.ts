@@ -5,7 +5,7 @@ import { ListDoctorsUseCase } from "../../application/useCases/admin/listDoctors
 import { listUsers } from "../../application/useCases/admin/listUsers";
 import { toggleBlockUser } from "../../application/useCases/admin/toggleBlockUser";
 import { toggleBlockDoctor } from "../../application/useCases/admin/toggleBlockDoctor";
-import { fetchPendingDoctors } from "../../application/useCases/admin/fetchPendingDoctorsUseCase";
+import { FetchPendingDoctors } from "../../application/useCases/admin/fetchPendingDoctorsUseCase";
 import { approveDoctor } from "../../application/useCases/admin/approveDoctor";
 import { rejectRequest } from "../../application/useCases/admin/rejectRequest";
 import { GetAdminDashboardStatsUseCase } from "../../application/useCases/admin/getAdminDashboardStats";
@@ -16,6 +16,7 @@ const userRepository = new UserRepository();
 const doctorRepository = new DoctorRepository();
 const loginAdmin = new LoginAdmin(userRepository);
 const listDoctorsUseCase = new ListDoctorsUseCase(doctorRepository);
+const fetchPendingDoctors = new FetchPendingDoctors(doctorRepository);
 
 export const adminController = {
   // Admin Login
@@ -81,8 +82,7 @@ export const adminController = {
     const searchQuery = search ? String(search) : "";
 
     try {
-      const { doctors, totalDoctors, totalPages } = await fetchPendingDoctors(
-        doctorRepository,
+      const { doctors, totalDoctors, totalPages } = await fetchPendingDoctors.execute(
         pageNumber,
         pageSize,
         searchQuery
