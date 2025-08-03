@@ -3,23 +3,42 @@ import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepositor
 import { Doctor } from "../../../domain/entities/Doctor";
 import bcrypt from "bcrypt";
 
-export const verifyOtpAndRegisterDoc = async (
-  otpRepository: IOtpRepository,
-  userRepository: IDoctorRepository,
-  data: { email: string; otp: string; fullName: string; mobileNumber: string; registerNumber: string; password: string }
-): Promise<Doctor> => {
-  const { email, otp, fullName, mobileNumber, registerNumber, password } = data;
+export class VerifyOtpAndRegisterDocUseCase {
+  constructor(
+    private otpRepository: IOtpRepository,
+    private userRepository: IDoctorRepository
+  ) {}
 
-  // Check OTP validity
-  const otpEntity = await otpRepository.findOtp(email, otp);
-  if (!otpEntity || new Date() > otpEntity.expiresAt) {
-    throw new Error("Invalid or expired OTP");
+  async execute(data: {
+    email: string;
+    otp: string;
+    fullName: string;
+    mobileNumber: string;
+    registerNumber: string;
+    password: string;
+  }): Promise<Doctor> {
+    const { email, otp, fullName, mobileNumber, registerNumber, password } =
+      data;
+
+    const otpEntity = await this.otpRepository.findOtp(email, otp);
+    if (!otpEntity || new Date() > otpEntity.expiresAt) {
+      throw new Error("Invalid or expired OTP");
+    }
+
+    await this.otpRepository.deleteOtp(email);
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const doctor: Doctor = {
+      fullName,
+      email,
+      mobileNumber,
+      registerNumber,
+      password: hashedPassword,
+      role: "doctor",
+      isApproved: false,
+      isBlocked: false,
+    };
+    return await this.userRepository.create(doctor);
   }
-
-  await otpRepository.deleteOtp(email);
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const doctor: Doctor = { fullName, email, mobileNumber, registerNumber, password: hashedPassword, role: "doctor", isApproved: false, isBlocked: false };
-  return await userRepository.create(doctor);
-};
+}

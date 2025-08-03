@@ -1,17 +1,33 @@
 import { Request, Response } from "express";
 import { OtpRepository } from "../../infrastructure/database/repositories/OtpRepository";
-import { createDoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
+import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
 import { SendOtpForSignupUseCase } from "../../application/useCases/user/sendOtpForSignup";
-import { verifyOtpAndRegisterDoc } from "../../application/useCases/doctor/verifyOtpAndRegisterDoc";
-import { loginDoctor } from "../../application/useCases/doctor/loginDoctor";
-import { sendOtpForResetPassword } from "../../application/useCases/user/sendOtpForResetPassword";
-import { verifyOtpAndResetDoctorPassword } from "../../application/useCases/doctor/verifyOtpAndResetDoctorPassword";
-import { updateDocProfile } from "../../application/useCases/doctor/updateDocProfile";
+import { VerifyOtpAndRegisterDocUseCase } from "../../application/useCases/doctor/verifyOtpAndRegisterDoc";
+import { LoginDoctorUseCase } from "../../application/useCases/doctor/loginDoctorUseCase";
+import { SendOtpForResetPassword } from "../../application/useCases/user/sendOtpForResetPassword";
+import { VerifyOtpAndResetDoctorPassword } from "../../application/useCases/doctor/ResetDoctorPassworduseCase";
+import { UpdateDocProfile } from "../../application/useCases/doctor/updateDocProfileUseCase";
 import { createAppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
 import { GetDashboardStatsUseCase } from "../../application/useCases/doctor/getDashboardStatsUseCase";
 
 const otpRepository = new OtpRepository();
-const sendOtpForSignupUseCase = new SendOtpForSignupUseCase(otpRepository)
+const sendOtpForSignupUseCase = new SendOtpForSignupUseCase(otpRepository);
+const sendOtpForResetPassword = new SendOtpForResetPassword(otpRepository);
+const doctorRepository = new DoctorRepository();
+const verifyOtpAndRegisterDocUseCase = new VerifyOtpAndRegisterDocUseCase(
+  otpRepository,
+  doctorRepository
+);
+const loginDoctorUseCase = new LoginDoctorUseCase(doctorRepository);
+const verifyOtpAndResetDoctorPassword = new VerifyOtpAndResetDoctorPassword(
+  otpRepository,
+  doctorRepository
+);
+const updateDocProfile = new UpdateDocProfile(doctorRepository);
+const appoinmentRepository = createAppointmentRepository();
+const getDashboardStatsUseCase = new GetDashboardStatsUseCase(
+  appoinmentRepository
+);
 
 export const doctorController = {
   // Send OTP during signup
@@ -25,10 +41,7 @@ export const doctorController = {
       return;
     }
 
-    const doctorRepository = createDoctorRepository();
-
     try {
-      // Check if the email already exists in the user database
       const existingDoctor = await doctorRepository.findByEmail(email);
       if (existingDoctor) {
         res.status(400).json({ message: "Email is already registered" });
@@ -46,21 +59,20 @@ export const doctorController = {
     const { email, otp, fullName, mobileNumber, registerNumber, password } =
       req.body;
 
-    const doctorRepository = createDoctorRepository();
-
     try {
-      const doctor = await verifyOtpAndRegisterDoc(
-        otpRepository,
-        doctorRepository,
-        { email, otp, fullName, mobileNumber, registerNumber, password }
-      );
-      res
-        .status(201)
-        .json({
-          message:
-            "OTP verified and Doctor registered successfully, You can now log in and update profile..!",
-          doctor,
-        });
+      const doctor = await verifyOtpAndRegisterDocUseCase.execute({
+        email,
+        otp,
+        fullName,
+        mobileNumber,
+        registerNumber,
+        password,
+      });
+      res.status(201).json({
+        message:
+          "OTP verified and Doctor registered successfully, You can now log in and update profile..!",
+        doctor,
+      });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
@@ -76,32 +88,25 @@ export const doctorController = {
         return;
       }
 
-      const doctorRepository = createDoctorRepository();
-
-      const { token, refreshToken, role, doctor } = await loginDoctor(
-        doctorRepository,
-        { email, password }
-      );
+      const { token, refreshToken, role, doctor } =
+        await loginDoctorUseCase.execute({ email, password });
 
       const userData = doctor._doc;
 
-      // Store the refresh token in an HTTP-only cookie
       res.cookie("doctor_refresh_token", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res
-        .status(200)
-        .json({
-          message: "Login successful",
-          token,
-          refreshToken,
-          role,
-          userData,
-        });
+      res.status(200).json({
+        message: "Login successful",
+        token,
+        refreshToken,
+        role,
+        userData,
+      });
     } catch (error: any) {
       res.status(401).json({ message: error.message });
     }
@@ -114,15 +119,13 @@ export const doctorController = {
   ): Promise<void> => {
     const { email } = req.body;
 
-    const doctorRepository = createDoctorRepository();
-
     try {
       const existingUser = await doctorRepository.findByEmail(email);
       if (!existingUser) {
         res.status(400).json({ message: "Please enter valid Email id" });
         return;
       }
-      await sendOtpForResetPassword(otpRepository, email);
+      await sendOtpForResetPassword.execute(email);
       res.status(200).json({ message: "OTP sent successfully" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -135,19 +138,16 @@ export const doctorController = {
     res: Response
   ): Promise<void> => {
     const { email, newPassword, otp } = req.body;
-    const doctorRepository = createDoctorRepository();
 
     try {
-      await verifyOtpAndResetDoctorPassword(otpRepository, doctorRepository, {
+      await verifyOtpAndResetDoctorPassword.execute({
         email,
         newPassword,
         otp,
       });
-      res
-        .status(200)
-        .json({
-          message: "Password changed successfully, You can now log in..!",
-        });
+      res.status(200).json({
+        message: "Password changed successfully, You can now log in..!",
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -159,19 +159,12 @@ export const doctorController = {
       const { id } = req.params;
       const updatedData = req.body;
 
-      const doctorRepository = createDoctorRepository();
-      const updatedDocProfile = await updateDocProfile(
-        doctorRepository,
-        id,
-        updatedData
-      );
+      const updatedDocProfile = await updateDocProfile.execute(id, updatedData);
 
-      res
-        .status(200)
-        .json({
-          message: "User Profile Updated Successfully..!",
-          updatedDocProfile,
-        });
+      res.status(200).json({
+        message: "User Profile Updated Successfully..!",
+        updatedDocProfile,
+      });
     } catch (error: any) {
       console.error("Error in updateDoctorProfile:", error.message);
       if (error.message === "Doctor not found") {
@@ -195,9 +188,7 @@ export const doctorController = {
     const { doctorId, startDate, endDate } = req.body;
 
     try {
-      const appoinmentRepository = createAppointmentRepository();
-      const stats = await GetDashboardStatsUseCase(
-        appoinmentRepository,
+      const stats = await getDashboardStatsUseCase.execute(
         doctorId,
         new Date(startDate),
         new Date(endDate)
