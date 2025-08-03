@@ -1,18 +1,24 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 
-export const toggleBlockDoctor = async (doctorRepository: IDoctorRepository, id: string) => {
-    const doctor = await doctorRepository.findDoctorById(id);
+export class ToggleBlockDoctorUseCase {
+  constructor(private doctorRepository: IDoctorRepository) {}
+
+  async execute(id: string) {
+    const doctor = await this.doctorRepository.findDoctorById(id);
 
     if (!doctor) {
-        throw new Error('Doctor not found'); 
+      throw new Error("Doctor not found");
     }
 
     const updatedStatus = !doctor.isBlocked;
 
-    await doctorRepository.updateDoctor(id, { isBlocked: updatedStatus})
+    await this.doctorRepository.updateDoctor(id, { isBlocked: updatedStatus });
 
     return {
-        isBlocked: updatedStatus,
-        message: `User has been ${updatedStatus ? 'Blocked' : 'Unblocked'} successfully`,
+      isBlocked: updatedStatus,
+      message: `User has been ${
+        updatedStatus ? "Blocked" : "Unblocked"
+      } successfully`,
     };
+  }
 }
