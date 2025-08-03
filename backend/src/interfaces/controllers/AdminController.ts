@@ -3,7 +3,7 @@ import { LoginAdmin } from "../../application/useCases/admin/loginAdminUseCase";
 import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
 import { ListDoctorsUseCase } from "../../application/useCases/admin/listDoctorsUseCase";
 import { ListUsersUseCase } from "../../application/useCases/admin/listUsersUseCase";
-import { toggleBlockUser } from "../../application/useCases/admin/toggleBlockUser";
+import { ToggleBlockUseruseCase } from "../../application/useCases/admin/toggleBlockUserUseCase";
 import { ToggleBlockDoctorUseCase } from "../../application/useCases/admin/toggleBlockDoctorUseCase";
 import { FetchPendingDoctors } from "../../application/useCases/admin/fetchPendingDoctorsUseCase";
 import { ApproveDoctorUsecase } from "../../application/useCases/admin/approveDoctorUseCase";
@@ -21,7 +21,7 @@ const listUsersUseCase = new ListUsersUseCase(userRepository);
 const approveDoctorUsecase = new ApproveDoctorUsecase(doctorRepository);
 const rejectRequestUseCase = new RejectRequestUseCase(doctorRepository);
 const toggleBlockDoctorUseCase = new ToggleBlockDoctorUseCase(doctorRepository);
-
+const toggleBlockUseruseCase = new ToggleBlockUseruseCase(userRepository);
 
 export const adminController = {
   // Admin Login
@@ -176,7 +176,7 @@ export const adminController = {
     try {
       const { id } = req.params;
 
-      const result = await toggleBlockUser(userRepository, id);
+      const result = await toggleBlockUseruseCase.execute(id);
 
       res.status(200).json(result);
     } catch (error: any) {
