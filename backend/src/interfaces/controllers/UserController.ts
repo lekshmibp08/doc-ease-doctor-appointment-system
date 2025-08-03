@@ -2,15 +2,13 @@ import { Request, Response } from "express";
 import { SendOtpForSignupUseCase } from "../../application/useCases/user/sendOtpForSignup";
 import { VerifyOtpAndRegister } from "../../application/useCases/user/verifyOtpAndRegisterUser";
 import { OtpRepository } from "../../infrastructure/database/repositories/OtpRepository";
-import { createDoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
-import { listApprovedDoctors } from "../../application/useCases/user/listApprovedDoctors";
-import { updateUser } from "../../application/useCases/user/updateUser";
-import { sendOtpForResetPassword } from "../../application/useCases/user/sendOtpForResetPassword";
-import { verifyOtpAndResetPassword } from "../../application/useCases/user/verifyOtpAndResetPassword";
-import { doctorDetails } from "../../application/useCases/user/doctorDetails";
-import { fetchSpecializationsUseCase } from "../../application/useCases/user/fetchSpecializationsUseCase";
-
-//import { LoginUserUseCase } from "../../application/useCases/user/loginUser";
+import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
+import { ListApprovedDoctors } from "../../application/useCases/user/listApprovedDoctors";
+import { UpdateUser } from "../../application/useCases/user/updateUser";
+import { SendOtpForResetPassword } from "../../application/useCases/user/sendOtpForResetPassword";
+import { VerifyOtpAndResetPassword } from "../../application/useCases/user/verifyOtpAndResetPassword";
+import { DoctorDetails } from "../../application/useCases/user/doctorDetails";
+import { FetchSpecializationsUseCase } from "../../application/useCases/user/fetchSpecializationsUseCase";
 import { UserLoginUseCase } from "../../application/useCases/user/userLoginUseCase";
 import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
 
@@ -22,6 +20,16 @@ const verifyOtpAndRegister = new VerifyOtpAndRegister(
   otpRepository,
   userRepository
 );
+const updateUser = new UpdateUser(userRepository);
+const sendOtpForResetPassword = new SendOtpForResetPassword(otpRepository);
+const verifyOtpAndResetPassword = new VerifyOtpAndResetPassword(
+  otpRepository,
+  userRepository
+)
+const doctorRepository = new DoctorRepository();
+const listApprovedDoctors = new ListApprovedDoctors(doctorRepository);
+const fetchSpecializationsUseCase = new FetchSpecializationsUseCase(doctorRepository);
+const doctorDetails = new DoctorDetails(doctorRepository);
 
 export const userController = {
   register: async (req: Request, res: Response) => {
@@ -115,9 +123,8 @@ export const userController = {
         sort,
       } = req.query;
 
-      const doctorRepository = createDoctorRepository();
 
-      const result = await listApprovedDoctors(doctorRepository, {
+      const result = await listApprovedDoctors.execute({
         page: Number(page),
         size: Number(size),
         search: search as string,
@@ -141,10 +148,7 @@ export const userController = {
   // List Specializations
   listSpecializations: async (req: Request, res: Response) => {
     try {
-      const doctorRepository = createDoctorRepository();
-      const specializations = await fetchSpecializationsUseCase(
-        doctorRepository
-      );
+      const specializations = await fetchSpecializationsUseCase.execute();
       res.json({ specializations });
     } catch (error: any) {
       res
@@ -152,7 +156,7 @@ export const userController = {
         .json({ message: "Failed to fetch specialization list", error });
     }
   },
-  /*
+  
   // Update User profile
   updateUserProfile: async (req: Request, res: Response): Promise<void> => {
     console.log("ENTERED UPDATION");
@@ -161,8 +165,7 @@ export const userController = {
       const { id } = req.params;
       const updatedData = req.body;
       
-      const userRepository = createUserRepository();
-      const updatedUser = await updateUser(userRepository, id, updatedData);      
+      const updatedUser = await updateUser.execute(id, updatedData);      
 
       res.status(200).json({message: "User Profile Updated Successfully..!", updatedUser});
       
@@ -188,8 +191,6 @@ export const userController = {
 
     const {email} = req.body;
         
-    const otpRepository = createOtpRepository();
-    const userRepository = createUserRepository();
 
     try {
       const existingUser = await userRepository.findByEmail(email);
@@ -197,7 +198,7 @@ export const userController = {
         res.status(400).json({ message: "Please enter valid Email id" })
         return;
       }
-      await sendOtpForResetPassword(otpRepository, email);
+      await sendOtpForResetPassword.execute(email);
       res.status(200).json({ message: "OTP sent successfully" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -208,13 +209,9 @@ export const userController = {
   //Verify the OTP and reset password
   verifyAndResetPassword: async (req: Request, res: Response) => {
     const {email, newPassword, otp} = req.body;
-    const otpRepository = createOtpRepository();
-    const userRepository = createUserRepository();
 
     try {
-      await verifyOtpAndResetPassword(
-        otpRepository,
-        userRepository,
+      await verifyOtpAndResetPassword.execute(
         { email, newPassword, otp }
       );
       res.status(200).json({ message: "Password changed successfully, You can now log in..!"});
@@ -226,14 +223,13 @@ export const userController = {
   // Get doctor Details
   getDoctorDetails: async (req: Request, res: Response) => {
     const { id } = req.params;
-    const doctorRepository = createDoctorRepository();
     try {
-      const details = await doctorDetails( doctorRepository, id )
+      const details = await doctorDetails.execute( id )
       res.status(200).json(details);
       
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   },
-  */
+
 };

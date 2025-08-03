@@ -1,14 +1,12 @@
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 import bcrypt from "bcrypt";
 
-export const updateUser = async (
-  userRepository: IUserRepository,
-  id: string,
-  updatedData: any
-): Promise<any> => {
+export class UpdateUser {
+  constructor(private userRepository: IUserRepository) {}
 
-    const existingUser = await userRepository.findUserById(id);
-    if(!existingUser) {
+  async execute(id: string, updatedData: any): Promise<any> {
+    const existingUser = await this.userRepository.findUserById(id);
+    if (!existingUser) {
       throw new Error("User not found");
     }
 
@@ -17,19 +15,19 @@ export const updateUser = async (
         updatedData.currentPassword,
         existingUser.password
       );
-  
+
       if (!isPasswordCorrect) {
         throw new Error("Current password is incorrect");
       }
-    }        
-    
-
-    if(updatedData.password) {
-        const hashedPassword = await bcrypt.hash(updatedData.password, 10);
-        updatedData.password = hashedPassword;
     }
 
-    const updatedUser = await userRepository.updateUser(id, updatedData);
-    
-    return updatedUser;  
-};
+    if (updatedData.password) {
+      const hashedPassword = await bcrypt.hash(updatedData.password, 10);
+      updatedData.password = hashedPassword;
+    }
+
+    const updatedUser = await this.userRepository.updateUser(id, updatedData);
+
+    return updatedUser;
+  }
+}

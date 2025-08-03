@@ -1,8 +1,10 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 
-export const fetchSpecializationsUseCase = async (
-  doctorRepository: IDoctorRepository
-): Promise<any> => {
-  const specializations = await doctorRepository.getAllSpecializations();
-  return specializations;
-};
+export class FetchSpecializationsUseCase {
+  constructor(private doctorRepository: IDoctorRepository) {}
+
+  async execute(): Promise<any> {
+    const specializations = await this.doctorRepository.getAllSpecializations();
+    return specializations;
+  }
+}
