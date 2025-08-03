@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { createDoctorRepository } from "../../../infrastructure/database/repositories/DoctorRepository";
+import { DoctorRepository } from "../../../infrastructure/database/repositories/DoctorRepository";
 import { UserRepository } from "../../../infrastructure/database/repositories/UserRepository";
+
+const doctorRepository = new DoctorRepository();
 
 export const googleOAuthLogin = async (
   fullName: string,
@@ -15,7 +17,6 @@ export const googleOAuthLogin = async (
 
   // Determine repository
   if (role === "doctor") {
-    const doctorRepository = createDoctorRepository();
     entity = await doctorRepository.findByEmail(email);
     
     if (!entity) {
