@@ -1,4 +1,3 @@
-// application/usecases/admin/listDoctors.ts
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 
 export const fetchPendingDoctors = async (doctorRepository: IDoctorRepository, page: number, size: number, search: string) => {
