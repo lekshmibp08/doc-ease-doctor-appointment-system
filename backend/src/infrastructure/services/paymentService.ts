@@ -1,44 +1,32 @@
 import Razorpay from "razorpay";
-import dotenv from "dotenv";
 
-// Load environment variables
-dotenv.config();
+export class PaymentService {
+  private razorpay: Razorpay;
 
-const RAZORPAY_KEY_ID= process.env.RAZORPAY_KEY_ID;
-const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
+  constructor(keyId: string, keySecret: string) {
+    if (!keyId || !keySecret) {
+      throw new Error("Razorpay credentials are missing");
+    }
+    this.razorpay = new Razorpay({
+      key_id: keyId,
+      key_secret: keySecret,
+    });
+  }
 
-const razorpay = new Razorpay({
-  key_id: RAZORPAY_KEY_ID || '',
-  key_secret: RAZORPAY_KEY_SECRET || '',
-});
-
-export const paymentService = {
   async createOrder(amount: number) {
-    try {
-      const options = {
-        amount: amount * 100, 
-        currency: "INR",
-        receipt: `receipt_${Date.now()}`,
-      };
-      
-      const order = await razorpay.orders.create(options);
-      return order;
-    } catch (error: any) {
-      throw new Error(error.message || "Error creating order");
-    }
-  },
-};
+    const options = {
+      amount: amount * 100,
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    };
 
-export const processRefund = async (paymentId: string, refundAmount: number) => {
-    try {
-        const refundResponse = await razorpay.payments.refund(paymentId, {
-            amount: refundAmount * 100, 
-            speed: "normal",
-        });
-        return { success: true, refundResponse };
-    } catch (error) {
-        console.error("Razorpay Refund Error:", error);
-        return { success: false, error };
-    }
-};
- 
+    return await this.razorpay.orders.create(options);
+  }
+
+  async processRefund(paymentId: string, refundAmount: number) {
+    return await this.razorpay.payments.refund(paymentId, {
+      amount: refundAmount * 100,
+      speed: "normal",
+    });
+  }
+}

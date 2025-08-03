@@ -1,5 +1,8 @@
 import { Request, Response, RequestHandler } from "express";
-import { paymentService } from "../../infrastructure/services/paymentService";
+import { CreateOrderUseCase } from "../../application/useCases/createOrderUseCase "; 
+import { paymentService } from "../../infrastructure/services";
+
+const createOrderUseCase = new CreateOrderUseCase(paymentService)
 
 export const paymentController = {
   createOrder: (async (req: Request, res: Response): Promise<void> => {
@@ -10,7 +13,7 @@ export const paymentController = {
         return;
       }
 
-      const order = await paymentService.createOrder(amount);
+      const order = await createOrderUseCase.execute(amount);
       res.status(200).json(order);
     } catch (error) {
       console.error("Error creating order:", error);
