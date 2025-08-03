@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import { SlotRepository } from "../../infrastructure/database/repositories/SlotRepository";
 import { UpdateSlotUseCase } from "../../application/useCases/doctor/updateSlotUseCase";
-import { fetchSlotUseCase } from "../../application/useCases/user/fetchSlotUseCase";
+import { FetchSlotUseCase } from "../../application/useCases/user/fetchSlotUseCase";
 import { updateSlotTimeUseCase } from "../../application/useCases/doctor/updateSlotTimeUseCase";
 import SlotUseCase from "../../application/useCases/SlotUseCase";
 
 const slotRepository = new SlotRepository();
 const updateSlotUseCase = new UpdateSlotUseCase(slotRepository);
+const fetchSlotUseCase = new FetchSlotUseCase(slotRepository);
 
 export const slotController = {
   async generateSlots(req: Request, res: Response): Promise<void> {
@@ -58,11 +59,7 @@ export const slotController = {
     const { doctorId } = req.params;
     const date = req.query.date as string;
     try {
-      const existingSlot = await fetchSlotUseCase(
-        slotRepository,
-        doctorId,
-        date
-      );
+      const existingSlot = await fetchSlotUseCase.execute(doctorId, date);
       res.status(200).json({
         timeSlots: existingSlot?.timeSlots,
         slotId: existingSlot?._id,
