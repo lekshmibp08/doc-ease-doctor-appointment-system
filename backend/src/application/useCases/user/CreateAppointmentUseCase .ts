@@ -14,23 +14,25 @@ interface IAppointmentInput {
   paymentId: string;
 }
 
-export const createAppointmentUseCase = async (
-    appointmentRepository: IAppointmentRepository, 
-    slotRepository: ISlotRepository,
-    appoinmentData: IAppointmentInput,
-): Promise<IAppointment> => {
-    console.log("USECASE APP>DATA: ,", appoinmentData);
-    
-    const newAppoinment = await appointmentRepository.createAppointment(appoinmentData);
-    if(!newAppoinment) {
-        throw new Error("Failed to create appointment.");
-    }
-    
-    await slotRepository.updateSlotStatus(
-        appoinmentData.slotId,
-        appoinmentData.timeSlotId,
-        "Booked"
-    )    
-    return newAppoinment
+export class CreateAppointmentUseCase {
+  constructor(
+    private appointmentRepository: IAppointmentRepository,
+    private slotRepository: ISlotRepository
+  ) {}
 
-} 
+  async execute(appoinmentData: IAppointmentInput): Promise<IAppointment> {
+    const newAppoinment = await this.appointmentRepository.createAppointment(
+      appoinmentData
+    );
+    if (!newAppoinment) {
+      throw new Error("Failed to create appointment.");
+    }
+
+    await this.slotRepository.updateSlotStatus(
+      appoinmentData.slotId,
+      appoinmentData.timeSlotId,
+      "Booked"
+    );
+    return newAppoinment;
+  }
+}
