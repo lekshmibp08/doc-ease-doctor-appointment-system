@@ -11,7 +11,7 @@ import { updateAppointmentUseCase } from "../../application/useCases/doctor/upda
 import { updateSlotStatus } from "../../application/useCases/user/updateSlotStatus";
 import rescheduleAppointmentUseCase from "../../application/useCases/user/rescheduleAppointmentUseCase";
 import { updateAppointment } from "../../application/useCases/user/updateAppointment";
-import { processRefund } from "../../infrastructure/services/paymentService";
+import { paymentService } from "../../infrastructure/services"; 
 
 
 const slotRepository = new SlotRepository();
@@ -90,7 +90,7 @@ export const appoinmentController = {
             let refundTransactionId = null;
 
             if (refundAmount > 0) {
-                const refundResult = await processRefund(paymentId, refundAmount);
+                const refundResult = await paymentService.processRefund(paymentId, refundAmount);
                 
                 if (refundResult.success) {
                     refundStatus = "Processed";
