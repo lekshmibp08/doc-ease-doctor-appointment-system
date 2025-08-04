@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
-import { createDoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
+import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
 
 
 interface DecodedToken {
@@ -10,7 +10,6 @@ interface DecodedToken {
   iat: number;
   exp: number;
 }
-
 
 export const authenticateUser = (allowedRoles: string[] = []): RequestHandler => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -38,7 +37,7 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
       }
 
       const userRepository = new UserRepository();
-      const doctorRepository = createDoctorRepository();
+      const doctorRepository = new DoctorRepository();
 
       let user;
       if(decoded.role === 'user' || decoded.role === "admin") {
