@@ -12,40 +12,28 @@ import { reviewController } from "../controllers/reviewController";
 
 const router = express.Router();
 
-// Send OTP during signup
-//router.post("/send-otp", userController.register);
+router.post("/send-otp", userController.register);
 
-// Verify OTP and register user
-//router.post("/verify-otp-and-register", userController.verifyOtpAndRegisterUser);
+router.post("/verify-otp-and-register", userController.verifyOtpAndRegisterUser);
 
-// Login route
 router.post("/login", userController.login);
 
-// Refresh token endpoint
 router.post("/refresh-token", authController.refreshAccessToken);
 
-// Logout route
 router.post("/logout", authController.logout);
 
-// Get all Approved doctors
 router.get("/doctors", authenticateUser(['user']), userController.getDoctors);
 
-// List all Specializations
 router.get("/doctors/specializations", userController.listSpecializations);
 
-// update user profile
-//router.patch("/profile/update/:id", authenticateUser(['user']), userController.updateUserProfile);
+router.patch("/profile/update/:id", authenticateUser(['user']), userController.updateUserProfile);
 
-//send OTP for forget password
-//router.post("/forget-password/send-otp", userController.sendOtpForForgetPassword);
+router.post("/forget-password/send-otp", userController.sendOtpForForgetPassword);
 
-//verify OTP and reset password
-//router.patch("/forget-password/verify-and-reset", userController.verifyAndResetPassword);
+router.patch("/forget-password/verify-and-reset", userController.verifyAndResetPassword);
 
-// Get doctor details
-//router.get("/doctor/:id", authenticateUser(['user']), userController.getDoctorDetails);
+router.get("/doctor/:id", authenticateUser(['user']), userController.getDoctorDetails);
 
-// Get slots
 router.get("/slots/:doctorId", authenticateUser(['user']), slotController.fetchSlotsForUser);
 
 router.post("/create-order", authenticateUser(['user']), paymentController.createOrder);
