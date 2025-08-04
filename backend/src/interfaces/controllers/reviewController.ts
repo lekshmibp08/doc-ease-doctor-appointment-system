@@ -1,12 +1,12 @@
 import type { Request, Response } from "express"
 import { ReviewUseCase } from "../../application/useCases/ReviewUseCase" 
 import { ReviewRepository } from "../../infrastructure/database/repositories/ReviewRepository" 
-import { createAppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository"
+import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository"
 import { updateAppointmentReviewStatus } from "../../application/useCases/user/updateAppointmentReviewStatus"
 
 const reviewRepository = new ReviewRepository()
 const reviewUseCase = new ReviewUseCase(reviewRepository)
-const appointmentRepository = createAppointmentRepository();
+const appointmentRepository = new AppointmentRepository();
 
 export const reviewController = {
   createReview: async (req: Request, res: Response) => {
