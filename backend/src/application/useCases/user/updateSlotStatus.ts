@@ -1,18 +1,22 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
 
-export const updateSlotStatus = async (
+export class UpdateSlotStatus {
+  constructor(private slotRepository: ISlotRepository) {}
+
+  async execute(
     slotId: string,
     timeSlotId: string,
-    status: string,
-    slotRepository: ISlotRepository
-): Promise<void> => {
-  try {
-    const updatedSlot = await slotRepository.updateSlotStatus(slotId, timeSlotId, status)
-    console.log(updatedSlot);
-    return;
-    
-  } catch (error) {
-    throw new Error("Failed to update slot status: ");
+    status: string
+  ): Promise<void> {
+    try {
+      const updatedSlot = await this.slotRepository.updateSlotStatus(
+        slotId,
+        timeSlotId,
+        status
+      );
+      return;
+    } catch (error) {
+      throw new Error("Failed to update slot status: ");
+    }
   }
-};
+}

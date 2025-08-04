@@ -3,11 +3,11 @@ import { SlotRepository } from "../../infrastructure/database/repositories/SlotR
 import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
 import { CreateAppointmentUseCase } from "../../application/useCases/user/CreateAppointmentUseCase ";
 import { GetAppointmentsByUserUseCase } from "../../application/useCases/user/getAppointmentsByUserUseCase ";
-import { cancelAppointmentByUserUsecase } from "../../application/useCases/user/cancelAppointment";
+import { CancelAppointmentByUserUsecase } from "../../application/useCases/user/cancelAppointment";
 import { listAllAppointmentsForAdmin } from "../../application/useCases/admin/listAllAppointmentsForAdmin";
 import { getAppointmentsByDoctorIdUseCase } from "../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
 import { updateAppointmentUseCase } from "../../application/useCases/doctor/updateAppointmentUseCase";
-import { updateSlotStatus } from "../../application/useCases/user/updateSlotStatus";
+import { UpdateSlotStatus } from "../../application/useCases/user/updateSlotStatus";
 import rescheduleAppointmentUseCase from "../../application/useCases/user/rescheduleAppointmentUseCase";
 import { updateAppointment } from "../../application/useCases/user/updateAppointment";
 import { paymentService } from "../../infrastructure/services";
@@ -21,6 +21,11 @@ const createAppointmentUseCase = new CreateAppointmentUseCase(
 const getAppointmentsByUserUseCase = new GetAppointmentsByUserUseCase(
   appointmentRepository
 );
+const cancelAppointmentByUserUsecase = new CancelAppointmentByUserUsecase(
+  appointmentRepository
+);
+const updateSlotStatus = new UpdateSlotStatus(slotRepository);
+
 
 export const appoinmentController = {
   createNewAppoinment: async (req: Request, res: Response): Promise<void> => {
@@ -58,7 +63,7 @@ export const appoinmentController = {
 
     try {
       const appointments = await getAppointmentsByUserUseCase.execute(
-        userId as string,
+        userId as string
       );
       res.status(200).json({ appointments });
     } catch (error) {
@@ -73,9 +78,8 @@ export const appoinmentController = {
   ): Promise<void> => {
     const { appointmentId } = req.params;
     try {
-      const updatedAppointment = await cancelAppointmentByUserUsecase(
-        appointmentId,
-        appointmentRepository
+      const updatedAppointment = await cancelAppointmentByUserUsecase.execute(
+        appointmentId
       );
       const updatedData = updatedAppointment.isCancelled;
       const slotId = updatedAppointment.slotId;
@@ -91,11 +95,10 @@ export const appoinmentController = {
         return;
       }
 
-      await updateSlotStatus(
+      await updateSlotStatus.execute(
         slotId as string,
         timeSlotId as string,
-        status,
-        slotRepository
+        status
       );
 
       const refundAmount = amount ? amount - 50 : 0;
