@@ -4,8 +4,8 @@ import { AppointmentRepository } from "../../infrastructure/database/repositorie
 import { CreateAppointmentUseCase } from "../../application/useCases/user/CreateAppointmentUseCase ";
 import { GetAppointmentsByUserUseCase } from "../../application/useCases/user/getAppointmentsByUserUseCase ";
 import { CancelAppointmentByUserUsecase } from "../../application/useCases/user/cancelAppointmentUseCase";
-import { ListAllAppointmentsForAdmin } from "../../application/useCases/admin/listAllAppointmentsForAdmin";
-import { getAppointmentsByDoctorIdUseCase } from "../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
+import { ListAllAppointmentsForAdmin } from "../../application/useCases/admin/listAllAppointmentsUseCase";
+import { GetAppointmentsByDoctorIdUseCase } from "../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
 import { updateAppointmentUseCase } from "../../application/useCases/doctor/updateAppointmentUseCase";
 import { UpdateSlotStatus } from "../../application/useCases/user/updateSlotStatusUseCase";
 import { RescheduleAppointmentUseCase } from "../../application/useCases/user/rescheduleAppointmentUseCase";
@@ -33,7 +33,9 @@ const rescheduleAppointmentUseCase = new RescheduleAppointmentUseCase(
 const listAllAppointmentsForAdmin = new ListAllAppointmentsForAdmin(
   appointmentRepository
 );
-
+const getAppointmentsByDoctorIdUseCase = new GetAppointmentsByDoctorIdUseCase(
+  appointmentRepository
+);
 
 export const appoinmentController = {
   createNewAppoinment: async (req: Request, res: Response): Promise<void> => {
@@ -205,12 +207,9 @@ export const appoinmentController = {
     const pageNumber = parseInt(page as string);
     const pageSize = parseInt(size as string);
 
-    const appointmentRepository = createAppointmentRepository();
-
     try {
       const { appointments, totalAppointments, totalPages } =
-        await getAppointmentsByDoctorIdUseCase(
-          appointmentRepository,
+        await getAppointmentsByDoctorIdUseCase.execute(
           doctorId as string,
           date as string,
           pageNumber,
