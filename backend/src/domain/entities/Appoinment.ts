@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-export type IAppointment = {
+export interface IAppointment {
   _id?: Types.ObjectId | string;
   doctorId: Types.ObjectId | string;
   userId: Types.ObjectId | string;

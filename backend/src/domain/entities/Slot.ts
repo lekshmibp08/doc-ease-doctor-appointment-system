@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-export type Slot = {
+export interface Slot {
     _id?: Types.ObjectId | string;
     doctorId: Types.ObjectId | string;
     date: Date;

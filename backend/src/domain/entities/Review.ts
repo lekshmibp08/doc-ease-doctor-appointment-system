@@ -1,9 +1,9 @@
-import mongoose, { type Document } from "mongoose"
+import { Types } from "mongoose";
 
-export interface IReview extends Document {
-  userId: mongoose.Types.ObjectId
-  doctorId: mongoose.Types.ObjectId
-  appointmentId: mongoose.Types.ObjectId
+export interface IReview {
+  userId: Types.ObjectId
+  doctorId: Types.ObjectId
+  appointmentId: Types.ObjectId
   rating: number
   comment: string
   createdAt: Date
