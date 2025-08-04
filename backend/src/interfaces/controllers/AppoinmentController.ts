@@ -6,7 +6,7 @@ import { GetAppointmentsByUserUseCase } from "../../application/useCases/user/ge
 import { CancelAppointmentByUserUsecase } from "../../application/useCases/user/cancelAppointmentUseCase";
 import { ListAllAppointmentsForAdmin } from "../../application/useCases/admin/listAllAppointmentsUseCase";
 import { GetAppointmentsByDoctorIdUseCase } from "../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
-import { updateAppointmentUseCase } from "../../application/useCases/doctor/updateAppointmentUseCase";
+import { UpdateAppointmentUseCase } from "../../application/useCases/doctor/updateAppointmentUseCase";
 import { UpdateSlotStatus } from "../../application/useCases/user/updateSlotStatusUseCase";
 import { RescheduleAppointmentUseCase } from "../../application/useCases/user/rescheduleAppointmentUseCase";
 import { UpdateAppointment } from "../../application/useCases/user/updateAppointmentUseCase";
@@ -34,6 +34,9 @@ const listAllAppointmentsForAdmin = new ListAllAppointmentsForAdmin(
   appointmentRepository
 );
 const getAppointmentsByDoctorIdUseCase = new GetAppointmentsByDoctorIdUseCase(
+  appointmentRepository
+);
+const updateAppointmentUseCase = new UpdateAppointmentUseCase(
   appointmentRepository
 );
 
@@ -233,8 +236,7 @@ export const appoinmentController = {
     const { isCompleted } = req.body;
 
     try {
-      const updatedAppointment = await updateAppointmentUseCase(
-        appointmentRepository,
+      const updatedAppointment = await updateAppointmentUseCase.execute(
         appointmentId,
         isCompleted
       );
