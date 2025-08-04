@@ -1,26 +1,26 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 
-export const listAllAppointmentsForAdmin  = async (
-    appointmentRepository: IAppointmentRepository, 
-    page: number, 
-    size: number, 
-    searchQuery: string
-) => {
-  const skip = (page - 1) * size;
-  const limit = size;
+export class ListAllAppointmentsForAdmin {
+  constructor(private appointmentRepository: IAppointmentRepository) {}
 
-  console.log("SEARCH USECASE: ", searchQuery);
-  
-  const appointments = await appointmentRepository.getAppointmentsWithPagination(skip, limit, searchQuery);
-  const totalAppointments = await appointmentRepository.countAppointments(searchQuery)
-  const totalPages = Math.ceil(totalAppointments / size);
+  async execute(page: number, size: number, searchQuery: string) {
+    const skip = (page - 1) * size;
+    const limit = size;
 
-  return {
-    appointments,
-    totalAppointments,
-    totalPages
-  };
-};
+    const appointments =
+      await this.appointmentRepository.getAppointmentsWithPagination(
+        skip,
+        limit,
+        searchQuery
+      );
+    const totalAppointments =
+      await this.appointmentRepository.countAppointments(searchQuery);
+    const totalPages = Math.ceil(totalAppointments / size);
 
-
-
+    return {
+      appointments,
+      totalAppointments,
+      totalPages,
+    };
+  }
+}

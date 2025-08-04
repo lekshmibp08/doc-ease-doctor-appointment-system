@@ -4,7 +4,7 @@ import { AppointmentRepository } from "../../infrastructure/database/repositorie
 import { CreateAppointmentUseCase } from "../../application/useCases/user/CreateAppointmentUseCase ";
 import { GetAppointmentsByUserUseCase } from "../../application/useCases/user/getAppointmentsByUserUseCase ";
 import { CancelAppointmentByUserUsecase } from "../../application/useCases/user/cancelAppointmentUseCase";
-import { listAllAppointmentsForAdmin } from "../../application/useCases/admin/listAllAppointmentsForAdmin";
+import { ListAllAppointmentsForAdmin } from "../../application/useCases/admin/listAllAppointmentsForAdmin";
 import { getAppointmentsByDoctorIdUseCase } from "../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
 import { updateAppointmentUseCase } from "../../application/useCases/doctor/updateAppointmentUseCase";
 import { UpdateSlotStatus } from "../../application/useCases/user/updateSlotStatusUseCase";
@@ -29,6 +29,9 @@ const updateAppointment = new UpdateAppointment(appointmentRepository);
 const rescheduleAppointmentUseCase = new RescheduleAppointmentUseCase(
   appointmentRepository,
   slotRepository
+);
+const listAllAppointmentsForAdmin = new ListAllAppointmentsForAdmin(
+  appointmentRepository
 );
 
 
@@ -177,11 +180,8 @@ export const appoinmentController = {
       const pageSize = parseInt(size as string);
       const searchQuery = search ? String(search) : "";
 
-      const appointmentRepository = createAppointmentRepository();
-
       const { appointments, totalAppointments, totalPages } =
-        await listAllAppointmentsForAdmin(
-          appointmentRepository,
+        await listAllAppointmentsForAdmin.execute(
           pageNumber,
           pageSize,
           searchQuery
