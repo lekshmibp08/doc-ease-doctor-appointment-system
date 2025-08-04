@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { SlotRepository } from "../../infrastructure/database/repositories/SlotRepository";
 import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
 import { CreateAppointmentUseCase } from "../../application/useCases/user/CreateAppointmentUseCase ";
-import { getAppointmentsByUserUseCase } from "../../application/useCases/user/getAppointmentsByUserUseCase ";
+import { GetAppointmentsByUserUseCase } from "../../application/useCases/user/getAppointmentsByUserUseCase ";
 import { cancelAppointmentByUserUsecase } from "../../application/useCases/user/cancelAppointment";
 import { listAllAppointmentsForAdmin } from "../../application/useCases/admin/listAllAppointmentsForAdmin";
 import { getAppointmentsByDoctorIdUseCase } from "../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
@@ -17,6 +17,9 @@ const appointmentRepository = new AppointmentRepository();
 const createAppointmentUseCase = new CreateAppointmentUseCase(
   appointmentRepository,
   slotRepository
+);
+const getAppointmentsByUserUseCase = new GetAppointmentsByUserUseCase(
+  appointmentRepository
 );
 
 export const appoinmentController = {
@@ -54,9 +57,8 @@ export const appoinmentController = {
     const { userId } = req.params;
 
     try {
-      const appointments = await getAppointmentsByUserUseCase(
+      const appointments = await getAppointmentsByUserUseCase.execute(
         userId as string,
-        appointmentRepository
       );
       res.status(200).json({ appointments });
     } catch (error) {
@@ -70,7 +72,6 @@ export const appoinmentController = {
     res: Response
   ): Promise<void> => {
     const { appointmentId } = req.params;
-    const appointmentRepository = createAppointmentRepository();
     try {
       const updatedAppointment = await cancelAppointmentByUserUsecase(
         appointmentId,
