@@ -1,6 +1,6 @@
 import { IOtpRepository } from "../../../domain/repositories/IOtpRepository";
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
-import { User } from "../../../domain/entities/User";
+import { IUser } from "../../../domain/entities/User";
 import bcrypt from "bcrypt";
 
 export class VerifyOtpAndRegister {
@@ -8,7 +8,7 @@ export class VerifyOtpAndRegister {
 
   async execute (
     data: { email: string; otp: string; fullName: string; mobileNumber: string; password: string }
-  ): Promise<User> {
+  ): Promise<IUser> {
     const { email, otp, fullName, mobileNumber, password } = data;
   
     const otpEntity = await this.otpRepository.findOtp(email, otp);
@@ -20,7 +20,7 @@ export class VerifyOtpAndRegister {
   
     const hashedPassword = await bcrypt.hash(password, 10);
   
-    const user: User = { fullName, email, mobileNumber, password: hashedPassword, role: "user", isBlocked: false };
+    const user: IUser = { fullName, email, mobileNumber, password: hashedPassword, role: "user", isBlocked: false };
     return await this.userRepository.create(user);
   }
 }

@@ -1,6 +1,6 @@
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 import UserModel from "../models/UserModel";
-import { User as IUser } from "../../../domain/entities/User";
+import { IUser } from "../../../domain/entities/User";
 
 export class UserRepository implements IUserRepository {
   async findByEmail(email: string): Promise<IUser | null> {
