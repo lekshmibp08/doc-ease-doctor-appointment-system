@@ -9,7 +9,7 @@ import { getAppointmentsByDoctorIdUseCase } from "../../application/useCases/doc
 import { updateAppointmentUseCase } from "../../application/useCases/doctor/updateAppointmentUseCase";
 import { UpdateSlotStatus } from "../../application/useCases/user/updateSlotStatus";
 import rescheduleAppointmentUseCase from "../../application/useCases/user/rescheduleAppointmentUseCase";
-import { updateAppointment } from "../../application/useCases/user/updateAppointment";
+import { UpdateAppointment } from "../../application/useCases/user/updateAppointment";
 import { paymentService } from "../../infrastructure/services";
 
 const slotRepository = new SlotRepository();
@@ -25,6 +25,7 @@ const cancelAppointmentByUserUsecase = new CancelAppointmentByUserUsecase(
   appointmentRepository
 );
 const updateSlotStatus = new UpdateSlotStatus(slotRepository);
+const updateAppointment = new UpdateAppointment(appointmentRepository);
 
 
 export const appoinmentController = {
@@ -117,15 +118,11 @@ export const appoinmentController = {
         }
       }
 
-      await updateAppointment(
-        appointmentId,
-        {
-          refundAmount,
-          refundStatus,
-          refundTransactionId,
-        },
-        appointmentRepository
-      );
+      await updateAppointment.execute(appointmentId, {
+        refundAmount,
+        refundStatus,
+        refundTransactionId,
+      });
 
       res.status(200).json({
         message: "Appointment cancelled and refund initiated Successfully.",
