@@ -3,13 +3,13 @@ import { SlotRepository } from "../../infrastructure/database/repositories/SlotR
 import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
 import { CreateAppointmentUseCase } from "../../application/useCases/user/CreateAppointmentUseCase ";
 import { GetAppointmentsByUserUseCase } from "../../application/useCases/user/getAppointmentsByUserUseCase ";
-import { CancelAppointmentByUserUsecase } from "../../application/useCases/user/cancelAppointment";
+import { CancelAppointmentByUserUsecase } from "../../application/useCases/user/cancelAppointmentUseCase";
 import { listAllAppointmentsForAdmin } from "../../application/useCases/admin/listAllAppointmentsForAdmin";
 import { getAppointmentsByDoctorIdUseCase } from "../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
 import { updateAppointmentUseCase } from "../../application/useCases/doctor/updateAppointmentUseCase";
-import { UpdateSlotStatus } from "../../application/useCases/user/updateSlotStatus";
-import rescheduleAppointmentUseCase from "../../application/useCases/user/rescheduleAppointmentUseCase";
-import { UpdateAppointment } from "../../application/useCases/user/updateAppointment";
+import { UpdateSlotStatus } from "../../application/useCases/user/updateSlotStatusUseCase";
+import { RescheduleAppointmentUseCase } from "../../application/useCases/user/rescheduleAppointmentUseCase";
+import { UpdateAppointment } from "../../application/useCases/user/updateAppointmentUseCase";
 import { paymentService } from "../../infrastructure/services";
 
 const slotRepository = new SlotRepository();
@@ -26,6 +26,10 @@ const cancelAppointmentByUserUsecase = new CancelAppointmentByUserUsecase(
 );
 const updateSlotStatus = new UpdateSlotStatus(slotRepository);
 const updateAppointment = new UpdateAppointment(appointmentRepository);
+const rescheduleAppointmentUseCase = new RescheduleAppointmentUseCase(
+  appointmentRepository,
+  slotRepository
+);
 
 
 export const appoinmentController = {
@@ -143,15 +147,13 @@ export const appoinmentController = {
       const { appointmentId, date, slotId, timeSlotId, time, modeOfVisit } =
         req.body;
 
-      const updatedAppointment = await rescheduleAppointmentUseCase(
+      const updatedAppointment = await rescheduleAppointmentUseCase.execute(
         appointmentId,
         date,
         slotId,
         timeSlotId,
         time,
-        modeOfVisit,
-        appointmentRepository,
-        slotRepository
+        modeOfVisit
       );
 
       res.status(200).json({
