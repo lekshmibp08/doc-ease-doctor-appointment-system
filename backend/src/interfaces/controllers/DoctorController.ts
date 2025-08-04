@@ -7,7 +7,7 @@ import { LoginDoctorUseCase } from "../../application/useCases/doctor/loginDocto
 import { SendOtpForResetPassword } from "../../application/useCases/user/sendOtpForResetPassword";
 import { VerifyOtpAndResetDoctorPassword } from "../../application/useCases/doctor/ResetDoctorPassworduseCase";
 import { UpdateDocProfile } from "../../application/useCases/doctor/updateDocProfileUseCase";
-import { createAppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
+import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
 import { GetDashboardStatsUseCase } from "../../application/useCases/doctor/getDashboardStatsUseCase";
 
 const otpRepository = new OtpRepository();
@@ -24,7 +24,7 @@ const verifyOtpAndResetDoctorPassword = new VerifyOtpAndResetDoctorPassword(
   doctorRepository
 );
 const updateDocProfile = new UpdateDocProfile(doctorRepository);
-const appoinmentRepository = createAppointmentRepository();
+const appoinmentRepository = new AppointmentRepository();
 const getDashboardStatsUseCase = new GetDashboardStatsUseCase(
   appoinmentRepository
 );
