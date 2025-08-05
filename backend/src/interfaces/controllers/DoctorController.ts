@@ -91,7 +91,7 @@ export const doctorController = {
       const { token, refreshToken, role, doctor } =
         await loginDoctorUseCase.execute({ email, password });
 
-      const userData = doctor._doc;
+      const userData = doctor;
 
       res.cookie("doctor_refresh_token", refreshToken, {
         httpOnly: true,
