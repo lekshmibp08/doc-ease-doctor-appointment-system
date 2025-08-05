@@ -25,10 +25,12 @@ const sendOtpForResetPassword = new SendOtpForResetPassword(otpRepository);
 const verifyOtpAndResetPassword = new VerifyOtpAndResetPassword(
   otpRepository,
   userRepository
-)
+);
 const doctorRepository = new DoctorRepository();
 const listApprovedDoctors = new ListApprovedDoctors(doctorRepository);
-const fetchSpecializationsUseCase = new FetchSpecializationsUseCase(doctorRepository);
+const fetchSpecializationsUseCase = new FetchSpecializationsUseCase(
+  doctorRepository
+);
 const doctorDetails = new DoctorDetails(doctorRepository);
 
 export const userController = {
@@ -67,13 +69,11 @@ export const userController = {
         mobileNumber,
         password,
       });
-      res
-        .status(201)
-        .json({
-          message:
-            "OTP verified and User registered successfully, You can now log in..!",
-          user,
-        });
+      res.status(201).json({
+        message:
+          "OTP verified and User registered successfully, You can now log in..!",
+        user,
+      });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
@@ -83,18 +83,19 @@ export const userController = {
     try {
       const { email, password } = req.body;
 
-      const { token, refreshToken, role, user } = await userLoginUseCase.execute({
-        email,
-        password,
-      });
+      const { token, refreshToken, role, user } =
+        await userLoginUseCase.execute({
+          email,
+          password,
+        });
 
-      const userData = user._doc;
+      const userData = user;
 
       res.cookie("user_refresh_token", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, 
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
       res
@@ -122,7 +123,6 @@ export const userController = {
         department,
         sort,
       } = req.query;
-
 
       const result = await listApprovedDoctors.execute({
         page: Number(page),
@@ -156,19 +156,20 @@ export const userController = {
         .json({ message: "Failed to fetch specialization list", error });
     }
   },
-  
+
   // Update User profile
   updateUserProfile: async (req: Request, res: Response): Promise<void> => {
     console.log("ENTERED UPDATION");
-    
+
     try {
       const { id } = req.params;
       const updatedData = req.body;
-      
-      const updatedUser = await updateUser.execute(id, updatedData);      
 
-      res.status(200).json({message: "User Profile Updated Successfully..!", updatedUser});
-      
+      const updatedUser = await updateUser.execute(id, updatedData);
+
+      res
+        .status(200)
+        .json({ message: "User Profile Updated Successfully..!", updatedUser });
     } catch (error: any) {
       console.error("Error in updateDoctorProfile:", error.message);
 
@@ -176,26 +177,30 @@ export const userController = {
         res.status(404).json({ message: "Doctor not found" });
         return;
       }
-  
+
       if (error.message === "Current password is incorrect") {
         res.status(400).json({ message: "Current password is incorrect" });
         return;
       }
-  
-      res.status(500).json({ message: "Failed to update profile", error: error.message }); 
-      return;     }
+
+      res
+        .status(500)
+        .json({ message: "Failed to update profile", error: error.message });
+      return;
+    }
   },
 
   //Send OTP for forget Password
-  sendOtpForForgetPassword: async (req: Request, res: Response): Promise<void> => {
-
-    const {email} = req.body;
-        
+  sendOtpForForgetPassword: async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    const { email } = req.body;
 
     try {
       const existingUser = await userRepository.findByEmail(email);
-      if(!existingUser) {
-        res.status(400).json({ message: "Please enter valid Email id" })
+      if (!existingUser) {
+        res.status(400).json({ message: "Please enter valid Email id" });
         return;
       }
       await sendOtpForResetPassword.execute(email);
@@ -203,33 +208,30 @@ export const userController = {
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
-
   },
 
   //Verify the OTP and reset password
   verifyAndResetPassword: async (req: Request, res: Response) => {
-    const {email, newPassword, otp} = req.body;
+    const { email, newPassword, otp } = req.body;
 
     try {
-      await verifyOtpAndResetPassword.execute(
-        { email, newPassword, otp }
-      );
-      res.status(200).json({ message: "Password changed successfully, You can now log in..!"});
+      await verifyOtpAndResetPassword.execute({ email, newPassword, otp });
+      res.status(200).json({
+        message: "Password changed successfully, You can now log in..!",
+      });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
-    }    
+    }
   },
 
   // Get doctor Details
   getDoctorDetails: async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
-      const details = await doctorDetails.execute( id )
+      const details = await doctorDetails.execute(id);
       res.status(200).json(details);
-      
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   },
-
 };

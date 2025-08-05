@@ -51,7 +51,7 @@ export const authController = {
         user,
       } = await googleOAuthLoginUseCase.execute(fullname, email, profilePicture, role);
 
-      const userData = user._doc;
+      const userData = user;
 
       if (role === "user") {
         res.cookie("user_refresh_token", refreshToken, {
