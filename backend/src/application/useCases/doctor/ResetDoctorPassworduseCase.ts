@@ -29,6 +29,6 @@ export class VerifyOtpAndResetDoctorPassword {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     const updates = { password: hashedPassword };
 
-    await this.doctorRepository.updateDoctor(doctor?._id.toString(), updates);
+    await this.doctorRepository.updateDoctor(doctor?._id, updates);
   }
 }
