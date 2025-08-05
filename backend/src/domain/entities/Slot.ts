@@ -1,13 +1,16 @@
-import { Types } from "mongoose";
-
-export interface Slot {
-    _id?: Types.ObjectId | string;
-    doctorId: Types.ObjectId | string;
-    date: Date;
-    timeSlots: { 
-        time: string; 
-        status: string; 
-        isAvailable: boolean;
-        _id?: Types.ObjectId
-    }[];
-};  
+export class TimeSlot {
+  constructor(
+    public time: string,
+    public status: "Not Booked" | "Booked",
+    public isAvailable: boolean,
+    public _id?: string
+  ) {}
+}
+export class Slot {
+  constructor(
+    public _id: string | undefined,
+    public doctorId: string,
+    public date: Date,
+    public timeSlots: TimeSlot[]
+  ) {}
+}

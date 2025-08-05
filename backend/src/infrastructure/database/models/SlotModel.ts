@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
-export interface ISlotDocument extends Document {
+
+export interface ISlotDocument extends Document<Types.ObjectId> {
+  _id: Types.ObjectId;
   doctorId: Types.ObjectId;
   date: Date;
   timeSlots: {
