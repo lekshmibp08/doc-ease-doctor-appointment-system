@@ -1,5 +1,5 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
-import { sendEmail } from "../../../infrastructure/web/services/EmailService";
+import { sendEmail } from "../../../infrastructure/services/EmailService";
 
 export const toggleApproval = async (doctorRepository: IDoctorRepository, id: string, reason: string) => {
     const doctor = await doctorRepository.findDoctorById(id);
