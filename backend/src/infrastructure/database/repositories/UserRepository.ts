@@ -1,22 +1,31 @@
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 import UserModel from "../models/UserModel";
 import { IUser } from "../../../domain/entities/User";
+import { mapToUserEntity } from "../mappers/userMapper";
 
 export class UserRepository implements IUserRepository {
   async findByEmail(email: string): Promise<IUser | null> {
-    return await UserModel.findOne({ email });
+    const userDoc = await UserModel.findOne({ email });
+    return userDoc ? mapToUserEntity(userDoc) : null;
   }
   async create(user: IUser): Promise<IUser> {
-    return await UserModel.create(user);
+    const createdUser = await UserModel.create(user);
+    return mapToUserEntity(createdUser);
   }
   async getAllUsers(): Promise<IUser[]> {
-    return await UserModel.find({ role: "user" }, "-password");
+    const userDocs = await UserModel.find({ role: "user" }, "-password");
+    return userDocs.map((doc) => mapToUserEntity(doc));
   }
-  async getUsersWithPagination(skip: number, limit: number, query: any): Promise<IUser[]> {
-    return await UserModel.find({ ...query, role: "user" }, "-password")
+  async getUsersWithPagination(
+    skip: number,
+    limit: number,
+    query: any
+  ): Promise<IUser[]> {
+    const users = await UserModel.find({ ...query, role: "user" }, "-password")
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
+    return users.map((doc) => mapToUserEntity(doc));
   }
 
   async countUsers(query: any): Promise<number> {
@@ -24,13 +33,16 @@ export class UserRepository implements IUserRepository {
   }
 
   async findUserById(id: string): Promise<IUser | null> {
-    return await UserModel.findById(id);
+    const userDoc = await UserModel.findById(id);
+    return userDoc ? mapToUserEntity(userDoc) : null;
   }
   async updateUser(id: string, updates: Partial<IUser>): Promise<IUser | null> {
-    return await UserModel.findByIdAndUpdate(
-      id, updates, 
-      { new: true}
-    ).select('-password');
-    
+    const updatedUser = await UserModel.findByIdAndUpdate(id, updates, {
+      new: true,
+    }).select("-password");
+    return updatedUser ? mapToUserEntity(updatedUser) : null;
   }
 }
+
+
+

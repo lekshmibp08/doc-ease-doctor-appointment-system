@@ -1,59 +1,71 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 import DoctorModel from "../models/DoctorModel";
 import { Doctor } from "../../../domain/entities/Doctor";
+import { mapToDoctorEntity } from "../mappers/doctorMapper";
 
 export class DoctorRepository implements IDoctorRepository {
-
   async findByEmail(email: string): Promise<Doctor | null> {
     const doctorDoc = await DoctorModel.findOne({ email });
-    return doctorDoc
+    return doctorDoc ? mapToDoctorEntity(doctorDoc) : null;
   }
-  
+
   async create(doctor: Doctor): Promise<Doctor> {
     const doctorDoc = await DoctorModel.create(doctor);
-    return doctorDoc
+    return mapToDoctorEntity(doctorDoc);
   }
-  
+
   async getAllDoctors() {
-    return await DoctorModel.find({}, "-password"); 
+    const docs = await DoctorModel.find({}, "-password");
+    return docs.map(mapToDoctorEntity);
   }
-  
-  async getDoctorsWithPagination(skip: number, limit: number, query: Partial<Doctor>) {
-    return await DoctorModel.find(query, "-password").skip(skip).limit(limit).sort({ createdAt: -1 }); 
+
+  async getDoctorsWithPagination(
+    skip: number,
+    limit: number,
+    query: Partial<Doctor>
+  ) {
+    const docs = await DoctorModel.find(query, "-password")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+    return docs.map(mapToDoctorEntity);
   }
-  
+
   async countDoctors(query: Partial<Doctor>) {
     return await DoctorModel.countDocuments(query); // Get total count of doctors
   }
-  
+
   async getAllApprovedDoctors() {
-    return await DoctorModel.find({ isApproved: true }, "-password");
+    const docs = await DoctorModel.find({ isApproved: true }, "-password");
+    return docs.map(mapToDoctorEntity);
   }
   async findDoctorById(id: string) {
-    return await DoctorModel.findById(id);
+    const doc = await DoctorModel.findById(id);
+    return doc ? mapToDoctorEntity(doc) : null;
   }
   async updateDoctor(id: string, updates: any) {
-    const updatedDoctor = await DoctorModel.findByIdAndUpdate(id, updates, { new: true});
-    return updatedDoctor;
+    const updatedDoctor = await DoctorModel.findByIdAndUpdate(id, updates, {
+      new: true,
+    });
+    return updatedDoctor ? mapToDoctorEntity(updatedDoctor) : null;
   }
-  async getDoctorsByCriteria(query: any, sortOptions: any, skip: number, limit: number) {
-    
+  async getDoctorsByCriteria(
+    query: any,
+    sortOptions: any,
+    skip: number,
+    limit: number
+  ) {
     const doctors = await DoctorModel.find(query, "-password")
       .sort(sortOptions)
       .skip(skip)
       .limit(limit);
-  
+
     const totalDocs = await DoctorModel.countDocuments(query);
-    
-    return { doctors, totalDocs };
+
+    return { doctors: doctors.map(mapToDoctorEntity), totalDocs };
   }
   async getAllSpecializations() {
-    const specializations = await DoctorModel.distinct('specialization');
+    const specializations = await DoctorModel.distinct("specialization");
     return specializations;
   }
-
-}  
-
-
-
-
+}
