@@ -1,15 +1,15 @@
-import { IReview } from "../../../domain/entities/Review" 
-import ReviewModel from "../models/ReviewModel"
-import { IReviewRepository } from "../../../domain/repositories/IReviewRepository"
+import { IReview } from "../../../domain/entities/Review";
+import ReviewModel from "../models/ReviewModel";
+import { IReviewRepository } from "../../../domain/repositories/IReviewRepository";
 
 export class ReviewRepository implements IReviewRepository {
   async createReview(reviewData: Partial<IReview>): Promise<IReview> {
-    const review = new ReviewModel(reviewData)
-    return await review.save()
+    const review = new ReviewModel(reviewData);
+    return await review.save();
   }
 
-  async getReviewsByAppointmentId(appointmentId: string): Promise<IReview[]> { 
-    return await ReviewModel.find({ appointmentId })
+  async getReviewsByAppointmentId(appointmentId: string): Promise<IReview[]> {
+    return await ReviewModel.find({ appointmentId });
   }
 
   async findByIdAndUpdate(id: string, updateData: Partial<IReview>) {
@@ -17,6 +17,11 @@ export class ReviewRepository implements IReviewRepository {
   }
 
   async getReviewsByDoctorId(doctorId: string): Promise<IReview[]> {
-    return await ReviewModel.find({ doctorId }).populate("userId", "fullName")
+    return await ReviewModel.find({ doctorId })
+      .populate({
+        path: 'userId',
+        select: 'fullName'
+      })
+      .lean();
   }
 }

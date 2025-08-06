@@ -75,3 +75,4 @@ export interface AppointmentsByDocIdDTO {
   createdAt?: Date,
 
 }
+

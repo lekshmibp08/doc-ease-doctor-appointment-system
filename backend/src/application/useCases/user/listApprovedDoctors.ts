@@ -1,5 +1,6 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
-
+import { ListApprovedDoctorsDTO } from "../../../dtos/doctorDTO/doctorDTOs";
+import { mapToListApprovedDoctorsDTO } from "../../../infrastructure/database/mappers/mapToListApprovedDoctors";
 export class ListApprovedDoctors {
   constructor(private doctorRepository: IDoctorRepository) {}
 
@@ -109,9 +110,10 @@ export class ListApprovedDoctors {
         skip,
         limit
       );
+      const mappedDoctors: ListApprovedDoctorsDTO[] = doctors.map(mapToListApprovedDoctorsDTO);
 
     return {
-      doctors,
+      doctors: mappedDoctors,
       totalPages: Math.ceil(totalDocs / criteria.size),
     };
   }
