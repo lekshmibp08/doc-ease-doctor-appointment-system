@@ -78,6 +78,8 @@ export const appoinmentController = {
       const appointments = await getAppointmentsByUserUseCase.execute(
         userId as string
       );
+      console.log(appointments);
+
       res.status(200).json({ appointments });
     } catch (error) {
       console.error("Error fetching user appointments:", error);
@@ -218,6 +220,7 @@ export const appoinmentController = {
           pageNumber,
           pageSize
         );
+
       res.status(200).json({
         appointments,
         totalAppointments,

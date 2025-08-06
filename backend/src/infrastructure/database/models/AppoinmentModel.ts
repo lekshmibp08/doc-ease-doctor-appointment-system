@@ -1,7 +1,34 @@
-import mongoose, { Model } from "mongoose";
+import mongoose, { Model, Document, Types } from "mongoose";
 import { IAppointment } from "../../../domain/entities/Appoinment";
 
-const appointmentSchema = new mongoose.Schema<IAppointment>({
+export interface IAppointmentDocument extends Document {
+  _id: Types.ObjectId;
+  doctorId: Types.ObjectId;
+  userId: Types.ObjectId;
+  date: Date;
+  slotId: Types.ObjectId;
+  timeSlotId: Types.ObjectId;
+  time: string;
+  modeOfVisit: "Video" | "Clinic";
+  amount: number;
+  paymentId: string;
+  isPaid: boolean;
+  isCancelled: boolean;
+  refundAmount: number;
+  refundStatus: "Pending" | "Processed" | "Failed";
+  refundTransactionId: string | null;
+  videoCallEnabled: boolean;
+  chatEnabled: boolean;
+  isCompleted: boolean;
+  rating?: number;
+  reviewMessage?: string;
+  videoCallId?: string;
+  isReviewed: boolean;
+  updatedAt?: Date;
+  createdAt?: Date;
+}
+
+const appointmentSchema = new mongoose.Schema<IAppointmentDocument>({
     doctorId: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Doctor", 
@@ -87,5 +114,5 @@ const appointmentSchema = new mongoose.Schema<IAppointment>({
     timestamps: true 
 });
 
-const AppointmentModel: Model<IAppointment> = mongoose.model<IAppointment>("Appointment", appointmentSchema);
+const AppointmentModel: Model<IAppointmentDocument> = mongoose.model<IAppointmentDocument>("Appointment", appointmentSchema);
 export default AppointmentModel;

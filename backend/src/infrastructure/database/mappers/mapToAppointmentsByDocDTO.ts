@@ -1,0 +1,31 @@
+import { AppointmentsByDocIdDTO } from "../../../dtos/dtos";
+
+export const mapToAppointmentsByDocDTO = (doc: any): AppointmentsByDocIdDTO => ({
+  _id: doc._id.toString(),
+  doctorId: doc.doctorId.toString(),
+  userId: {
+    _id: doc.userId._id.toString(),
+    fullName: doc.userId.fullName,
+  },
+  date: doc.date,
+  slotId: doc.slotId,
+  timeSlotId: doc.timeSlotId,
+  time: doc.time,
+  modeOfVisit: doc.modeOfVisit,
+  amount: doc.amount,
+  paymentId: doc.paymentId,
+  isPaid: doc.isPaid,
+  isCancelled: doc.isCancelled,
+  refundAmount: doc.refundAmount,
+  refundStatus: doc.refundStatus,
+  refundTransactionId: doc.refundTransactionId,
+  videoCallEnabled: doc.videoCallEnabled,
+  chatEnabled: doc.chatEnabled,
+  isCompleted: doc.isCompleted,
+  rating: doc.rating,
+  reviewMessage: doc.reviewMessage,
+  videoCallId: doc.videoCallId,
+  isReviewed: doc.isReviewed,
+  updatedAt: doc.updatedAt,
+  createdAt: doc.createdAt,
+});

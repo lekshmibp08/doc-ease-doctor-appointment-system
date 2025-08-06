@@ -31,7 +31,7 @@ const AppointmentContainer = ({
   );
   const [visitType, setVisitType] = useState<string>('');
   const [selectedSlot, setSelectedSlot] = useState<Slot>();
-  const [slots, setSlots] = useState<Slot[]>([]); // To store the fetched slots
+  const [slots, setSlots] = useState<Slot[]>([]); 
   const [loading, setLoading] = useState<boolean>(false);
   const [slotId, setSlotId] = useState<string>('')
   const { currentUser } = useSelector((state: RootState) => state.userAuth);

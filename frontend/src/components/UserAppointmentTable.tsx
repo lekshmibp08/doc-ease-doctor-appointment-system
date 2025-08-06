@@ -1,41 +1,45 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  getUserAppointments, 
-  cancelAppointment 
-} from '../services/api/userApi'
-import { useSelector } from 'react-redux';
-import { RootState } from '../Redux/store';
-import { IAppointment } from '../types/interfaces';
+import React, { useEffect, useState } from "react";
+import {
+  getUserAppointments,
+  cancelAppointment,
+} from "../services/api/userApi";
+import { useSelector } from "react-redux";
+import { RootState } from "../Redux/store";
+import { IAppointment } from "../types/interfaces";
 import { format } from "date-fns";
-import PrescriptionView from './PrescriptionView';
+import PrescriptionView from "./PrescriptionView";
 import { Star } from "lucide-react";
-import ReviewForm from './ReviewForm';
-import Swal from 'sweetalert2';
-import RescheduleModal from './RescheduleModal';
+import ReviewForm from "./ReviewForm";
+import Swal from "sweetalert2";
+import RescheduleModal from "./RescheduleModal";
 
 const UserAppointmentTable: React.FC = () => {
-
   const { currentUser } = useSelector((state: RootState) => state.userAuth);
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
-  const [showPrescription, setShowPrescription] = useState(false)
-  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null)
-  const [showReviewForm, setShowReviewForm] = useState(false)
-  const [selectedAppointmentForReview, setSelectedAppointmentForReview] = useState<IAppointment | null>(null)
+  const [showPrescription, setShowPrescription] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<
+    string | null
+  >(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [selectedAppointmentForReview, setSelectedAppointmentForReview] =
+    useState<IAppointment | null>(null);
   const [showRescheduleModel, setShowRescheduleModel] = useState(false);
-  const [selectedAppointmentForReschedule, setSelectedAppointmentForReschedule] = useState<IAppointment | null>(null);
+  const [
+    selectedAppointmentForReschedule,
+    setSelectedAppointmentForReschedule,
+  ] = useState<IAppointment | null>(null);
 
-
-  const fetchAppointments = async () => {    
+  const fetchAppointments = async () => {
     try {
-      const data = await getUserAppointments(currentUser?._id);    
-      setAppointments(data); 
+      const data = await getUserAppointments(currentUser?._id);
+      setAppointments(data);
     } catch (error) {
-        console.error(error);        
+      console.error(error);
     }
   };
   useEffect(() => {
-    fetchAppointments();    
-  },[currentUser?._id]);
+    fetchAppointments();
+  }, [currentUser?._id]);
 
   const handleCancelOrReschedule = async (appointment: IAppointment) => {
     const result = await Swal.fire({
@@ -51,50 +55,40 @@ const UserAppointmentTable: React.FC = () => {
     if (result.isConfirmed) {
       try {
         const response = await cancelAppointment(appointment._id);
-        setAppointments((prev) => 
-          prev.map((app) => 
-            app._id === appointment._id ? { ...appointment, isCancelled: true } : appointment
-          )
-        );
+        await fetchAppointments();
 
         Swal.fire({
           title: "Cancelled!",
           text: `${response.message}\nRefund Transaction ID: ${response.refundTransactionId}`,
           icon: "success",
         });
-
       } catch (error: any) {
         Swal.fire("Error!", error.message, "error");
       }
     } else if (result.isDenied) {
-      setSelectedAppointmentForReschedule(appointment)
+      setSelectedAppointmentForReschedule(appointment);
       setShowRescheduleModel(true);
     }
-    
-  }
+  };
 
-  const handleRescheduleSubmit = (updatedAppointment: IAppointment) => {
-    setAppointments((prev) =>
-      prev.map((app) =>
-        app._id === updatedAppointment._id ? updatedAppointment : app
-      )
-    );
+  const handleRescheduleSubmit = async () => {
+    await fetchAppointments();
     setShowRescheduleModel(false);
   };
 
   const handlePrescription = async (appointmentId: string) => {
     setSelectedAppointmentId(appointmentId);
     setShowPrescription(true);
-  }
+  };
 
   const handleRateUs = (appointment: IAppointment) => {
-    setSelectedAppointmentForReview(appointment)
-    setShowReviewForm(true)
-  }
+    setSelectedAppointmentForReview(appointment);
+    setShowReviewForm(true);
+  };
 
-    const handleReviewSubmit = () => {
-    fetchAppointments()
-  }
+  const handleReviewSubmit = () => {
+    fetchAppointments();
+  };
 
   return (
     <div className="p-4 mx-auto max-w-6xl bg-lightTeal rounded-md">
@@ -105,8 +99,16 @@ const UserAppointmentTable: React.FC = () => {
             <thead className="bg-customTeal text-white">
               <tr>
                 <th className="p-2 border border-gray-300">Sl. No</th>
-                <th className="p-2 border border-gray-300">Doctor<br />Name</th>
-                <th className="p-2 border border-gray-300">Booking<br />Date</th>
+                <th className="p-2 border border-gray-300">
+                  Doctor
+                  <br />
+                  Name
+                </th>
+                <th className="p-2 border border-gray-300">
+                  Booking
+                  <br />
+                  Date
+                </th>
                 <th className="p-2 border border-gray-300">Slot</th>
                 <th className="p-2 border border-gray-300">Status</th>
                 <th className="p-2 border border-gray-300">Cancel</th>
@@ -129,29 +131,39 @@ const UserAppointmentTable: React.FC = () => {
                     {format(new Date(appointment.date), "dd MMM yyyy")} <br />
                     {format(new Date(appointment.date), "EEEE")}
                   </td>
-                  <td className="p-2 border border-gray-300">{appointment.time}</td>
-                  <td className={`p-2 border border-gray-300 ${appointment.isCompleted ? "text-green-700" : "text-red-600"}`}>
+                  <td className="p-2 border border-gray-300">
+                    {appointment.time}
+                  </td>
+                  <td
+                    className={`p-2 border border-gray-300 ${
+                      appointment.isCompleted
+                        ? "text-green-700"
+                        : "text-red-600"
+                    }`}
+                  >
                     {appointment.isCompleted ? "Completed" : "Pending"} <br />
-                    {appointment.isCompleted &&
+                    {appointment.isCompleted && (
                       <button
                         onClick={() => handlePrescription(appointment._id)}
                         className="text-blue-600 cursor-pointer 
                         bg-transparent border-none text-sm hover:underline"
-                      >                        
-                        Open Prescription                       
+                      >
+                        Open Prescription
                       </button>
-                    }
+                    )}
                   </td>
-                  { /*
+                  {/*
                   <td className="p-2 border border-gray-300">
                     <button className="px-4 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-xs md:text-sm">
                       Open
                     </button>
                   </td>
-                  */ }
+                  */}
                   <td className="p-2 border border-gray-300">
                     {appointment.isCancelled ? (
-                      <span className="text-red-500 font-semibold">Cancelled</span>
+                      <span className="text-red-500 font-semibold">
+                        Cancelled
+                      </span>
                     ) : (
                       <button
                         className={`px-4 py-1 rounded-md text-xs md:text-sm ${
@@ -167,19 +179,19 @@ const UserAppointmentTable: React.FC = () => {
                     )}
                   </td>
                   <td className="p-2 border border-gray-300 items-center">
-                <button
-                  className={`flex justify-center px-3 py-1 rounded-md text-xs md:text-sm ${
-                    appointment.isCompleted
-                      ? "bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
-                  disabled={!appointment.isCompleted}
-                  onClick={() => handleRateUs(appointment)}
-                >
-                  <Star className="w-4 h-4 mr-1" />
-                  {appointment.isReviewed ? "Edit Review" : "Add Review"}
-                </button>
-              </td>
+                    <button
+                      className={`flex justify-center px-3 py-1 rounded-md text-xs md:text-sm ${
+                        appointment.isCompleted
+                          ? "bg-yellow-500 text-white hover:bg-yellow-600 cursor-pointer"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
+                      disabled={!appointment.isCompleted}
+                      onClick={() => handleRateUs(appointment)}
+                    >
+                      <Star className="w-4 h-4 mr-1" />
+                      {appointment.isReviewed ? "Edit Review" : "Add Review"}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -195,8 +207,8 @@ const UserAppointmentTable: React.FC = () => {
         <PrescriptionView
           appointmentId={selectedAppointmentId}
           onClose={() => {
-            setShowPrescription(false)
-            setSelectedAppointmentId(null)
+            setShowPrescription(false);
+            setSelectedAppointmentId(null);
           }}
         />
       )}
@@ -219,7 +231,6 @@ const UserAppointmentTable: React.FC = () => {
           onRescheduleSuccess={handleRescheduleSubmit}
         />
       )}
-
     </div>
   );
 };

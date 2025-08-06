@@ -2,11 +2,14 @@ import { PipelineStage } from "mongoose";
 import AppointmentModel from "../models/AppoinmentModel";
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { IAppointment } from "../../../domain/entities/Appoinment";
+import { AppointmentInputDTO } from "../../../dtos/dtos";
+import { mapToAppointmentEntity } from "../mappers/appointmentMapper";
+
 
 export class AppointmentRepository implements IAppointmentRepository {
-  async createAppointment(appoinmentData: IAppointment) {
-    const appoinmentDoc = await AppointmentModel.create(appoinmentData);
-    return appoinmentDoc;
+  async createAppointment(appoinmentData: AppointmentInputDTO) {
+    const appointmentDoc = await AppointmentModel.create(appoinmentData);
+    return mapToAppointmentEntity(appointmentDoc);
   }
 
   async getAppointmentsByUserId(userId: string) {
@@ -14,20 +17,20 @@ export class AppointmentRepository implements IAppointmentRepository {
 
     const appointments = await AppointmentModel.find({ userId })
       .populate("doctorId slotId timeSlotId")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 }).lean();
     return appointments;
   }
 
   async findAppointmentsById(appointmentId: string) {
     const appointment = await AppointmentModel.findById(appointmentId);
-    return appointment;
+    return appointment ? mapToAppointmentEntity(appointment) : null;
   }
 
   async findAppointmentsByIdWithDocDetails(appointmentId: string) {
     const appointment = await AppointmentModel.findById(appointmentId).populate(
       "doctorId"
     );
-    return appointment;
+    return appointment ? mapToAppointmentEntity(appointment) : null;
   }
 
   async updateAppointment(
@@ -38,12 +41,12 @@ export class AppointmentRepository implements IAppointmentRepository {
       appointmentId,
       { $set: updates },
       { new: true }
-    ).lean();
+    );
     if (!updatedAppointment) {
       throw new Error("Appointment not found");
     }
 
-    return updatedAppointment;
+    return mapToAppointmentEntity(updatedAppointment);
   }
 
   async getAppointmentsWithPagination(
@@ -135,11 +138,14 @@ export class AppointmentRepository implements IAppointmentRepository {
       .populate("userId")
       .skip(skip)
       .limit(limit)
-      .exec();
+      .lean();
 
     const totalAppointments = await AppointmentModel.countDocuments(filter);
 
-    return { appointments, totalAppointments };
+    return {
+      appointments: appointments,
+      totalAppointments,
+    };
   }
 
   async findByDoctorIdAndDateRange(
@@ -147,9 +153,10 @@ export class AppointmentRepository implements IAppointmentRepository {
     startDate: Date,
     endDate: Date
   ) {
-    return AppointmentModel.find({
+    const appointments = await AppointmentModel.find({
       doctorId,
       date: { $gte: startDate, $lte: endDate },
     }).populate("userId");
+    return appointments.map(mapToAppointmentEntity);
   }
 }

@@ -1,9 +1,20 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
+import { mapToAppointmentsByDocDTO } from "../../../infrastructure/database/mappers/mapToAppointmentsByDocDTO";
+import { AppointmentsByDocIdDTO } from "../../../dtos/dtos";
 
 export class GetAppointmentsByDoctorIdUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
 
-  async execute(doctorId: string, date: string, page: number, size: number) {
+  async execute(
+    doctorId: string,
+    date: string,
+    page: number,
+    size: number
+  ): Promise<{
+    appointments: AppointmentsByDocIdDTO[];
+    totalAppointments: number;
+    totalPages: number;
+  }> {
     const startOfDay = new Date(date);
     const endOfDay = new Date(date);
     endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);
@@ -28,7 +39,7 @@ export class GetAppointmentsByDoctorIdUseCase {
     const totalPages = Math.ceil(totalAppointments / size);
 
     return {
-      appointments,
+      appointments: appointments.map(mapToAppointmentsByDocDTO),
       totalAppointments,
       totalPages,
     };

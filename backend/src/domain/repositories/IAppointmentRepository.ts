@@ -1,9 +1,10 @@
 import { IAppointment } from "../entities/Appoinment";
+import { AppointmentInputDTO } from "../../dtos/dtos";
 
 export interface IAppointmentRepository {
-    createAppointment(appointmentData: IAppointment): Promise<IAppointment>;
+    createAppointment(appointmentData: AppointmentInputDTO): Promise<IAppointment>;
     
-    getAppointmentsByUserId(userId: string): Promise<IAppointment[]>;
+    getAppointmentsByUserId(userId: string): Promise<any>;
     
     findAppointmentsById(appointmentId: string): Promise<IAppointment | null>;
     
@@ -18,7 +19,7 @@ export interface IAppointmentRepository {
     countAppointments: (query: any) => Promise<number>;
 
     getAppointmentsByDoctorId: (filter: any, skip: number, limit: number) =>
-        Promise<{ appointments: IAppointment[]; totalAppointments: number }>
+        Promise<{ appointments: any; totalAppointments: number }>
 
     findByDoctorIdAndDateRange: (doctorId: string, startDate: Date, endDate: Date) =>
         Promise<IAppointment[]>

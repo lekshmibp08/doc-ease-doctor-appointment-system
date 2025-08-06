@@ -1,18 +1,8 @@
 import { IAppointment } from "../../../domain/entities/Appoinment";
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
+import { AppointmentInputDTO } from "../../../dtos/dtos";
 
-interface IAppointmentInput {
-  doctorId: string;
-  userId: string;
-  date: any;
-  slotId: string;
-  timeSlotId: string;
-  time: string;
-  modeOfVisit: "Video" | "Clinic";
-  amount: number;
-  paymentId: string;
-}
 
 export class CreateAppointmentUseCase {
   constructor(
@@ -20,7 +10,7 @@ export class CreateAppointmentUseCase {
     private slotRepository: ISlotRepository
   ) {}
 
-  async execute(appoinmentData: IAppointmentInput): Promise<IAppointment> {
+  async execute(appoinmentData: AppointmentInputDTO): Promise<IAppointment> {
     const newAppoinment = await this.appointmentRepository.createAppointment(
       appoinmentData
     );
