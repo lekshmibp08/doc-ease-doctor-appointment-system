@@ -16,7 +16,7 @@ export class AppointmentRepository implements IAppointmentRepository {
     console.log(userId);
 
     const appointments = await AppointmentModel.find({ userId })
-      .populate("doctorId slotId timeSlotId")
+      .populate("doctorId slotId")
       .sort({ createdAt: -1 }).lean();
     return appointments;
   }
