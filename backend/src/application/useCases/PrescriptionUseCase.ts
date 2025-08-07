@@ -1,5 +1,7 @@
 import { IPrescription } from "../../domain/entities/Prescription" 
 import { PrescriptionRepository } from "../../infrastructure/database/repositories/PrescriptionRepository"; 
+import { mapToPrescriptionDTO } from "../../infrastructure/database/mappers/mapToPrescriptionDTO ";
+import { PrescriptionDTO } from "../../dtos/prescriptionDTO/prescriptionDTOs";
 
 class PrescriptionUseCase {
     private prescriptionRepository: PrescriptionRepository;
@@ -14,14 +16,15 @@ class PrescriptionUseCase {
     };
 
     // Get prescription
-    async getPrescription(id: string): Promise<IPrescription | null> {
+    async getPrescription(id: string): Promise<PrescriptionDTO | null> {
         const appointmentId = id.trim()
-        return this.prescriptionRepository.findByAppointmentId(appointmentId);
+        const prescription = await this.prescriptionRepository.findByAppointmentId(appointmentId);        
+        return mapToPrescriptionDTO(prescription);
     }
 
     // Update Prescription
     async UpdatePrescription(id: string, prescriptionData: Partial<IPrescription>): Promise<IPrescription | null> {
-        return this.prescriptionRepository.update(id, prescriptionData);
+        return await this.prescriptionRepository.update(id, prescriptionData);
     }
   
 }
