@@ -19,12 +19,8 @@ export class PrescriptionRepository implements IPrescriptionRepository {
   async findByAppointmentId(
     appointmentId: string
   ): Promise<IPrescription | null> {
-    const result = await PrescriptionModel.findOne({ appointmentId });
-
-    if (result) {
-      return result.toObject();
-    }
-    return null;
+    const result = await PrescriptionModel.findOne({ appointmentId }).lean();
+    return result;
   }
 
   async update(

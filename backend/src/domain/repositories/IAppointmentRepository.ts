@@ -8,7 +8,7 @@ export interface IAppointmentRepository {
     
     findAppointmentsById(appointmentId: string): Promise<IAppointment | null>;
     
-    findAppointmentsByIdWithDocDetails(appointmentId: string): Promise<IAppointment | null>;
+    findAppointmentsByIdWithDocDetails(appointmentId: string): Promise<any>;
 
     updateAppointment(appointmentId: string, updates: Partial<IAppointment>):
         Promise<IAppointment>;

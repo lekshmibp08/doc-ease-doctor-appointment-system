@@ -29,8 +29,8 @@ export class AppointmentRepository implements IAppointmentRepository {
   async findAppointmentsByIdWithDocDetails(appointmentId: string) {
     const appointment = await AppointmentModel.findById(appointmentId).populate(
       "doctorId"
-    );
-    return appointment ? mapToAppointmentEntity(appointment) : null;
+    ).lean();
+    return appointment;
   }
 
   async updateAppointment(

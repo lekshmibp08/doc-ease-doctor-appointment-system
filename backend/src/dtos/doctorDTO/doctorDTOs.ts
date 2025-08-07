@@ -7,13 +7,5 @@ export interface ListApprovedDoctorsDTO {
   isBlocked: boolean;
   profilePicture: string;
   isRejected: boolean;
-  specialization: string;
-  fee: number;
-  gender: string;
-  experience: number;
-  locationCoordinates: {
-    latitude: number;
-    longitude: number;
-  };
-  locationName: string;
+ 
 }
