@@ -7,8 +7,9 @@ import { ReviewsByAppointmentIdDTO } from "../../dtos/reviewDTO/reviewDTOS"
 export class ReviewUseCase {
   constructor(private reviewRepository: IReviewRepository) {}
 
-  async createReview(reviewData: Partial<IReview>): Promise<IReview> {
-    return await this.reviewRepository.createReview(reviewData)
+  async createReview(reviewData: Partial<IReview>): Promise<Partial<IReview>> {
+    const result = await this.reviewRepository.createReview(reviewData);
+    return mapToReviewsByAppointmentIdDTO(result);
   }
 
   async getReviewsByAppointmentId(appointmentId: string): Promise<ReviewsByAppointmentIdDTO[]> {
