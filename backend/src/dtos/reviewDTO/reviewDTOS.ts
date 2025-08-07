@@ -6,3 +6,9 @@ export interface ReviewsByDoctorIdDTO {
   rating: number;
   comment: string;
 }
+
+export interface ReviewsByAppointmentIdDTO {
+  id: string
+  rating: number
+  comment: string
+}

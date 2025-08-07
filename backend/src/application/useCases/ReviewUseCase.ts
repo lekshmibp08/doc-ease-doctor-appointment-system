@@ -1,6 +1,8 @@
 import { IReviewRepository } from "../../domain/repositories/IReviewRepository"
 import { IReview } from "../../domain/entities/Review"
 import { ReviewsByDoctorIdDTO } from "../../dtos/reviewDTO/reviewDTOS"
+import { mapToReviewsByAppointmentIdDTO } from "../../infrastructure/database/mappers/reviewMapper"
+import { ReviewsByAppointmentIdDTO } from "../../dtos/reviewDTO/reviewDTOS"
 
 export class ReviewUseCase {
   constructor(private reviewRepository: IReviewRepository) {}
@@ -9,8 +11,9 @@ export class ReviewUseCase {
     return await this.reviewRepository.createReview(reviewData)
   }
 
-  async getReviewsByAppointmentId(appointmentId: string): Promise<IReview[]> {
-    return await this.reviewRepository.getReviewsByAppointmentId(appointmentId)
+  async getReviewsByAppointmentId(appointmentId: string): Promise<ReviewsByAppointmentIdDTO[]> {
+    const result = await this.reviewRepository.getReviewsByAppointmentId(appointmentId);
+    return result.map(mapToReviewsByAppointmentIdDTO)
   }
 
   async updateReview(id: string, updateData: Partial<IReview>) {
