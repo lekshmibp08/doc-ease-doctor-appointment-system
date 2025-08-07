@@ -8,7 +8,7 @@ export interface ReviewsByDoctorIdDTO {
 }
 
 export interface ReviewsByAppointmentIdDTO {
-  id: string
+  _id: string
   rating: number
   comment: string
 }
