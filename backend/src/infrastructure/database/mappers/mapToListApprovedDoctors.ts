@@ -9,14 +9,6 @@ export function mapToListApprovedDoctorsDTO(doctor: any): ListApprovedDoctorsDTO
     isBlocked: doctor.isBlocked,
     profilePicture: doctor.profilePicture,
     isRejected: doctor.isRejected,
-    specialization: doctor.specialization,
-    fee: doctor.fee,
-    gender: doctor.gender,
-    experience: doctor.experience,
-    locationCoordinates: {
-      latitude: doctor.locationCoordinates?.latitude,
-      longitude: doctor.locationCoordinates?.longitude,
-    },
-    locationName: doctor.locationName,
+    
   };
 }
