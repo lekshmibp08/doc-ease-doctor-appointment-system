@@ -2,14 +2,13 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { AppError } from "../../../shared/errors/appError";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 
 export class LoginDoctorUseCase {
   constructor(private doctorRepository: IDoctorRepository) {}
 
-  async execute(data: {
-    email: string;
-    password: string;
-  }): Promise<{
+  async execute(data: { email: string; password: string }): Promise<{
     token: string;
     refreshToken: string;
     role: string;
@@ -19,16 +18,25 @@ export class LoginDoctorUseCase {
 
     const doctor = await this.doctorRepository.findByEmail(email);
     if (!doctor) {
-      throw new Error("Invalid email or password");
+      throw new AppError(
+        "Invalid email or password",
+        HttpStatusCode.UNAUTHORIZED
+      );
     }
 
     const isPasswordValid = await bcrypt.compare(password, doctor.password);
     if (!isPasswordValid) {
-      throw new Error("Invalid email or password");
+      throw new AppError(
+        "Invalid email or password",
+        HttpStatusCode.UNAUTHORIZED
+      );
     }
 
     if (doctor.role !== "doctor") {
-      throw new Error("Access denied: only doctors can log in");
+      throw new AppError(
+        "Access denied: only doctors can log in",
+        HttpStatusCode.FORBIDDEN
+      );
     }
 
     const { password: _, ...rest } = doctor;

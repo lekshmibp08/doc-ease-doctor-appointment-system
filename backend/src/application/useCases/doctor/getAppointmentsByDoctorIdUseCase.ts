@@ -1,6 +1,8 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { mapToAppointmentsByDocDTO } from "../../../infrastructure/database/mappers/mapToAppointmentsByDocDTO";
 import { AppointmentsByDocIdDTO } from "../../../dtos/dtos";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
+import { AppError } from "../../../shared/errors/appError";
 
 export class GetAppointmentsByDoctorIdUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
@@ -15,6 +17,13 @@ export class GetAppointmentsByDoctorIdUseCase {
     totalAppointments: number;
     totalPages: number;
   }> {
+    if (!doctorId || !date || !page || !size) {
+      throw new AppError(
+        "Missing required parameters",
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+
     const startOfDay = new Date(date);
     const endOfDay = new Date(date);
     endOfDay.setUTCDate(endOfDay.getUTCDate() + 1);

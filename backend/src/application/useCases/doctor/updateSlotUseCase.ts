@@ -1,4 +1,6 @@
 import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
+import { AppError } from "../../../shared/errors/appError";
 
 export class UpdateSlotUseCase {
   constructor(private slotRepository: ISlotRepository) {}
@@ -15,7 +17,7 @@ export class UpdateSlotUseCase {
     } else if (status === "Available") {
       updation = true;
     } else {
-      throw new Error("Invalid status value");
+      throw new AppError("Invalid status value", HttpStatusCode.BAD_REQUEST);
     }
 
     const updatedSlot = await this.slotRepository.findByIdAndUpdateAvailability(
@@ -23,7 +25,6 @@ export class UpdateSlotUseCase {
       timeSlotId,
       updation
     );
-    console.log("USECASE UPDATED SLOT: ", updatedSlot);
 
     return { updatedSlot, updation };
   }

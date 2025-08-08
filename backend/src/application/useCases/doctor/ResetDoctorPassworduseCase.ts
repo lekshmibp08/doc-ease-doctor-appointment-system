@@ -1,6 +1,8 @@
 import { IOtpRepository } from "../../../domain/repositories/IOtpRepository";
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 import bcrypt from "bcrypt";
+import { AppError } from "../../../shared/errors/appError";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 
 export class VerifyOtpAndResetDoctorPassword {
   constructor(
@@ -16,12 +18,12 @@ export class VerifyOtpAndResetDoctorPassword {
 
     const otpEntity = await this.otpRepository.findOtp(email, otp);
     if (!otpEntity || new Date() > otpEntity.expiresAt) {
-      throw new Error("Invalid or expired OTP");
+      throw new AppError("Invalid or expired OTP", HttpStatusCode.BAD_REQUEST);
     }
 
     const doctor = await this.doctorRepository.findByEmail(email);
     if (!doctor || !doctor._id) {
-      throw new Error("User not found");
+      throw new AppError("User not found", HttpStatusCode.NOT_FOUND);
     }
 
     await this.otpRepository.deleteOtp(email);

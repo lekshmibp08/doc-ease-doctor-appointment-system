@@ -1,10 +1,18 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { startOfDay, endOfDay, eachDayOfInterval, format } from "date-fns";
+import { AppError } from "../../../shared/errors/appError";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 
 export class GetDashboardStatsUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
 
   async execute(doctorId: string, startDate: Date, endDate: Date) {
+    if (!doctorId || !startDate || !endDate) {
+      throw new AppError(
+        "Missing required parameters",
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
     const start = startOfDay(new Date(startDate));
     const end = endOfDay(new Date(endDate));
 

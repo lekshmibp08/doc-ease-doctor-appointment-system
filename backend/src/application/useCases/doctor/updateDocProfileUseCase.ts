@@ -1,5 +1,7 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 import bcrypt from "bcrypt";
+import { AppError } from "../../../shared/errors/appError";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 
 export class UpdateDocProfile {
   constructor(private doctorRepository: IDoctorRepository) {}
@@ -7,7 +9,7 @@ export class UpdateDocProfile {
   async execute(id: string, updatedData: any): Promise<any> {
     const existingDoctor = await this.doctorRepository.findDoctorById(id);
     if (!existingDoctor) {
-      throw new Error("Doctor not found");
+      throw new AppError("Doctor not found", HttpStatusCode.NOT_FOUND);
     }
 
     if (updatedData.currentPassword) {
@@ -17,7 +19,10 @@ export class UpdateDocProfile {
       );
 
       if (!isPasswordCorrect) {
-        throw new Error("Current password is incorrect");
+        throw new AppError(
+          "Current password is incorrect",
+          HttpStatusCode.BAD_REQUEST
+        );
       }
     }
 

@@ -2,6 +2,8 @@ import { IOtpRepository } from "../../../domain/repositories/IOtpRepository";
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 import { Doctor } from "../../../domain/entities/Doctor";
 import bcrypt from "bcrypt";
+import { AppError } from "../../../shared/errors/appError";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 
 export class VerifyOtpAndRegisterDocUseCase {
   constructor(
@@ -22,7 +24,7 @@ export class VerifyOtpAndRegisterDocUseCase {
 
     const otpEntity = await this.otpRepository.findOtp(email, otp);
     if (!otpEntity || new Date() > otpEntity.expiresAt) {
-      throw new Error("Invalid or expired OTP");
+      throw new AppError("Invalid or expired OTP", HttpStatusCode.BAD_REQUEST);
     }
 
     await this.otpRepository.deleteOtp(email);
