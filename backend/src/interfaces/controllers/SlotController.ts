@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { SlotRepository } from "../../infrastructure/database/repositories/SlotRepository";
 import { UpdateSlotUseCase } from "../../application/useCases/doctor/updateSlotUseCase";
 import { FetchSlotUseCase } from "../../application/useCases/user/fetchSlotUseCase";
@@ -11,17 +11,24 @@ const fetchSlotUseCase = new FetchSlotUseCase(slotRepository);
 const updateSlotTimeUseCase = new UpdateSlotTimeUseCase(slotRepository);
 
 export const slotController = {
-  async generateSlots(req: Request, res: Response): Promise<void> {
+  async generateSlots(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       await SlotUseCase.generateSlots(req.body);
       res.status(201).json({ message: "Slots generated successfully!" });
     } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "Internal Server Error" });
+      next(error);
     }
   },
 
-  async fetchSlot(req: Request, res: Response): Promise<void> {
+  async fetchSlot(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       console.log("Received params:", req.query);
       const { filteredSlots, slotDataAll, slotId } =
@@ -30,12 +37,15 @@ export const slotController = {
         .status(200)
         .json({ slotDataFiltered: filteredSlots, slotDataAll, slotId });
     } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   },
 
-  updateSlotStatus: async (req: Request, res: Response): Promise<void> => {
+  updateSlotStatus: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const { slotId, timeSlotId, status } = req.body;
     console.log("REQ BODY:", slotId, timeSlotId, status);
 
@@ -49,14 +59,15 @@ export const slotController = {
         .status(200)
         .json({ message: "Slot status updated successfully.", updation });
     } catch (error: any) {
-      console.error("Error updating slot status:", error);
-      res
-        .status(400)
-        .json({ message: error.message || "Failed to update slot status." });
+      next(error);
     }
   },
 
-  fetchSlotsForUser: async (req: Request, res: Response): Promise<void> => {
+  fetchSlotsForUser: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const { doctorId } = req.params;
     const date = req.query.date as string;
     try {
@@ -66,12 +77,15 @@ export const slotController = {
         slotId: existingSlot?._id,
       });
     } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   },
 
-  updateSlotTime: async (req: Request, res: Response): Promise<void> => {
+  updateSlotTime: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const { slotId, timeSlotId, newTime } = req.body;
 
     try {
@@ -82,9 +96,7 @@ export const slotController = {
       );
       res.status(200).json({ success });
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ error: error.message || "Failed to update slot time" });
+      next(error);
     }
   },
 };

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { LoginAdmin } from "../../application/useCases/admin/loginAdminUseCase";
 import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
 import { ListDoctorsUseCase } from "../../application/useCases/admin/listDoctorsUseCase";
@@ -29,7 +29,7 @@ const getAdminDashboardStatsUseCase = new GetAdminDashboardStatsUseCase(
 
 export const adminController = {
 
-  login: async (req: Request, res: Response): Promise<void> => {
+  login: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email, password } = req.body;
 
@@ -53,12 +53,12 @@ export const adminController = {
         .status(200)
         .json({ message: "Login successful", token, refreshToken, role });
     } catch (error: any) {
-      res.status(401).json({ message: error.message });
+      next(error);
     }
   },
 
   // List all doctors
-  getDoctors: async (req: Request, res: Response): Promise<void> => {
+  getDoctors: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { page, size, search } = req.query;
       const pageNumber = parseInt(page as string);
@@ -72,14 +72,12 @@ export const adminController = {
         .status(200)
         .json({ doctors, totalDoctors, totalPages, currentPage: pageNumber });
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ message: "Failed to fetch doctors", error: error.message });
+      next(error)
     }
   },
 
   //List all pending requests
-  getPendingDoctors: async (req: Request, res: Response): Promise<void> => {
+  getPendingDoctors: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { page = 1, size = 8, search = "" } = req.query;
 
     const pageNumber = parseInt(page as string);
@@ -94,10 +92,7 @@ export const adminController = {
         .status(200)
         .json({ doctors, totalDoctors, totalPages, currentPage: pageNumber });
     } catch (error: any) {
-      res.status(500).json({
-        message: "Failed to fetch pending doctors",
-        error: error.message,
-      });
+      next(error)
     }
   },
 

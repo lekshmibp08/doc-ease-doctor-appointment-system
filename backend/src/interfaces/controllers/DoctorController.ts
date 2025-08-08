@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { OtpRepository } from "../../infrastructure/database/repositories/OtpRepository";
 import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
 import { SendOtpForSignupUseCase } from "../../application/useCases/user/sendOtpForSignup";
@@ -31,7 +31,7 @@ const getDashboardStatsUseCase = new GetDashboardStatsUseCase(
 
 export const doctorController = {
   // Send OTP during signup
-  register: async (req: Request, res: Response) => {
+  register: async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
@@ -50,12 +50,16 @@ export const doctorController = {
       await sendOtpForSignupUseCase.execute(email);
       res.status(200).json({ message: "OTP sent successfully" });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   },
 
   // Verify OTP and register doctor
-  verifyOtpAndRegisterUser: async (req: Request, res: Response) => {
+  verifyOtpAndRegisterUser: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const { email, otp, fullName, mobileNumber, registerNumber, password } =
       req.body;
 
@@ -74,12 +78,16 @@ export const doctorController = {
         doctor,
       });
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   },
 
   // Doctor Login
-  login: async (req: Request, res: Response): Promise<void> => {
+  login: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { email, password } = req.body;
 
@@ -108,14 +116,15 @@ export const doctorController = {
         userData,
       });
     } catch (error: any) {
-      res.status(401).json({ message: error.message });
+      next(error);
     }
   },
 
   //Send OTP for forget Password
   sendOtpForForgetPassword: async (
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ): Promise<void> => {
     const { email } = req.body;
 
@@ -128,14 +137,15 @@ export const doctorController = {
       await sendOtpForResetPassword.execute(email);
       res.status(200).json({ message: "OTP sent successfully" });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   },
 
   //Verify the OTP and reset password verifyOtpAndResetDoctorPassword
   verifyAndResetPassword: async (
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ): Promise<void> => {
     const { email, newPassword, otp } = req.body;
 
@@ -149,12 +159,16 @@ export const doctorController = {
         message: "Password changed successfully, You can now log in..!",
       });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   },
 
   //Update Doctor profile
-  updateDoctorProfile: async (req: Request, res: Response): Promise<void> => {
+  updateDoctorProfile: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { id } = req.params;
       const updatedData = req.body;
@@ -166,25 +180,15 @@ export const doctorController = {
         updatedDocProfile,
       });
     } catch (error: any) {
-      console.error("Error in updateDoctorProfile:", error.message);
-      if (error.message === "Doctor not found") {
-        res.status(404).json({ message: "Doctor not found" });
-        return;
-      }
-
-      if (error.message === "Current password is incorrect") {
-        res.status(400).json({ message: "Current password is incorrect" });
-        return;
-      }
-
-      res
-        .status(500)
-        .json({ message: "Failed to update profile", error: error.message });
-      return;
+      next(error);
     }
   },
 
-  getDashboardData: async (req: Request, res: Response): Promise<void> => {
+  getDashboardData: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const { doctorId, startDate, endDate } = req.body;
 
     try {
@@ -195,8 +199,7 @@ export const doctorController = {
       );
       res.status(200).json(stats);
     } catch (error) {
-      console.error("Error fetching dashboard stats:", error);
-      res.status(500).json({ message: "Failed to fetch dashboard stats" });
+      next(error);
     }
   },
 };

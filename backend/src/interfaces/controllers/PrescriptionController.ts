@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import PrescriptionUseCase from "../../application/useCases/PrescriptionUseCase";
 import { GetAppointmentsByIdUseCase } from "../../application/useCases/user/getAppointmentByIdUseCase";
 import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
@@ -9,21 +9,26 @@ const getAppointmentsByIdUseCase = new GetAppointmentsByIdUseCase(
 );
 
 export const prescriptionController = {
-  async createPrescription(req: Request, res: Response): Promise<void> {
+  async createPrescription(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const prescription = await PrescriptionUseCase.createPrescription(
         req.body
       );
       res.status(201).json(prescription);
     } catch (error: any) {
-      res.status(500).json({
-        error:
-          error.message || "An error occurred while creating the prescription",
-      });
+      next(error);
     }
   },
 
-  async getPrescription(req: Request, res: Response): Promise<void> {
+  async getPrescription(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const prescription = await PrescriptionUseCase.getPrescription(
         req.params.appointmentId
@@ -34,14 +39,15 @@ export const prescriptionController = {
         res.status(404).json({ error: "Prescription not found" });
       }
     } catch (error: any) {
-      res.status(500).json({
-        error:
-          error.message || "An error occurred while fetching the prescription",
-      });
+      next(error);
     }
   },
 
-  async updatePrescription(req: Request, res: Response): Promise<void> {
+  async updatePrescription(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const prescriptionData = req.body.prescription;
     try {
       const prescription = await PrescriptionUseCase.UpdatePrescription(
@@ -54,14 +60,15 @@ export const prescriptionController = {
         res.status(404).json({ error: "Prescription not found" });
       }
     } catch (error: any) {
-      res.status(500).json({
-        error:
-          error.message || "An error occurred while updating the prescription",
-      });
+      next(error);
     }
   },
 
-  async getPrescriptionForUser(req: Request, res: Response): Promise<void> {
+  async getPrescriptionForUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const appointmentId = req.params.appointmentId;
     try {
       const prescription = await PrescriptionUseCase.getPrescription(
@@ -79,10 +86,7 @@ export const prescriptionController = {
 
       res.status(200).json({ prescription, doctor });
     } catch (error: any) {
-      res.status(500).json({
-        error:
-          error.message || "An error occurred while fetching the prescription",
-      });
+      next(error);
     }
   },
 };

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { SendOtpForSignupUseCase } from "../../application/useCases/user/sendOtpForSignup";
 import { VerifyOtpAndRegister } from "../../application/useCases/user/verifyOtpAndRegisterUser";
 import { OtpRepository } from "../../infrastructure/database/repositories/OtpRepository";
@@ -34,7 +34,7 @@ const fetchSpecializationsUseCase = new FetchSpecializationsUseCase(
 const doctorDetails = new DoctorDetails(doctorRepository);
 
 export const userController = {
-  register: async (req: Request, res: Response) => {
+  register: async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
@@ -53,12 +53,16 @@ export const userController = {
       await sendOtpForSignupUseCase.execute(email);
       res.status(200).json({ message: "OTP sent successfully" });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   },
 
   // Verify OTP and register user
-  verifyOtpAndRegisterUser: async (req: Request, res: Response) => {
+  verifyOtpAndRegisterUser: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const { email, otp, fullName, mobileNumber, password } = req.body;
 
     try {
@@ -75,11 +79,15 @@ export const userController = {
         user,
       });
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   },
 
-  login: async (req: Request, res: Response): Promise<void> => {
+  login: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { email, password } = req.body;
 
@@ -102,12 +110,12 @@ export const userController = {
         .status(200)
         .json({ message: "Login successful", token, role, userData });
     } catch (error: any) {
-      res.status(401).json({ message: error.message });
+      next(error);
     }
   },
 
   // List all approved doctors
-  getDoctors: async (req: Request, res: Response) => {
+  getDoctors: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const {
         page = 1,
@@ -141,19 +149,21 @@ export const userController = {
 
       res.status(200).json(result);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch doctors", error });
+      next(error);
     }
   },
 
   // List Specializations
-  listSpecializations: async (req: Request, res: Response) => {
+  listSpecializations: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const specializations = await fetchSpecializationsUseCase.execute();
       res.json({ specializations });
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ message: "Failed to fetch specialization list", error });
+      next(error);
     }
   },
 
@@ -193,7 +203,8 @@ export const userController = {
   //Send OTP for forget Password
   sendOtpForForgetPassword: async (
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ): Promise<void> => {
     const { email } = req.body;
 
@@ -206,12 +217,16 @@ export const userController = {
       await sendOtpForResetPassword.execute(email);
       res.status(200).json({ message: "OTP sent successfully" });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   },
 
   //Verify the OTP and reset password
-  verifyAndResetPassword: async (req: Request, res: Response) => {
+  verifyAndResetPassword: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const { email, newPassword, otp } = req.body;
 
     try {
@@ -220,18 +235,18 @@ export const userController = {
         message: "Password changed successfully, You can now log in..!",
       });
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   },
 
   // Get doctor Details
-  getDoctorDetails: async (req: Request, res: Response) => {
+  getDoctorDetails: async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
       const details = await doctorDetails.execute(id);
       res.status(200).json(details);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   },
 };

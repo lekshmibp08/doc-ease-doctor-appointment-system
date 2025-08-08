@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { SlotRepository } from "../../infrastructure/database/repositories/SlotRepository";
 import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
 import { CreateAppointmentUseCase } from "../../application/useCases/user/CreateAppointmentUseCase ";
@@ -41,7 +41,11 @@ const updateAppointmentUseCase = new UpdateAppointmentUseCase(
 );
 
 export const appoinmentController = {
-  createNewAppoinment: async (req: Request, res: Response): Promise<void> => {
+  createNewAppoinment: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const { time, modeOfVisit, amount, paymentId } = req.body;
 
     const doctorId = req.body.doctorId as string;
@@ -66,12 +70,15 @@ export const appoinmentController = {
         .status(201)
         .json({ message: "Appointment created successfully.", newAppoinment });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Failed to create appointment." });
+      next(error);
     }
   },
 
-  getAppointmentsByUser: async (req: Request, res: Response): Promise<void> => {
+  getAppointmentsByUser: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const { userId } = req.params;
 
     try {
@@ -82,14 +89,14 @@ export const appoinmentController = {
 
       res.status(200).json({ appointments });
     } catch (error) {
-      console.error("Error fetching user appointments:", error);
-      res.status(500).json({ error: "Failed to fetch appointments." });
+      next(error);
     }
   },
 
   cancelAppointmentByUser: async (
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ): Promise<void> => {
     const { appointmentId } = req.params;
     try {
@@ -144,14 +151,14 @@ export const appoinmentController = {
         refundTransactionId,
       });
     } catch (error) {
-      console.error("Error cancelling appointment:", error);
-      res.status(500).json({ error: "Failed to cancel appointment." });
+      next(error);
     }
   },
 
   rescheduleAppointmentByUser: async (
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ): Promise<void> => {
     try {
       const { appointmentId, date, slotId, timeSlotId, time, modeOfVisit } =
@@ -171,14 +178,14 @@ export const appoinmentController = {
         updatedAppointment,
       });
     } catch (error) {
-      console.error("Error cancelling appointment:", error);
-      res.status(500).json({ error: "Failed to cancel appointment." });
+      next(error);
     }
   },
 
   getAllAppointmentsByAdmin: async (
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ): Promise<void> => {
     try {
       const { page, size, search } = req.query;
@@ -200,13 +207,15 @@ export const appoinmentController = {
         currentPage: pageNumber,
       });
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ message: "Failed to fetch users", error: error.message });
+      next(error);
     }
   },
 
-  getAppointmentsByDoctorId: async (req: Request, res: Response) => {
+  getAppointmentsByDoctorId: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const { page, size, date, doctorId } = req.query;
 
     const pageNumber = parseInt(page as string);
@@ -228,13 +237,15 @@ export const appoinmentController = {
         currentPage: pageNumber,
       });
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ message: "Failed to fetch users", error: error.message });
+      next(error);
     }
   },
 
-  updateAppointmentStatus: async (req: Request, res: Response) => {
+  updateAppointmentStatus: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     const { appointmentId } = req.params;
     const { isCompleted } = req.body;
 
@@ -249,8 +260,7 @@ export const appoinmentController = {
         updatedAppointment,
       });
     } catch (error: any) {
-      console.error("Error updating appointment status:", error);
-      res.status(500).json({ message: error.message || "Server error" });
+      next(error);
     }
   },
 };

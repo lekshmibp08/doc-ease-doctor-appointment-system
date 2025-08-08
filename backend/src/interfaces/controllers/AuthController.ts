@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { GoogleOAuthLoginUseCase } from "../../application/useCases/auth/googleOAuthLoginUseCase";
 import jwt from "jsonwebtoken";
 import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
@@ -13,7 +13,7 @@ const googleOAuthLoginUseCase = new GoogleOAuthLoginUseCase(
 
 export const authController = {
   // Logout for all roles (User, Doctor, Admin)
-  logout: (req: Request, res: Response): void => {
+  logout: (req: Request, res: Response, next: NextFunction): void => {
     try {
       const { role } = req.body;
       let cookieName = "";
@@ -28,14 +28,15 @@ export const authController = {
       res.clearCookie(cookieName, { httpOnly: true });
       res.status(200).json({ message: "Logout successful" });
     } catch (error: any) {
-      console.error("Logout error:", error);
-      res
-        .status(500)
-        .json({ message: "Error during logout", error: error.message });
+      next(error);
     }
   },
 
-  googleLogin: async (req: Request, res: Response): Promise<void> => {
+  googleLogin: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { fullname, email, role, profilePicture } = req.body;
 
@@ -49,7 +50,12 @@ export const authController = {
         refreshToken,
         role: userRole,
         user,
-      } = await googleOAuthLoginUseCase.execute(fullname, email, profilePicture, role);
+      } = await googleOAuthLoginUseCase.execute(
+        fullname,
+        email,
+        profilePicture,
+        role
+      );
 
       const userData = user;
 
@@ -72,17 +78,15 @@ export const authController = {
         res.status(200).json({ token, userData, role: userRole });
       }
     } catch (error: any) {
-      console.error("Google OAuth Error:", error);
-      res
-        .status(500)
-        .json({ message: error.message || "Google OAuth login failed" });
+      next(error);
     }
   },
 
-  refreshAccessToken: async (req: Request, res: Response): Promise<any> => {
-    console.log("Cookies received:", req.cookies);
-    console.log("Request Headers:", req.headers);
-
+  refreshAccessToken: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
     const { role } = req.body;
 
     let refresh_token;
@@ -120,10 +124,7 @@ export const authController = {
 
       return res.status(200).json({ token: newAccessToken });
     } catch (error) {
-      console.error("Logout error:", error);
-      return res
-        .status(403)
-        .json({ message: "Invalid or expired refresh token" });
+      next(error);
     }
   },
 };
