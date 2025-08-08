@@ -1,5 +1,7 @@
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 import bcrypt from "bcrypt";
+import { AppError } from "../../../shared/errors/appError";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 
 export class UpdateUser {
   constructor(private userRepository: IUserRepository) {}
@@ -7,7 +9,7 @@ export class UpdateUser {
   async execute(id: string, updatedData: any): Promise<any> {
     const existingUser = await this.userRepository.findUserById(id);
     if (!existingUser) {
-      throw new Error("User not found");
+      throw new AppError("User not found", HttpStatusCode.NOT_FOUND);
     }
 
     if (updatedData.currentPassword) {
@@ -17,7 +19,10 @@ export class UpdateUser {
       );
 
       if (!isPasswordCorrect) {
-        throw new Error("Current password is incorrect");
+        throw new AppError(
+          "Current password is incorrect",
+          HttpStatusCode.FORBIDDEN
+        );
       }
     }
 

@@ -1,5 +1,7 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
+import { AppError } from "../../../shared/errors/appError";
 
 export class RescheduleAppointmentUseCase {
   constructor(
@@ -18,7 +20,9 @@ export class RescheduleAppointmentUseCase {
     const appointment = await this.appointmentRepository.findAppointmentsById(
       appointmentId
     );
-    if (!appointment) throw new Error("Appointment not found");
+    if (!appointment) {
+      throw new AppError("Appointment not found", HttpStatusCode.NOT_FOUND);
+    }
 
     const previousSlotId = appointment.slotId.toString();
     const previousTimeSlotId = appointment.timeSlotId.toString();

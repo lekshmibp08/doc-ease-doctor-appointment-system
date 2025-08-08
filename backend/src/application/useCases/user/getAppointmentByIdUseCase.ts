@@ -1,22 +1,29 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { mapToAppointmentWithDocDetailsDTO } from "../../../infrastructure/database/mappers/mapToAppointmentWithDocDetails";
 import { AppointmentsByIdWithDocDetailsDTO } from "../../../dtos/dtos";
+import { AppError } from "../../../shared/errors/appError";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 export class GetAppointmentsByIdUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
 
-  async execute(appointmentId: string): Promise<AppointmentsByIdWithDocDetailsDTO> {
+  async execute(
+    appointmentId: string
+  ): Promise<AppointmentsByIdWithDocDetailsDTO> {
     try {
       const appointment =
         await this.appointmentRepository.findAppointmentsByIdWithDocDetails(
           appointmentId
         );
       if (!appointment) {
-        throw new Error("Appointment not found");
+        throw new AppError("Appointment not found", HttpStatusCode.NOT_FOUND);
       }
 
       return mapToAppointmentWithDocDetailsDTO(appointment);
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch appointments");
+      throw new AppError(
+        error.message || "Failed to fetch appointments",
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }

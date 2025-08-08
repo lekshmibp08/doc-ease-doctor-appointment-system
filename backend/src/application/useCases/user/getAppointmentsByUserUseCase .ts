@@ -1,6 +1,8 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { AppointmentsByUserIdDTO } from "../../../dtos/dtos";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 import { mapToAppointmentsByUserDTO } from "../../../infrastructure/database/mappers/mapToAppointmentsByUserDTO";
+import { AppError } from "../../../shared/errors/appError";
 
 export class GetAppointmentsByUserUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
@@ -11,7 +13,10 @@ export class GetAppointmentsByUserUseCase {
         await this.appointmentRepository.getAppointmentsByUserId(userId);
       return appointments.map(mapToAppointmentsByUserDTO);
     } catch (error: any) {
-      throw new Error(error.message || "Failed to fetch appointments");
+      throw new AppError(
+        error.message || "Failed to fetch appointments",
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }

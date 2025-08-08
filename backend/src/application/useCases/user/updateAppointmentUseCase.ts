@@ -1,5 +1,7 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { IAppointment } from "../../../domain/entities/Appoinment";
+import { AppError } from "../../../shared/errors/appError";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 
 export class UpdateAppointment {
   constructor(private appointmentRepository: IAppointmentRepository) {}
@@ -13,7 +15,7 @@ export class UpdateAppointment {
         appointmentId
       );
       if (!appointment) {
-        throw new Error("Appointment not Found");
+        throw new AppError("Appointment not Found", HttpStatusCode.NOT_FOUND);
       }
       const updatedAppointment =
         await this.appointmentRepository.updateAppointment(
@@ -22,9 +24,11 @@ export class UpdateAppointment {
         );
 
       return updatedAppointment;
-    } catch (error) {
-      console.error("Failed to fetch appointments:", error);
-      throw new Error("Failed to fetch appointments.");
+    } catch (error: any) {
+      throw new AppError(
+        error.message || "Failed to fetch appointments.",
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }

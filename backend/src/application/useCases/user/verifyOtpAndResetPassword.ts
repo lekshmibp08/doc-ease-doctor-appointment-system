@@ -1,6 +1,8 @@
 import { IOtpRepository } from "../../../domain/repositories/IOtpRepository";
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 import bcrypt from "bcrypt";
+import { AppError } from "../../../shared/errors/appError";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 
 export class VerifyOtpAndResetPassword {
   constructor(
@@ -17,12 +19,12 @@ export class VerifyOtpAndResetPassword {
 
     const otpEntity = await this.otpRepository.findOtp(email, otp);
     if (!otpEntity || new Date() > otpEntity.expiresAt) {
-      throw new Error("Invalid or expired OTP");
+      throw new AppError("Invalid or expired OTP", HttpStatusCode.BAD_REQUEST);
     }
 
     const user = await this.userRepository.findByEmail(email);
     if (!user || !user._id) {
-      throw new Error("User not found");
+      throw new AppError("User not found", HttpStatusCode.NOT_FOUND);
     }
 
     await this.otpRepository.deleteOtp(email);

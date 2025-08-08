@@ -2,7 +2,8 @@ import { IAppointment } from "../../../domain/entities/Appoinment";
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
 import { AppointmentInputDTO } from "../../../dtos/dtos";
-
+import { AppError } from "../../../shared/errors/appError";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
 
 export class CreateAppointmentUseCase {
   constructor(
@@ -15,7 +16,10 @@ export class CreateAppointmentUseCase {
       appoinmentData
     );
     if (!newAppoinment) {
-      throw new Error("Failed to create appointment.");
+      throw new AppError(
+        "Failed to create appointment.",
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
     }
 
     await this.slotRepository.updateSlotStatus(

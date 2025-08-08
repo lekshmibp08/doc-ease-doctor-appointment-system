@@ -1,5 +1,7 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
 import { IAppointment } from "../../../domain/entities/Appoinment";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
+import { AppError } from "../../../shared/errors/appError";
 
 export class CancelAppointmentByUserUsecase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
@@ -10,7 +12,7 @@ export class CancelAppointmentByUserUsecase {
         appointmentId
       );
       if (!appointment) {
-        throw new Error("Appointment not Found");
+        throw new AppError("Appointment not Found", HttpStatusCode.NOT_FOUND);
       }
       const updates = { isCancelled: true };
       const updatedAppointment =

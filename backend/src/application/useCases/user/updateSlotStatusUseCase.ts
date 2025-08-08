@@ -1,4 +1,6 @@
 import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
+import { AppError } from "../../../shared/errors/appError";
 
 export class UpdateSlotStatus {
   constructor(private slotRepository: ISlotRepository) {}
@@ -15,8 +17,11 @@ export class UpdateSlotStatus {
         status
       );
       return;
-    } catch (error) {
-      throw new Error("Failed to update slot status: ");
+    } catch (error: any) {
+      throw new AppError(
+        error.message || "Failed to update slot status",
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      );
     }
   }
 }
