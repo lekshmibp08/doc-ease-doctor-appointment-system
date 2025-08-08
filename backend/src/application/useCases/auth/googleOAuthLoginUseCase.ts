@@ -34,10 +34,10 @@ export class GoogleOAuthLoginUseCase {
         entity = await this.doctorRepository.create({
           fullName: fullName || "",
           email: email,
+          password: hashPassword,
           profilePicture: profilePicture,
           mobileNumber: "",
           registerNumber: "",
-          password: hashPassword,
           role: "doctor",
           isApproved: false,
           isBlocked: false,
@@ -66,8 +66,6 @@ export class GoogleOAuthLoginUseCase {
     }
 
     const { password: _password, ...rest } = entity;
-
-    console.log("REST: ", rest);
 
     const token = jwt.sign(
       { id: entity._id, email: entity.email, role: entity.role },

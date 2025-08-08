@@ -1,4 +1,6 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
+import { HttpStatusCode } from "../../../enums/HttpStatusCode";
+import { AppError } from "../../../shared/errors/appError";
 
 export class ToggleBlockDoctorUseCase {
   constructor(private doctorRepository: IDoctorRepository) {}
@@ -7,7 +9,7 @@ export class ToggleBlockDoctorUseCase {
     const doctor = await this.doctorRepository.findDoctorById(id);
 
     if (!doctor) {
-      throw new Error("Doctor not found");
+      throw new AppError("Doctor not found", HttpStatusCode.NOT_FOUND);
     }
 
     const updatedStatus = !doctor.isBlocked;
