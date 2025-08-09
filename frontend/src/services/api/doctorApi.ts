@@ -6,6 +6,9 @@ import type {
     DoctorVerifyPayload,
 } from '../../types/interfaces'
 
+const CLOUDINARY_API_URL = import.meta.env.VITE_CLOUDINARY_API_URL;
+const GOOGLE_MAPS_BASE_URL = import.meta.env.VITE_GOOGLE_MAPS_BASE_URL;
+
 
 export const sendOtpToDoctor = async (payload: DoctorRegisterPayload) => {
   return await axios.post('/api/doctors/send-otp', payload);
@@ -38,7 +41,7 @@ export const uploadDoctorProfileImage = async (
 
   try {
     const response = await axios.post(
-      "https://api.cloudinary.com/v1_1/dgpy8wkiw/image/upload",
+      CLOUDINARY_API_URL,
       data,
       {
         headers: {
@@ -86,7 +89,7 @@ export const fetchLocationName = async (
   longitude: number,
   apiKey: string
 ): Promise<any | null> => {
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;  
+  const url = `${GOOGLE_MAPS_BASE_URL}?latlng=${latitude},${longitude}&key=${apiKey}`;  
   const response = await axios.get(url);
   return response;
 };

@@ -8,6 +8,8 @@ import * as Yup from "yup";
 import Swal from "sweetalert2";
 import { updateUserProfile } from '../services/api/userApi'
 
+const CLOUDINARY_API_URL = import.meta.env.VITE_CLOUDINARY_API_URL;
+
 // Form validation schema with Yup
 const validationSchema = Yup.object({
   currentPassword: Yup.string()
@@ -41,7 +43,7 @@ const UserAccountDetails = () => {
 
     try {
       const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/dgpy8wkiw/image/upload",
+        CLOUDINARY_API_URL,
         data,
         {
           headers: {
