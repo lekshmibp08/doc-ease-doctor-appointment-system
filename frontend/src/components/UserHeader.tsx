@@ -3,6 +3,7 @@ import { useLogout } from '../hooks/useLogout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
 import { useNavigate } from 'react-router-dom';
+import { getFullImageUrl } from '../utils/getFullImageUrl';
 
 interface UserHeaderProps {
   role: 'user' | 'doctor'; 
@@ -65,7 +66,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({ role, onToggleSidebar }) => {
                 <Menu.Button className="flex items-center bg-white text-teal-700 rounded-full h-10 w-10 cursor-pointer">
                   {currentUser?.profilePicture && (
                     <img
-                      src={currentUser?.profilePicture}
+                      src={getFullImageUrl(currentUser?.profilePicture)}
                       alt="profile"
                       referrerPolicy="no-referrer"
                       className="w-10 h-10 rounded-full object-cover"

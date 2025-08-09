@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
+import { stripBaseUrl } from "../../helper/stripBaseUrl";
 
 export class GoogleOAuthLoginUseCase {
   constructor(
@@ -66,6 +67,9 @@ export class GoogleOAuthLoginUseCase {
     }
 
     const { password: _password, ...rest } = entity;
+    if (rest.profilePicture) {
+      rest.profilePicture = stripBaseUrl(rest.profilePicture);
+    }
 
     const token = jwt.sign(
       { id: entity._id, email: entity.email, role: entity.role },

@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { AppError } from "../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../enums/HttpStatusCode";
+import { stripBaseUrl } from "../../helper/stripBaseUrl";
 
 export class UserLoginUseCase {
   constructor(private userRepository: IUserRepository) {}
@@ -38,6 +39,9 @@ export class UserLoginUseCase {
     }
 
     const { password: _, ...rest } = user;
+    if (rest.profilePicture) {
+      rest.profilePicture = stripBaseUrl(rest.profilePicture);
+    }
 
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role },
