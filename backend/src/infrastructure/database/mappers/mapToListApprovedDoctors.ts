@@ -4,13 +4,18 @@ import { ListApprovedDoctorsDTO } from "../../../dtos/doctorDTO/doctorDTOs";
 dotenv.config();
 
 const COMMON_STORAGE_URL = process.env.COMMON_STORAGE_URL;
+const GOOGLE_IMAGE_BASE_URL = process.env.GOOGLE_IMAGE_BASE_URL;
 
 
 export function mapToListApprovedDoctorsDTO(doctor: any): ListApprovedDoctorsDTO {
   let profilePicture = doctor.profilePicture;
 
   if (profilePicture?.startsWith(COMMON_STORAGE_URL)) {
-    profilePicture = profilePicture.replace(COMMON_STORAGE_URL, "");
+    profilePicture = `cloudinary:${profilePicture.replace(COMMON_STORAGE_URL, "")}`;
+  } else if (profilePicture?.startsWith(GOOGLE_IMAGE_BASE_URL)) {
+    profilePicture = `google:${profilePicture.replace(GOOGLE_IMAGE_BASE_URL, "")}`;
+  } else {
+    profilePicture = profilePicture;
   }
   return {
     _id: doctor._id,
