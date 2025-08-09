@@ -1,3 +1,4 @@
+import { getFullImageUrl } from "../utils/getFullImageUrl";
 import { useState } from "react";
 
 interface DoctorGalleryProps {
@@ -19,7 +20,6 @@ const DoctorGallery = ({ images = [] }: DoctorGalleryProps) => {
     );
   };
 
-  //if (!images.length) return <div>No images in gallery.</div>;
 
   return (
     <div className="mt-8">
@@ -44,7 +44,7 @@ const DoctorGallery = ({ images = [] }: DoctorGalleryProps) => {
             {images.map((imgUrl, index) => (
               <div key={index} className="w-full flex-shrink-0 px-2">
                 <img
-                  src={imgUrl}
+                  src={getFullImageUrl(imgUrl)}
                   alt={`Gallery Image ${index + 1}`}
                   className="w-full max-h-40 sm:max-h-64 object-contain rounded-md" 
                 />

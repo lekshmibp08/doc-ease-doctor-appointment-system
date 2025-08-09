@@ -5,6 +5,7 @@ import ChatButton from "./ChatButton"
 import { useEffect, useState } from "react"
 import { fetchDoctorReviews } from '../services/api/userApi'
 import { Star, StarHalf } from "lucide-react"
+import { getFullImageUrl } from "../utils/getFullImageUrl"
 
 interface DoctorDetailsCardProps {
   doctor: IPractitioner
@@ -70,7 +71,7 @@ const DoctorDetailsCard: React.FC<DoctorDetailsCardProps> = ({ doctor }) => {
       {/* Doctor Image */}
       <div className="flex-shrink-0 flex justify-center md:block">
         <img
-          src={doctor.profilePicture || "/placeholder-user.jpg"}
+          src={getFullImageUrl(doctor.profilePicture)}
           alt={`Dr. ${doctor.fullName}`}
           className="w-24 h-24 sm:w-40 sm:h-40 object-cover rounded"
         />
