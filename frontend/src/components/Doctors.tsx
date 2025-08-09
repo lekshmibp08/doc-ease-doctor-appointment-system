@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { IPractitioner } from "../types/interfaces";
 import { getDoctorSpecializations, getDoctors } from "../services/api/userApi";
+import { getFullImageUrl } from "../utils/getFullImageUrl";
 import Pagination from "./Pagination";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import Swal from "sweetalert2";
-const COMMON_STORAGE_URL = import.meta.env.VITE_COMMON_STORAGE_URL;
 
 const DoctorsPage = () => {
   const [doctors, setDoctors] = useState<IPractitioner[]>([]);
@@ -325,13 +325,7 @@ const DoctorsPage = () => {
                   >
                     {/* Doctor Image */}
                     <img
-                      src={
-                        doctor.profilePicture
-                          ? doctor.profilePicture.startsWith("http")
-                            ? doctor.profilePicture
-                            : `${COMMON_STORAGE_URL}${doctor.profilePicture}`
-                          : "/default-doctor.png"
-                      }
+                      src={getFullImageUrl(doctor.profilePicture)}                        
                       alt={doctor.fullName || "Doctor"}
                       className="rounded-lg w-24 h-24 object-cover mb-4"
                     />
