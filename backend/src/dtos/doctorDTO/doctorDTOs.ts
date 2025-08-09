@@ -7,5 +7,7 @@ export interface ListApprovedDoctorsDTO {
   isBlocked: boolean;
   profilePicture: string;
   isRejected: boolean;
+  specialization: string;
+
  
 }
