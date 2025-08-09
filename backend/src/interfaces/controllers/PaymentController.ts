@@ -11,7 +11,7 @@ export const paymentController = {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { amount } = req.body; // Amount in rupees
+      const { amount } = req.body; 
       if (!amount) {
         res.status(400).json({ message: "Amount is required" });
         return;
