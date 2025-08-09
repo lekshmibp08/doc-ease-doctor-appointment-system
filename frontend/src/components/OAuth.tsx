@@ -26,7 +26,8 @@ const OAuth = () => {
             email: result.user.email,
             profilePicture: result.user.photoURL,
             role: role,
-          })
+          },
+          { withCredentials: true })
           
           const { token, userData } = res.data;
 
