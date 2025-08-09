@@ -11,9 +11,9 @@ export function mapToListApprovedDoctorsDTO(doctor: any): ListApprovedDoctorsDTO
   let profilePicture = doctor.profilePicture;
 
   if (profilePicture?.startsWith(COMMON_STORAGE_URL)) {
-    profilePicture = `cloudinary:${profilePicture.replace(COMMON_STORAGE_URL, "")}`;
+    profilePicture = `cl:${profilePicture.replace(COMMON_STORAGE_URL, "")}`;
   } else if (profilePicture?.startsWith(GOOGLE_IMAGE_BASE_URL)) {
-    profilePicture = `google:${profilePicture.replace(GOOGLE_IMAGE_BASE_URL, "")}`;
+    profilePicture = `go:${profilePicture.replace(GOOGLE_IMAGE_BASE_URL, "")}`;
   } else {
     profilePicture = profilePicture;
   }

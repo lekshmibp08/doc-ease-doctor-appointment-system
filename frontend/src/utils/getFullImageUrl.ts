@@ -8,12 +8,12 @@ export const getFullImageUrl = (imagePath?: string): string => {
     return imagePath;
   }
 
-  if (imagePath.startsWith("cloudinary:")) {
-    return COMMON_STORAGE_URL + imagePath.replace("cloudinary:", "");
+  if (imagePath.startsWith("cl:")) {
+    return COMMON_STORAGE_URL + imagePath.replace("cl:", "");
   }
 
-  if (imagePath.startsWith("google:")) {
-    return GOOGLE_IMAGE_BASE_URL + imagePath.replace("google:", "");
+  if (imagePath.startsWith("go:")) {
+    return GOOGLE_IMAGE_BASE_URL + imagePath.replace("go:", "");
   }
 
   return imagePath;
