@@ -12,6 +12,7 @@ import {
   getMessagesByChatId,
   uploadImageForSend
 } from "../services/api/doctorApi"
+import { getFullImageUrl } from "../utils/getFullImageUrl"
 
 
 const ENDPOINT = import.meta.env.VITE_BASE_URL || "http://localhost:5000"
@@ -224,7 +225,7 @@ const DoctorChat: React.FC = () => {
             }`}
           >
             <img
-              src={chat.userId.profilePicture || "/placeholder-user.jpg"}
+              src={getFullImageUrl(chat.userId.profilePicture)}
               alt={chat.userId.fullName}
               className="w-12 h-12 rounded-full"
             />
@@ -257,7 +258,7 @@ const DoctorChat: React.FC = () => {
                 </button>
                 )} 
                 <img
-                  src={currentChat.userId.profilePicture || "/placeholder-user.jpg"}
+                  src={getFullImageUrl(currentChat.userId.profilePicture)}
                   alt={currentChat.userId.fullName}
                   className="w-10 h-10 rounded-full mr-4"
                 />
@@ -285,7 +286,7 @@ const DoctorChat: React.FC = () => {
                       <div className="overflow-hidden rounded-lg mt-2 border
                        border-gray-300 w-[150px] h-[150px] md:w-[250px] md:h-[250px]"
                       >
-                        <img src={msg.imageUrl || "/placeholder.svg"} alt="Image"className="w-full h-full object-cover" />
+                        <img src={getFullImageUrl(msg.imageUrl)} alt="Image"className="w-full h-full object-cover" />
                       </div>
                     )}
                     <div className="flex items-center justify-end gap-1 mt-1">

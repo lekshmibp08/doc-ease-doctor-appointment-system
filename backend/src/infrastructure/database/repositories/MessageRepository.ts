@@ -11,13 +11,22 @@ export class MessageRepository implements IMessageRepository {
     text: string,
     imageUrl: string
   ): Promise<any> {
-    const newMessage = new MessageModel({ chatId, senderId, receiverId, text, imageUrl });
+    const newMessage = new MessageModel({
+      chatId,
+      senderId,
+      receiverId,
+      text,
+      imageUrl,
+    });
     return await newMessage.save();
   }
 
   // Get messages by chatId
   async getMessagesByChatId(chatId: string): Promise<any[]> {
-    return await MessageModel.find({ chatId }).sort({ timestamp: 1 });
+    return await MessageModel.find({ chatId })
+      .sort({ timestamp: 1 })
+      .select("-__v")
+      .lean();
   }
 
   // Method to mark messages as read
@@ -28,8 +37,8 @@ export class MessageRepository implements IMessageRepository {
         receiverId,
         read: false,
       },
-      { read: true },
-    )
+      { read: true }
+    );
   }
 
   // Method to get unread message count for User
@@ -38,15 +47,18 @@ export class MessageRepository implements IMessageRepository {
       chatId,
       receiverId: userId,
       read: false,
-    })
+    });
   }
-  
+
   // Method to get unread message count for Doctor
-  async getUnreadCountForDoc(chatId: string, doctorId: string): Promise<number> {
+  async getUnreadCountForDoc(
+    chatId: string,
+    doctorId: string
+  ): Promise<number> {
     return await MessageModel.countDocuments({
       chatId,
       receiverId: doctorId,
       read: false,
-    })
+    });
   }
 }

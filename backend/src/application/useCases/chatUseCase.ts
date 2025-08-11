@@ -2,6 +2,8 @@ import { ChatRepository } from "../../infrastructure/database/repositories/ChatR
 import { MessageRepository } from "../../infrastructure/database/repositories/MessageRepository";
 import { IChat } from "../../domain/entities/Chat";
 import { IMessage } from "../../domain/entities/Message";
+import { mapToAllDocChatsDTO } from "../../infrastructure/database/mappers/mapToAllDocChatsDTO";
+import { stripBaseUrl } from "../helper/stripBaseUrl";
 
 export class ChatUsecase {
   private chatRepository: ChatRepository;
@@ -29,7 +31,8 @@ export class ChatUsecase {
   }
 
   async getAllDoctorChats(doctorId: string) {
-    const chats = await this.chatRepository.findChatByDoctorId(doctorId);
+    const chatDocs = await this.chatRepository.findChatByDoctorId(doctorId);
+    const chats = (chatDocs ?? []).map(mapToAllDocChatsDTO)
     return chats
   }
 
@@ -52,7 +55,10 @@ export class ChatUsecase {
   //Make a chat using Chat id
   async getAChatUsingChatId(chatId: string,) {
     const messages = await this.messageRepository.getMessagesByChatId(chatId);
-    return messages;
+    return messages.map(msg => ({
+      ...msg,
+      imageUrl: msg.imageUrl ? stripBaseUrl(msg.imageUrl) : '',
+    }));
   }
 
   // Mark Messages as read
