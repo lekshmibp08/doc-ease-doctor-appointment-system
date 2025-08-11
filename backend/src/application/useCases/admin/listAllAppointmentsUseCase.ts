@@ -1,4 +1,5 @@
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
+import { mapToAppointmentsByAdminDTO } from "../../../infrastructure/database/mappers/mapToAppointmentsByAdminDTO";
 
 export class ListAllAppointmentsForAdmin {
   constructor(private appointmentRepository: IAppointmentRepository) {}
@@ -7,15 +8,17 @@ export class ListAllAppointmentsForAdmin {
     const skip = (page - 1) * size;
     const limit = size;
 
-    const appointments =
+    const docs =
       await this.appointmentRepository.getAppointmentsWithPagination(
         skip,
         limit,
         searchQuery
       );
+      const appointments = docs.map(mapToAppointmentsByAdminDTO)
     const totalAppointments =
       await this.appointmentRepository.countAppointments(searchQuery);
     const totalPages = Math.ceil(totalAppointments / size);
+
 
     return {
       appointments,

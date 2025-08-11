@@ -89,3 +89,16 @@ export interface AppointmentsByIdWithDocDetailsDTO {
   updatedAt?: Date;
   createdAt?: Date;
 }
+
+export interface AllAppointmentsByAdminDTO {
+  _id: string;
+  user: {
+    fullName: string;
+  };
+  doctor: {
+    fullName: string
+  };
+  date: string;
+  time: string;
+  isCompleted: boolean;
+}
