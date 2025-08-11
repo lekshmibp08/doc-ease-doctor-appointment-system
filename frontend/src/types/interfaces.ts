@@ -183,6 +183,12 @@ export interface Chat {
   createdAt: string
 }
 
+export interface UserChatProps {
+  isOpen: boolean
+  onClose: () => void
+  initialDoctorId?: string
+}
+
 export interface Message {
   _id: string
   chatId: string

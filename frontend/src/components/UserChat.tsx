@@ -1,6 +1,7 @@
 
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
+import { Chat, Message, MessageWithLoading, UserChatProps } from "../types/interfaces"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/Redux/store"
 import io from "socket.io-client"
@@ -13,6 +14,7 @@ import {
   sendMessageToDoctor, 
   uploadToCloudinary 
 } from "../services/api/userApi"
+import { getFullImageUrl } from "../utils/getFullImageUrl"
 
 
 const ENDPOINT = import.meta.env.VITE_BASE_URL
@@ -22,44 +24,9 @@ const CLOUDINARY_API_URL = import.meta.env.VITE_CLOUDINARY_API_URL
 
 let socket: any
 
-interface Message {
-  _id: string
-  chatId: string
-  senderId: string
-  receiverId: string
-  text: string
-  imageUrl: string
-  timestamp: string
-  read: boolean
-}
-
-interface Chat {
-  _id: string
-  userId: {
-    _id: string
-    fullName: string
-    profilePicture: string
-  }
-  doctorId: {
-    _id: string
-    fullName: string
-    profilePicture: string
-  }
-  lastMessage: {
-    text: string
-  }
-  createdAt: string
-}
-
-interface UserChatProps {
-  isOpen: boolean
-  onClose: () => void
-  initialDoctorId?: string
-}
-
 const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId }) => {
   const userId = useSelector((state: RootState) => state.userAuth.currentUser?._id)
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<MessageWithLoading[]>([])
   const [currentChat, setCurrentChat] = useState<Chat | null>(null)
   const [allChats, setAllChats] = useState<Chat[]>([])
   const [newMessage, setNewMessage] = useState<string>("")
@@ -68,6 +35,7 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
   const [unreadCounts, setUnreadCounts] = useState<{ [key: string]: number }>({})
   const [isVideoCallActive, setIsVideoCallActive] = useState(false)
   const [incomingCall, setIncomingCall] = useState<{ chatId: string; callerId: string } | null>(null)
+  const [isImageUploading, setIsImageUploading] = useState<boolean>(false)
 
   const [showChatList, setShowChatList] = useState(true)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
@@ -197,14 +165,37 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
   }
 
   const sendMessage = async () => {
-    if (!newMessage.trim() && !imagePreview) return
+    if (!newMessage.trim() && !imageUrl) return
+
+    const tempId = `temp_${Date.now()}_${Math.random()}`;
+
+    const skeletonMessage: MessageWithLoading = {
+      _id: tempId,
+      chatId: currentChat?._id || "",
+      senderId: userId || "",
+      receiverId: currentChat?.userId._id || '',
+      text: newMessage,
+      imageUrl: imageUrl,
+      timestamp: new Date().toISOString(),
+      read: false,
+      isLoading: true,
+      tempId: tempId,
+    }
+
+    setMessages((prevMessages) => [...prevMessages, skeletonMessage])
+
+    const messageText = newMessage
+    const currentImageUrl = imageUrl
+    setNewMessage("")
+    setImagePreview(null)
+    setImageUrl("")
 
     const messageData = {
       chatId: currentChat?._id,
       senderId: userId,
       receiverId: currentChat?.doctorId._id,
-      text: newMessage,
-      imageUrl,
+      text: messageText,
+      imageUrl: currentImageUrl,
       timestamp: new Date().toISOString(),
       read: false,
     }
@@ -212,13 +203,19 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
     try {
       const response = await sendMessageToDoctor(messageData)
       socket.emit("send message", messageData)
-      const sentMessage = response.data
-      setMessages((prevMessages) => [...prevMessages, sentMessage])
-      setNewMessage("")
-      setImagePreview(null)
-      setImageUrl("")
+      setMessages((prevMessages) => prevMessages.map((msg) =>
+        (msg.tempId === tempId ? response.data : msg)
+      ))
     } catch (error) {
       console.error("Error sending message:", error)
+      setMessages((prevMessages) => prevMessages.filter((msg) => msg.tempId !== tempId))
+      setNewMessage(messageText)
+      setImageUrl(currentImageUrl)
+      if (currentImageUrl) {
+        setImagePreview(currentImageUrl)
+      }
+
+      alert("Failed to send message. Please try again.")
     }
   }
 
@@ -227,6 +224,7 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
     if (!file) return
     const previewURL = URL.createObjectURL(file)
     setImagePreview(previewURL)
+    setIsImageUploading(true)
 
     try {
       const formData = new FormData()
@@ -240,11 +238,15 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
         throw new Error("Image upload to Cloudinary failed")
       }
 
-      //const imageUrl = response.data.secure_url
-      setImageUrl(response.data.secure_url)
-      await sendMessage()
+      const uploadedImageUrl = response.data.secure_url
+      setImageUrl(uploadedImageUrl)
+      setImagePreview(uploadedImageUrl)
     } catch (error) {
       console.error("Error uploading image:", error)
+      setImagePreview(null)
+      alert("Failed to upload image. Please try again.")
+    } finally {
+      setIsImageUploading(false)
     }
   }
 
@@ -267,11 +269,11 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
       callerId: incomingCall?.callerId,
       receiverId: userId,
     })
-    setIncomingCall(null) // Hide the incoming call modal
+    setIncomingCall(null) 
   }
 
   const handleReject = () => {
-    setIncomingCall(null) // Hide the modal
+    setIncomingCall(null) 
     setIsVideoCallActive(false)
 
     socket.emit("reject call", {
@@ -367,36 +369,69 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
               {/* Messages Container */}
               <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-100">
                 {messages.map((msg, index) => (
-                  <div key={index} className={`flex ${msg.senderId === userId ? "justify-end" : "justify-start"}`}>
-                    <div
-                      className={`p-3 rounded-lg ${msg.senderId === userId ? "bg-blue-500 text-white" : "bg-white"}
-                      ${isMobile ? "max-w-[75%]" : "max-w-xs"}`}
-                    >
-                      {msg.text && <p className="break-words">{msg.text}</p>}
-                      {msg.imageUrl && (
-                        <div
-                          className={`overflow-hidden rounded-lg mt-2 border border-gray-300
-                          ${isMobile ? "w-[200px] h-[200px]" : "w-[250px] h-[250px]"}`}
-                        >
-                          <img
-                            src={msg.imageUrl || "/placeholder.svg"}
-                            alt="Sent image"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className="flex items-center justify-end gap-1 mt-1">
-                        <span className="text-xs opacity-75">
-                          {new Date(msg.timestamp).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                        {msg.senderId === userId && (
-                          <Check className={`h-4 w-4 ${msg.read ? "text-blue-300" : "text-gray-300"}`} />
+                  <div
+                    key={msg._id || index}
+                    className={`flex mb-4 ${msg.senderId === userId ? "justify-end" : "justify-start"}`}
+                  >
+                    {msg.isLoading ? (
+                      <div className="bg-blue-500 text-white p-3 rounded-lg max-w-[70%] animate-pulse">
+                        {msg.text && <p className="break-words opacity-70">{msg.text}</p>}
+                        {msg.imageUrl && (
+                          <div className="overflow-hidden rounded-lg mt-2 border border-gray-300 w-[150px] h-[150px] md:w-[250px] md:h-[250px] opacity-70">
+                            <img
+                              src={getFullImageUrl(msg.imageUrl) || "/placeholder.svg"}
+                              alt="Image"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
                         )}
+                        <div className="flex items-center justify-end gap-1 mt-1">
+                          <div className="flex space-x-1">
+                            <div className="w-1 h-1 bg-blue-300 rounded-full animate-bounce"></div>
+                            <div
+                              className="w-1 h-1 bg-blue-300 rounded-full animate-bounce"
+                              style={{ animationDelay: "0.1s" }}
+                            ></div>
+                            <div
+                              className="w-1 h-1 bg-blue-300 rounded-full animate-bounce"
+                              style={{ animationDelay: "0.2s" }}
+                            ></div>
+                          </div>
+                          <span className="text-xs opacity-50 ml-1">Sending...</span>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div
+                        className={`p-3 rounded-lg max-w-[70%] ${
+                          msg.senderId === userId ? "bg-blue-500 text-white" : "bg-white"
+                        }`}
+                      >
+                        {msg.text && <p className="break-words">{msg.text}</p>}
+                        {msg.imageUrl && (
+                          <div
+                            className="overflow-hidden rounded-lg mt-2 border
+                           border-gray-300 w-[150px] h-[150px] md:w-[250px] md:h-[250px]"
+                          >
+                            <img
+                              src={getFullImageUrl(msg.imageUrl) || "/placeholder.svg"}
+                              alt="Image"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex items-center justify-end gap-1 mt-1">
+                          <span className="text-xs opacity-75">
+                            {new Date(msg.timestamp).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                          {msg.senderId === userId && (
+                            <Check className={`h-4 w-4 ${msg.read ? "text-green-700" : "text-gray-300"}`} />
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
                 <div ref={messagesEndRef} />
@@ -411,8 +446,16 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
                       alt="Preview"
                       className="max-w-xs h-auto rounded-lg border border-gray-300"
                     />
+                    {isImageUploading && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                        <div className="text-white text-sm">Uploading...</div>
+                      </div>
+                    )}
                     <button
-                      onClick={() => setImagePreview(null)}
+                      onClick={() => {
+                        setImagePreview(null)
+                        setImageUrl("")
+                      }}
                       className="absolute top-0 right-0 bg-red-500 text-white text-xs p-1 rounded-full"
                     >
                       ✕
