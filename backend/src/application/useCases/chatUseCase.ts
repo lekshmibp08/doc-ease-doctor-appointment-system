@@ -46,6 +46,9 @@ export class ChatUsecase {
     const newMessage: IMessage = await this.messageRepository.createMessage(
       chatId, senderId, receiverId, text, imageUrl
     );
+    if (newMessage.imageUrl) {
+      newMessage.imageUrl = stripBaseUrl(newMessage.imageUrl);
+    }
 
     await this.chatRepository.updateChatLastMessage(chatId, newMessage._id as string);
     
