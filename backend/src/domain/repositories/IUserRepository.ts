@@ -1,14 +1,14 @@
-import { User } from '../entities/User'
+import { IUser } from '../entities/User'
 
 
 export type IUserRepository = {
-    findByEmail: (email: string) => Promise<User | null>;
-    create: (user: User) => Promise<User>;
-    getAllUsers: () => Promise<User[]>;
-    getUsersWithPagination: (skip: number, limit: number, query: any) => Promise<User[]>;
+    findByEmail: (email: string) => Promise<IUser | null>;
+    create: (user: IUser) => Promise<IUser>;
+    getAllUsers: () => Promise<IUser[]>;
+    getUsersWithPagination: (skip: number, limit: number, query: any) => Promise<IUser[]>;
     countUsers: (query: any) => Promise<number>;
-    findUserById: (id: string) => Promise<User | null>;
-    updateUser: (id: string, updates: any) => Promise<User | null>;
+    findUserById: (id: string) => Promise<IUser | null>;
+    updateUser: (id: string, updates: any) => Promise<IUser | null>;
 
   };
   
