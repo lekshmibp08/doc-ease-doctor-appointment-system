@@ -100,7 +100,6 @@ export const adminController = {
   getAllUsers: async (req: Request, res: Response): Promise<void> => {
     try {
       const { page, size, search } = req.query;
-      console.log(req.query);
 
       const pageNumber = parseInt(page as string);
       const pageSize = parseInt(size as string);
