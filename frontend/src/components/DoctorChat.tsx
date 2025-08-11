@@ -4,7 +4,6 @@ import { Chat, Message, MessageWithLoading } from "../types/interfaces"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/Redux/store"
 import io from "socket.io-client"
-import { Check, ArrowLeft } from "lucide-react"
 import VideoCall from "./VideoCall"
 import { 
   sendMessagebyDoc,
@@ -12,8 +11,11 @@ import {
   getMessagesByChatId,
   uploadImageForSend
 } from "../services/api/doctorApi"
-import { getFullImageUrl } from "../utils/getFullImageUrl"
-
+import ChatList from "./chat/ChatList"
+import ChatHeader from "./chat/ChatHeader"
+import MessagesContainer from "./chat/MessagesContainer"
+import MessageInput from "./chat/MessageInput"
+import IncomingCallModal from "./chat/IncomingCallModal"
 
 const ENDPOINT = import.meta.env.VITE_BASE_URL || "http://localhost:5000"
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
@@ -58,7 +60,6 @@ const DoctorChat: React.FC = () => {
           chatId: message.chatId, receiverId: doctorId
         })
       } else {
-        // Increment unread count for other chats
         setUnreadCounts((prev) => ({
           ...prev,
           [message.chatId]: (prev[message.chatId] || 0) + 1,
@@ -248,226 +249,63 @@ const DoctorChat: React.FC = () => {
     });
   };
 
+  const handleBackToList = () => {
+    setCurrentChat(null)
+    setShowChatList(true)
+  }
+
 
 
   return (
-    <div className="flex h-[580px] border rounded-lg overflow-hidden">
-      {/* Chat List - Always Visible on Large Screens */}
-      <div
-        className={`w-full md:w-1/3 border-r border-gray-300 overflow-y-auto ${isMobile && currentChat ? "hidden" : "block"}`}
-      >
-        <div className="p-4 border-b font-bold text-xl">Chats</div>
-        {allChats.map((chat) => (
-          <div
-            key={chat._id}
-            onClick={() => selectChat(chat)}
-            className={`cursor-pointer flex items-center p-2 hover:bg-gray-200 ${
-              currentChat?._id === chat._id ? "bg-blue-100" : ""
-            }`}
-          >
-            <img
-              src={getFullImageUrl(chat.userId.profilePicture)}
-              alt={chat.userId.fullName}
-              className="w-12 h-12 rounded-full"
-            />
-            <div className="flex-1 ml-2">
-              <div className="font-bold">{chat.userId.fullName}</div>
-              <div className="text-sm text-gray-600 truncate">
-                {chat.lastMessage?.text || "No messages yet"}
-              </div>
-            </div>
-            {unreadCounts[chat._id] > 0 && (
-              <div className="bg-blue-500 text-white rounded-full w-6 h-6 
-              flex items-center justify-center text-xs"
-              >
-                {unreadCounts[chat._id]}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+        <div className="flex h-[580px] border rounded-lg overflow-hidden">
+      <ChatList
+        chats={allChats}
+        currentChat={currentChat}
+        unreadCounts={unreadCounts}
+        onSelectChat={selectChat}
+        title="Chats"
+        isMobile={isMobile}
+        showChatList={showChatList}
+        userType="doctor"
+      />
 
-      {/* Chat Content */}
       <div className={`flex-1 flex flex-col ${isMobile && !currentChat ? "hidden" : "block"}`}>
         {currentChat ? (
           <>
-            <div className="p-4 border-b flex items-center justify-between">
-              <div className="flex items-center">
-                {isMobile && (
-                <button onClick={() => setCurrentChat(null)} className="text-blue-500 text-2xl mr-3">
-                  <ArrowLeft className="h-6 w-6 text-blue-500 text-2xl" />
-                </button>
-                )} 
-                <img
-                  src={getFullImageUrl(currentChat.userId.profilePicture)}
-                  alt={currentChat.userId.fullName}
-                  className="w-10 h-10 rounded-full mr-4"
-                />
-                <div className="font-bold text-lg">
-                  {currentChat.userId.fullName}
-                </div>
-              </div>
-              {/* Video Camera Icon */}
-              <button onClick={startVideoCall}
-                className="text-blue-500"
-              >
-                <i className="fas fa-video text-3xl"></i>           
-              </button>
-            </div>
+            <ChatHeader
+              currentChat={currentChat}
+              onBack={isMobile ? handleBackToList : undefined}
+              onVideoCall={startVideoCall}
+              isMobile={isMobile}
+              userType="doctor"
+            />
 
-            {/* Chat Messages */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-100">
-              {messages.map((msg, index) => (
-                <div
-                  key={msg._id || index}
-                  className={`flex mb-4 ${msg.senderId === doctorId ? "justify-end" : "justify-start"}`}
-                >
-                  {msg.isLoading ? (
-                    <div className="bg-blue-500 text-white p-3 rounded-lg max-w-[70%] animate-pulse">
-                      {msg.text && <p className="break-words opacity-70">{msg.text}</p>}
-                      {msg.imageUrl && (
-                        <div className="overflow-hidden rounded-lg mt-2 border border-gray-300 w-[150px] h-[150px] md:w-[250px] md:h-[250px] opacity-70">
-                          <img
-                            src={getFullImageUrl(msg.imageUrl) || "/placeholder.svg"}
-                            alt="Image"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className="flex items-center justify-end gap-1 mt-1">
-                        <div className="flex space-x-1">
-                          <div className="w-1 h-1 bg-blue-300 rounded-full animate-bounce"></div>
-                          <div
-                            className="w-1 h-1 bg-blue-300 rounded-full animate-bounce"
-                            style={{ animationDelay: "0.1s" }}
-                          ></div>
-                          <div
-                            className="w-1 h-1 bg-blue-300 rounded-full animate-bounce"
-                            style={{ animationDelay: "0.2s" }}
-                          ></div>
-                        </div>
-                        <span className="text-xs opacity-50 ml-1">Sending...</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div
-                      className={`p-3 rounded-lg max-w-[70%] ${
-                        msg.senderId === doctorId ? "bg-blue-500 text-white" : "bg-white"
-                      }`}
-                    >
-                      {msg.text && <p className="break-words">{msg.text}</p>}
-                      {msg.imageUrl && (
-                        <div
-                          className="overflow-hidden rounded-lg mt-2 border
-                         border-gray-300 w-[150px] h-[150px] md:w-[250px] md:h-[250px]"
-                        >
-                          <img
-                            src={getFullImageUrl(msg.imageUrl) || "/placeholder.svg"}
-                            alt="Image"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className="flex items-center justify-end gap-1 mt-1">
-                        <span className="text-xs opacity-75">
-                          {new Date(msg.timestamp).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                        {msg.senderId === doctorId && (
-                          <Check className={`h-4 w-4 ${msg.read ? "text-green-700" : "text-gray-300"}`} />
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
+            <MessagesContainer messages={messages} currentUserId={doctorId || ""} userType="doctor" />
 
-            {/* Chat Input */}
-            <div className="p-4 bg-white border-t border-gray-300">
-              {imagePreview && (
-                <div className="mt-2 relative inline-block">
-                  <img
-                    src={imagePreview || "/placeholder.svg"}
-                    alt="Preview"
-                    className="max-w-xs h-auto rounded-lg border border-gray-300"
-                  />
-                  {isImageUploading && (
-                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-                      <div className="text-white text-sm">Uploading...</div>
-                    </div>
-                  )}
-                  <button
-                    onClick={() => {
-                      setImagePreview(null)
-                      setImageUrl("")
-                    }}
-                    className="absolute top-0 right-0 bg-red-500 text-white text-xs p-1 rounded-full"
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
-
-              <div className="flex items-center space-x-2">
-                <label htmlFor="image-upload" className="cursor-pointer">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </label>
-                <input
-                  id="image-upload" type="file"
-                  accept="image/*" className="hidden"
-                  onChange={handleImageUpload}
-                />
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyDown={(e) => {
-                    if(e.key === 'Enter') sendMessage()
-                  }}
-                  placeholder="Type a message"
-                  className="flex-1 p-2 border border-gray-300 rounded-lg"
-                />
-                <button 
-                  onClick={sendMessage} disabled={isImageUploading}
-                  className="bg-blue-500 text-white p-2 rounded-lg"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                    />
-                  </svg>
-                </button>
-
-              </div>
-            </div>
+            <MessageInput
+              newMessage={newMessage}
+              setNewMessage={setNewMessage}
+              imagePreview={imagePreview}
+              setImagePreview={setImagePreview}
+              setImageUrl={setImageUrl}
+              isImageUploading={isImageUploading}
+              onSendMessage={sendMessage}
+              onImageUpload={handleImageUpload}
+            />
           </>
         ) : (
-            <div className="flex-1 flex items-center justify-center text-gray-500">
-              Select a chat to start messaging
-            </div>
+          <div className="flex-1 flex items-center justify-center text-gray-500">Select a chat to start messaging</div>
         )}
       </div>
+
       {incomingCall && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg">
-            <p className="mb-4">Incoming call from {currentChat?.userId.fullName}</p>
-            <button onClick={handleAccept} className="bg-green-500 text-white px-4 py-2 rounded mr-2">
-              Accept
-            </button>
-            <button onClick={handleReject} className="bg-red-500 text-white px-4 py-2 rounded">
-              Reject
-            </button>
-          </div>
-        </div>
+        <IncomingCallModal
+          callerName={currentChat?.userId.fullName || "Unknown User"}
+          onAccept={handleAccept}
+          onReject={handleReject}
+        />
       )}
+
       {isVideoCallActive && currentChat && doctorId && (
         <VideoCall
           chatId={currentChat._id}
@@ -476,10 +314,8 @@ const DoctorChat: React.FC = () => {
           onClose={() => setIsVideoCallActive(false)}
         />
       )}
-
     </div>
   )
-
 }
 
 export default DoctorChat
