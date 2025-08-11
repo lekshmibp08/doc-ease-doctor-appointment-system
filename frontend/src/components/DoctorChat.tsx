@@ -1,6 +1,6 @@
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
-import { Chat, Message } from "../types/interfaces"
+import { Chat, Message, MessageWithLoading } from "../types/interfaces"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/Redux/store"
 import io from "socket.io-client"
@@ -24,7 +24,7 @@ let socket: any
 
 const DoctorChat: React.FC = () => {
   const doctorId = useSelector((state: RootState) => state.doctorAuth.currentUser?._id)
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<MessageWithLoading[]>([])
   const [currentChat, setCurrentChat] = useState<any>(null)
   const [allChats, setAllChats] = useState<Chat[]>([])
   const [newMessage, setNewMessage] = useState<string>("")
@@ -35,6 +35,8 @@ const DoctorChat: React.FC = () => {
   const [unreadCounts, setUnreadCounts] = useState<{ [key: string]: number }>({})
   const [isVideoCallActive, setIsVideoCallActive] = useState(false)
   const [incomingCall, setIncomingCall] = useState<{ chatId: string; callerId: string } | null>(null)
+  const [isImageUploading, setIsImageUploading] = useState<boolean>(false)
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -122,14 +124,40 @@ const DoctorChat: React.FC = () => {
   }
 
   const sendMessage = async () => {
-    if ((!newMessage.trim() && !imagePreview) || !currentChat) return
+    if ((!newMessage.trim() && !imageUrl) || !currentChat) return;
+
+    const tempId = `temp_${Date.now()}_${Math.random()}`;
+
+    // Create skeleton message immediately
+    const skeletonMessage: MessageWithLoading = {
+      _id: tempId,
+      chatId: currentChat._id,
+      senderId: doctorId || "",
+      receiverId: currentChat.userId._id,
+      text: newMessage,
+      imageUrl: imageUrl,
+      timestamp: new Date().toISOString(),
+      read: false,
+      isLoading: true,
+      tempId: tempId,
+    }
+
+    // Add skeleton message immediately for instant feedback
+    setMessages((prevMessages) => [...prevMessages, skeletonMessage])
+
+    // Clear input immediately
+    const messageText = newMessage
+    const currentImageUrl = imageUrl
+    setNewMessage("")
+    setImagePreview(null)
+    setImageUrl("")
 
     const messageData = {
       chatId: currentChat._id,
       senderId: doctorId,
       receiverId: currentChat.userId._id,
-      text: newMessage,
-      imageUrl,
+      text: messageText,
+      imageUrl: currentImageUrl,
       timestamp: new Date().toISOString(),
       read: false,
     }
@@ -137,12 +165,20 @@ const DoctorChat: React.FC = () => {
     try {
       const response = await sendMessagebyDoc(messageData)
       socket.emit("send message", messageData)
-      setMessages((prevMessages) => [...prevMessages, response.data])
-      setNewMessage("")
-      setImagePreview(null)
-      setImageUrl('')
+      setMessages((prevMessages) => prevMessages.map((msg) =>
+        (msg.tempId === tempId ? response.data : msg)
+      ))
     } catch (error) {
       console.error("Error sending message:", error)
+
+      setMessages((prevMessages) => prevMessages.filter((msg) => msg.tempId !== tempId))
+      setNewMessage(messageText)
+      setImageUrl(currentImageUrl)
+      if (currentImageUrl) {
+        setImagePreview(currentImageUrl)
+      }
+
+      alert("Failed to send message. Please try again.")
     }
   }
 
@@ -152,6 +188,7 @@ const DoctorChat: React.FC = () => {
 
     const previewURL = URL.createObjectURL(file)
     setImagePreview(previewURL)
+    setIsImageUploading(true)
 
     try {
       const formData = new FormData()
@@ -167,9 +204,13 @@ const DoctorChat: React.FC = () => {
 
       const uploadedImageUrl = response.data.secure_url
         setImageUrl(uploadedImageUrl)
-        await sendMessage()
+        setImagePreview(uploadedImageUrl)
     } catch (error) {
       console.error("Error uploading image:", error)
+      setImagePreview(null)
+      alert("Failed to upload image. Please try again.")
+    } finally {
+      setIsImageUploading(false)
     }
   }
 
@@ -194,11 +235,11 @@ const DoctorChat: React.FC = () => {
       callerId: incomingCall?.callerId,
       receiverId: doctorId
     });
-    setIncomingCall(null); // Hide the incoming call modal
+    setIncomingCall(null); 
   };
 
   const handleReject = () => {
-    setIncomingCall(null); // Hide the modal
+    setIncomingCall(null); 
     setIsVideoCallActive(false);
 
     socket.emit("reject call", {
@@ -277,30 +318,69 @@ const DoctorChat: React.FC = () => {
             {/* Chat Messages */}
             <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-100">
               {messages.map((msg, index) => (
-                <div key={index} className={`flex mb-4 ${msg.senderId === doctorId ? "justify-end" : "justify-start"}`}>
-                  <div className={`p-3 rounded-lg max-w-w[70%] ${msg.senderId === doctorId ?
-                    "bg-blue-500 text-white" : "bg-white"}`}
-                  >
-                    {msg.text && <p className="break-words">{msg.text}</p>}
-                    {msg.imageUrl && (
-                      <div className="overflow-hidden rounded-lg mt-2 border
-                       border-gray-300 w-[150px] h-[150px] md:w-[250px] md:h-[250px]"
-                      >
-                        <img src={getFullImageUrl(msg.imageUrl)} alt="Image"className="w-full h-full object-cover" />
-                      </div>
-                    )}
-                    <div className="flex items-center justify-end gap-1 mt-1">
-                      <span className="text-xs opacity-75">
-                        {new Date(msg.timestamp).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                      {msg.senderId === doctorId && (
-                        <Check className={`{h-4 w-4 ${msg.read ? "text-green-700" : "text-gray-300"}}`} />
+                <div
+                  key={msg._id || index}
+                  className={`flex mb-4 ${msg.senderId === doctorId ? "justify-end" : "justify-start"}`}
+                >
+                  {msg.isLoading ? (
+                    <div className="bg-blue-500 text-white p-3 rounded-lg max-w-[70%] animate-pulse">
+                      {msg.text && <p className="break-words opacity-70">{msg.text}</p>}
+                      {msg.imageUrl && (
+                        <div className="overflow-hidden rounded-lg mt-2 border border-gray-300 w-[150px] h-[150px] md:w-[250px] md:h-[250px] opacity-70">
+                          <img
+                            src={getFullImageUrl(msg.imageUrl) || "/placeholder.svg"}
+                            alt="Image"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       )}
+                      <div className="flex items-center justify-end gap-1 mt-1">
+                        <div className="flex space-x-1">
+                          <div className="w-1 h-1 bg-blue-300 rounded-full animate-bounce"></div>
+                          <div
+                            className="w-1 h-1 bg-blue-300 rounded-full animate-bounce"
+                            style={{ animationDelay: "0.1s" }}
+                          ></div>
+                          <div
+                            className="w-1 h-1 bg-blue-300 rounded-full animate-bounce"
+                            style={{ animationDelay: "0.2s" }}
+                          ></div>
+                        </div>
+                        <span className="text-xs opacity-50 ml-1">Sending...</span>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div
+                      className={`p-3 rounded-lg max-w-[70%] ${
+                        msg.senderId === doctorId ? "bg-blue-500 text-white" : "bg-white"
+                      }`}
+                    >
+                      {msg.text && <p className="break-words">{msg.text}</p>}
+                      {msg.imageUrl && (
+                        <div
+                          className="overflow-hidden rounded-lg mt-2 border
+                         border-gray-300 w-[150px] h-[150px] md:w-[250px] md:h-[250px]"
+                        >
+                          <img
+                            src={getFullImageUrl(msg.imageUrl) || "/placeholder.svg"}
+                            alt="Image"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex items-center justify-end gap-1 mt-1">
+                        <span className="text-xs opacity-75">
+                          {new Date(msg.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                        {msg.senderId === doctorId && (
+                          <Check className={`h-4 w-4 ${msg.read ? "text-green-700" : "text-gray-300"}`} />
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
               <div ref={messagesEndRef} />
@@ -309,12 +389,27 @@ const DoctorChat: React.FC = () => {
             {/* Chat Input */}
             <div className="p-4 bg-white border-t border-gray-300">
               {imagePreview && (
-              <div className="mt-2 relative inline-block">
-                <img src={imagePreview || "/placeholder.svg"} alt="Preview" className="max-w-xs h-auto rounded-lg border border-gray-300" />
-                <button onClick={() => setImagePreview(null)} className="absolute top-0 right-0 bg-red-500 text-white text-xs p-1 rounded-full">
-                  ✕
-                </button>
-              </div>
+                <div className="mt-2 relative inline-block">
+                  <img
+                    src={imagePreview || "/placeholder.svg"}
+                    alt="Preview"
+                    className="max-w-xs h-auto rounded-lg border border-gray-300"
+                  />
+                  {isImageUploading && (
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                      <div className="text-white text-sm">Uploading...</div>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => {
+                      setImagePreview(null)
+                      setImageUrl("")
+                    }}
+                    className="absolute top-0 right-0 bg-red-500 text-white text-xs p-1 rounded-full"
+                  >
+                    ✕
+                  </button>
+                </div>
               )}
 
               <div className="flex items-center space-x-2">
@@ -340,7 +435,10 @@ const DoctorChat: React.FC = () => {
                   placeholder="Type a message"
                   className="flex-1 p-2 border border-gray-300 rounded-lg"
                 />
-                <button onClick={sendMessage} className="bg-blue-500 text-white p-2 rounded-lg">
+                <button 
+                  onClick={sendMessage} disabled={isImageUploading}
+                  className="bg-blue-500 text-white p-2 rounded-lg"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"

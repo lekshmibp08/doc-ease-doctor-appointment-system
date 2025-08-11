@@ -194,6 +194,12 @@ export interface Message {
   read: boolean
 }
 
+export interface MessageWithLoading extends Message {
+  isLoading?: boolean
+  tempId?: string
+}
+
+
 export interface StatCardProps {
   title: string
   value: string | number
