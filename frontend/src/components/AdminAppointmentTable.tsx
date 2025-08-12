@@ -10,11 +10,22 @@ const AdminAppointmentTable: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500); 
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
 
   useEffect(() => {
     const fetchAllAppointments = async () => {        
       try {
-        const response = await fetchAppointments(currentPage, search);
+        const response = await fetchAppointments(currentPage, debouncedSearch);
 
         setAppointments(response.data.appointments);
         setTotalPages(response.data.totalPages);
@@ -24,7 +35,7 @@ const AdminAppointmentTable: React.FC = () => {
     };
 
     fetchAllAppointments();
-  }, [currentPage, search]);
+  }, [currentPage, debouncedSearch]);
 
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

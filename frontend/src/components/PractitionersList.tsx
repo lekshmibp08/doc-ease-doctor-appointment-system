@@ -10,11 +10,24 @@ const PractitionersList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setCurrentPage(1);
+    }, 500); 
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
+
 
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await getAllDoctors(currentPage, 8, search || "");
+        const response = await getAllDoctors(currentPage, 8, debouncedSearch || "");
         setPractitioners(response.data.doctors);
         setTotalPages(response.data.totalPages);
       } catch (error) {
@@ -23,7 +36,7 @@ const PractitionersList = () => {
     };
 
     fetchDoctors();
-  }, [currentPage, search]);
+  }, [currentPage, debouncedSearch]);
 
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

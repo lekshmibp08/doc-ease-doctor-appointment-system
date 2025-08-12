@@ -16,11 +16,22 @@ const UserList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500); 
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
 
   useEffect(() => {
     const fetchUsers = async () => {        
       try {
-        const response = await getAllUsers(currentPage, 8, search || "");
+        const response = await getAllUsers(currentPage, 8, debouncedSearch || "");
         
         setUsers(response.data.users);
         setTotalPages(response.data.totalPages);
@@ -30,7 +41,7 @@ const UserList: React.FC = () => {
     };
 
     fetchUsers();
-  }, [currentPage, search]);
+  }, [currentPage, debouncedSearch]);
 
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
