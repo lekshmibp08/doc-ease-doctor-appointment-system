@@ -2,8 +2,9 @@ import { ChatRepository } from "../../infrastructure/database/repositories/ChatR
 import { MessageRepository } from "../../infrastructure/database/repositories/MessageRepository";
 import { IChat } from "../../domain/entities/Chat";
 import { IMessage } from "../../domain/entities/Message";
-import { mapToAllDocChatsDTO } from "../../infrastructure/database/mappers/mapToAllDocChatsDTO";
 import { stripBaseUrl } from "../helper/stripBaseUrl";
+import { mapToAllDocChatsDTO } from "../../infrastructure/database/mappers/mapToAllDocChatsDTO";
+import { mapToAllUserChatsDTO } from "../../infrastructure/database/mappers/mapToAllUserChatsDTO";
 
 export class ChatUsecase {
   private chatRepository: ChatRepository;
@@ -26,7 +27,8 @@ export class ChatUsecase {
   }
 
   async getAllChatsForUser(userId: string) {
-    const chats = await this.chatRepository.findChatByUserId(userId);
+    const chatDocs = await this.chatRepository.findChatByUserId(userId);
+    const chats = (chatDocs ?? []).map(mapToAllUserChatsDTO)
     return chats
   }
 
