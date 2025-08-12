@@ -6,7 +6,9 @@ export const stripBaseUrl = (url?: string): string => {
   if (!url) return '';
 
   if (url.startsWith(COMMON_STORAGE_URL)) {
-    return `cl:${url.replace(COMMON_STORAGE_URL, "")}`;
+    const stripped = `cl:${url.replace(COMMON_STORAGE_URL, "")}`;
+    console.log(stripped);
+    return stripped
   }
 
   if (url.startsWith(GOOGLE_IMAGE_BASE_URL)) {

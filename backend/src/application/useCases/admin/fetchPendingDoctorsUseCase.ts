@@ -1,4 +1,5 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
+import { stripBaseUrl } from "../../helper/stripBaseUrl";
 
 export class FetchPendingDoctors {
   constructor(private doctorRepository: IDoctorRepository) {}
@@ -10,7 +11,7 @@ export class FetchPendingDoctors {
       isBlocked: doc.isBlocked,
       registerNumber: doc.registerNumber,
       isRejected: doc.isRejected,
-      documents: doc.documents,
+      documents: doc.documents.map((url: string) => stripBaseUrl(url)),
     };
   }
 
@@ -33,9 +34,7 @@ export class FetchPendingDoctors {
       limit,
       query
     );
-    const doctors = doctorsData.map((doc) =>
-      this.mapToPendingDoctorDTO(doc)
-    );
+    const doctors = doctorsData.map((doc) => this.mapToPendingDoctorDTO(doc));
     const totalDoctors = await this.doctorRepository.countDoctors(query);
     const totalPages = Math.ceil(totalDoctors / size);
 
