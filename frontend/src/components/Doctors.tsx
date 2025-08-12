@@ -14,6 +14,7 @@ const DoctorsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("")
   const [filters, setFilters] = useState({
     latitude: 0,
     longitude: 0,
@@ -33,6 +34,20 @@ const DoctorsPage = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const specialization = searchParams.get("specialization") || "";
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [search])
+
+  useEffect(() => {
+    if (search !== debouncedSearch) {
+      setCurrentPage(1)
+    }
+  }, [search, debouncedSearch])
 
   // Fetch Specialization for filtering
   useEffect(() => {
@@ -57,7 +72,7 @@ const DoctorsPage = () => {
         const data = await getDoctors({
           page: currentPage,
           size: 6,
-          search,
+          search: debouncedSearch,
           locationName: locationInput.includes(",") ? "" : locationInput,
           latitude: filters.latitude,
           longitude: filters.longitude,
@@ -78,7 +93,7 @@ const DoctorsPage = () => {
     };
 
     fetchDoctors();
-  }, [currentPage, search, locationInput, filters, sort]);
+  }, [currentPage, debouncedSearch, locationInput, filters, sort]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -99,6 +114,7 @@ const DoctorsPage = () => {
       department: "",
     });
     setSearch("");
+    setDebouncedSearch("")
     setSort("relevance");
     setCurrentPage(1);
     setLocationInput("");
