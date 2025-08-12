@@ -1,5 +1,5 @@
 export interface PrescriptionDTO {
-  id: string;
+  _id: string;
   patientName: string;
   age: string;
   diagnosis: string;

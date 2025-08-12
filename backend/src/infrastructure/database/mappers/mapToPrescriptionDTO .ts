@@ -1,7 +1,7 @@
 import { PrescriptionDTO } from "../../../dtos/prescriptionDTO/prescriptionDTOs"; 
 
 export const mapToPrescriptionDTO = (doc: any): PrescriptionDTO => ({
-  id: doc._id.toString(),
+  _id: doc._id.toString(),
   patientName: doc.patientName,
   age: doc.age,
   diagnosis: doc.diagnosis,
