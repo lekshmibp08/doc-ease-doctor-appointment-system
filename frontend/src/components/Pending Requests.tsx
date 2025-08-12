@@ -16,12 +16,22 @@ const PendingRequests = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setCurrentPage(1); 
+    }, 500); 
+
+    return () => clearTimeout(handler); 
+  }, [search]);
 
   // Fetch pending doctors
   const fetchPendingDoctors  = async () => {
     try {
-      const response = await getPendingRequests(currentPage, search)
+      const response = await getPendingRequests(currentPage, debouncedSearch)
 
       setPendingDoctors(response.data.doctors);
       setTotalPages(response.data.totalPages);
@@ -32,7 +42,7 @@ const PendingRequests = () => {
 
   useEffect(() => {
     fetchPendingDoctors();
-  }, [currentPage, search]);
+  }, [currentPage, debouncedSearch]);
 
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
