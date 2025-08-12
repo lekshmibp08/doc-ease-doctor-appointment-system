@@ -11,16 +11,24 @@ export class CreateAppointmentUseCase {
     private slotRepository: ISlotRepository
   ) {}
 
-  async execute(appoinmentData: AppointmentInputDTO): Promise<IAppointment> {
-    const newAppoinment = await this.appointmentRepository.createAppointment(
+  async execute(appoinmentData: AppointmentInputDTO): Promise <Pick<IAppointment, "_id" | "date" | "time">> {
+    const newAppoinmentDoc = await this.appointmentRepository.createAppointment(
       appoinmentData
     );
-    if (!newAppoinment) {
+    if (!newAppoinmentDoc) {
       throw new AppError(
         "Failed to create appointment.",
         HttpStatusCode.INTERNAL_SERVER_ERROR
       );
     }
+
+    const newAppoinment = {
+      _id: newAppoinmentDoc._id,
+      date: newAppoinmentDoc.date,
+      time: newAppoinmentDoc.time
+    }
+
+
 
     await this.slotRepository.updateSlotStatus(
       appoinmentData.slotId,
