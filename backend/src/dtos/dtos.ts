@@ -43,26 +43,13 @@ export interface AppointmentsByDocIdDTO {
   userId: {
     _id: string;
     fullName: string;
+    age: string;
   };
-  date: Date;
-  slotId: Slot;
-  timeSlotId: TimeSlot;
+  date: Date;  
   time: string;
-  modeOfVisit: "Video" | "Clinic";
-  amount: number;
-  paymentId: string;
-  isPaid?: boolean;
+  modeOfVisit: "Video" | "Clinic";  
   isCancelled?: boolean;
-  refundAmount?: number;
-  refundStatus?: "Pending" | "Processed" | "Failed";
-  refundTransactionId?: string | null;
-  videoCallEnabled?: boolean;
-  chatEnabled?: boolean;
-  isCompleted?: boolean;
-  rating?: number;
-  reviewMessage?: string;
-  videoCallId?: string;
-  isReviewed?: boolean;
+  isCompleted?: boolean;  
   updatedAt?: Date;
   createdAt?: Date;
 }
