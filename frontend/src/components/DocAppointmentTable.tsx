@@ -74,16 +74,29 @@ const DocAppointmentTable = ({ doctorId }: { doctorId: string }) => {
 
   const handleCompleteAppointment = async (appointmentId: string) => {
     try {
-      await completeAppointmentById(appointmentId);
-      setAppointments((prevAppointments) =>
-        prevAppointments.map((appointment) =>
-          appointment._id === appointmentId
-            ? { ...appointment, isCompleted: true }
-            : appointment
-        )
-      );
-    } catch (error) {
+      const response = await completeAppointmentById(appointmentId);
+      if(response.data.success) {
+        setAppointments((prevAppointments) =>
+          prevAppointments.map((appointment) =>
+            appointment._id === appointmentId
+              ? { ...appointment, isCompleted: true }
+              : appointment
+          )
+        );
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Updation Failed",
+          text: response.data.message || "Unable to update appointment status.",
+        })
+      }
+    } catch (error: any) {
       console.error("Error updating appointment status:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.data.message || "Unable to update appointment status.",
+      });
     }
   };
 

@@ -250,14 +250,14 @@ export const appoinmentController = {
     const { isCompleted } = req.body;
 
     try {
-      const updatedAppointment = await updateAppointmentUseCase.execute(
+      await updateAppointmentUseCase.execute(
         appointmentId,
         isCompleted
       );
 
       res.status(200).json({
+        success: true,
         message: "Appointment status updated successfully",
-        updatedAppointment,
       });
     } catch (error: any) {
       next(error);
