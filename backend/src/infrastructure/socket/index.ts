@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Server as SocketIOServer } from "socket.io";
 import { ChatUsecase } from "../../application/useCases/chatUseCase";
+import { registerSlotEvents } from "./slotSocketHandlers";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -17,6 +17,7 @@ export const initializeSocket = (server: any) => {
     cors: {
       origin: FRONT_END_URL || "http://localhost:5173",
       methods: ["GET", "POST"],
+      credentials: true,
     },
     path: "/socket.io",
   });
@@ -31,7 +32,8 @@ export const initializeSocket = (server: any) => {
     console.log(`User connected: ${socket.id}`);
 
     socket.on("setup", (userId) => {
-      connectedUsers.set(userId, socket.id)
+      connectedUsers.set(userId, socket.id);
+      (socket.data as any).userId = userId;
       socket.join(userId);
       socket.emit("connected");
     });
@@ -167,6 +169,8 @@ export const initializeSocket = (server: any) => {
     
       console.log(`Call ended in chat ${chatId} between ${userId} and ${receiverId}`);
     })
+
+    registerSlotEvents(io, socket);
 
     socket.on("disconnect", () => {
       // Clear any active call timeouts for this user
