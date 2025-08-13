@@ -12,6 +12,8 @@ interface PaymentButtonProps {
   slotId: string
   fee: number
   currentUser: any
+  onBookingConfirmed: () => void
+  onPaymentAborted: () => void
 }
 
 const PaymentButton = ({
@@ -22,6 +24,8 @@ const PaymentButton = ({
   slotId,
   fee,
   currentUser,
+  onBookingConfirmed,
+  onPaymentAborted,
 }: PaymentButtonProps) => {
   const navigate = useNavigate()
 
@@ -57,17 +61,9 @@ const PaymentButton = ({
         description: `Appointment Booking for ${format(selectedDate, "yyyy-MM-dd")}`,
         order_id: order.id,
         handler: async (response: any) => {
-          console.log("Payment successful:", response)
-          Swal.fire({
-            icon: "success",
-            title: "Payment Successful",
-            text: `Payment ID: ${response.razorpay_payment_id}`,
-            confirmButtonText: "Okay",
-          })
-
           try {
             const appointmentData = {
-              doctorId: doctorId,
+              doctorId,
               userId: currentUser?._id,
               date: selectedDate,
               slotId,
@@ -80,42 +76,31 @@ const PaymentButton = ({
             }
             const res = await bookAppointment(appointmentData)
 
+            // Tell parent to broadcast "booked" & clear lock
+            onBookingConfirmed()
+
             Swal.fire({
               icon: "success",
               title: "Payment Successful",
               html: `
-              <h3>Your appointment has been successfully created!</h3>
-              <p><strong>Date:</strong> ${format(new Date(res.newAppoinment.date), "dd MMM yyyy, EEEE")}</p>
-              <p><strong>Time:</strong> ${res.newAppoinment.time}</p>
-              <div class="mt-4">
-                <button id="go-home" class="swal2-confirm swal2-styled">Go to Home</button>
-                <button id="show-appointments" class="swal2-confirm swal2-styled">Show Appointments</button>
-              </div>
-            `,
+                <h3>Your appointment has been successfully created!</h3>
+                <p><strong>Date:</strong> ${format(new Date(res.newAppoinment.date), "dd MMM yyyy, EEEE")}</p>
+                <p><strong>Time:</strong> ${res.newAppoinment.time}</p>
+                <div class="mt-4">
+                  <button id="go-home" class="swal2-confirm swal2-styled">Go to Home</button>
+                  <button id="show-appointments" class="swal2-confirm swal2-styled">Show Appointments</button>
+                </div>
+              `,
               showConfirmButton: false,
               didRender: () => {
-                const goHomeButton = document.getElementById("go-home")
-                const showAppointmentsButton = document.getElementById("show-appointments")
-
-                goHomeButton?.addEventListener("click", () => {
-                  Swal.close()
-                  navigate("/")
-                })
-
-                showAppointmentsButton?.addEventListener("click", () => {
-                  Swal.close()
-                  navigate(`/appointments`)
-                })
+                document.getElementById("go-home")?.addEventListener("click", () => { Swal.close(); navigate("/") })
+                document.getElementById("show-appointments")?.addEventListener("click", () => { Swal.close(); navigate(`/appointments`) })
               },
             })
-          } catch (error) {
-            console.error("Error creating appointment:", error)
-            Swal.fire({
-              icon: "error",
-              title: "Appointment Error",
-              text: "There was an error while creating your appointment. Please try again later.",
-              confirmButtonText: "Okay",
-            })
+          } catch (err) {
+            console.error("Error creating appointment:", err)
+            Swal.fire({ icon: "error", title: "Appointment Error", text: "There was an error while creating your appointment." })
+            onPaymentAborted() 
           }
         },
         prefill: {
@@ -123,8 +108,11 @@ const PaymentButton = ({
           email: currentUser?.email,
           contact: currentUser?.mobileNumber,
         },
-        theme: {
-          color: "#3399cc",
+        theme: { color: "#3399cc" },
+        modal: {
+          ondismiss: () => {
+            onPaymentAborted() 
+          },
         },
       }
 
@@ -146,9 +134,10 @@ const PaymentButton = ({
         }).then((result) => {
           if (result.isConfirmed) {
             razorpay.open()
+          } else {
+            onPaymentAborted()
           }
         })
-
         console.error("Payment failed:", response.error)
       })
     } catch (error) {

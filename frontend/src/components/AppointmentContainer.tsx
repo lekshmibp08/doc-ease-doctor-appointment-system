@@ -1,4 +1,4 @@
- import { useEffect, useState } from 'react';
+ import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
@@ -7,9 +7,9 @@ import TimeSlotSection from './appointmentBooking/TimeSlotSection';
 import ConsultationModeSelector from './appointmentBooking/ConsultationModeSelector';
 import PaymentButton from './appointmentBooking/PaymentButton';
 import { Slot, AppointmentContainerProps } from '../types/interfaces';
-import { 
-  getDoctorSlots, 
-} from '../services/api/userApi'
+import { getDoctorSlots } from '../services/api/userApi'
+import Swal from 'sweetalert2';
+import BookingSocketService from '../services/socketService/bookingSocketService';
 
 declare global {
   interface Window {
@@ -31,9 +31,15 @@ const AppointmentContainer = ({
   const [slots, setSlots] = useState<Slot[]>([]); 
   const [loading, setLoading] = useState<boolean>(false);
   const [slotId, setSlotId] = useState<string>('')
-  const { currentUser } = useSelector((state: RootState) => state.userAuth);
+  const [lockedSlotIds, setLockedSlotIds] = useState<Set<string>>(new Set());
 
-  const fetchSlots = async () => {
+  const { currentUser } = useSelector((state: RootState) => state.userAuth);
+  const socketService = useMemo(() => BookingSocketService.getInstance(), []);
+  const myLockRef = useRef<{ slotId: string; date: string } | null>(null);
+
+  const dateStr = useMemo(() => selectedDate.toISOString().split("T")[0], [selectedDate]);
+
+  const fetchSlots = useCallback( async () => {
     setLoading(true); 
     try {
       const data = await getDoctorSlots(doctorId, selectedDate.toISOString().split("T")[0]);
@@ -52,11 +58,73 @@ const AppointmentContainer = ({
       setSlots([]); 
       setLoading(false);
     }
-  };
+  }, [doctorId, dateStr])
+
+  // Connect socket when user ready
+  useEffect(() => {
+    if (!currentUser?._id) return;
+    socketService.connect(currentUser._id);
+    return () => socketService.offAll();
+  }, [currentUser?._id, socketService]);
+
+  // Join room and attach listeners for this date/doctor
+  useEffect(() => {
+    if (!currentUser?._id) return;
+    socketService.joinRoom(doctorId, dateStr);
+
+    const onLocked = (d: { doctorId: string; date: string; slotId: string }) => {
+      if (d.doctorId === doctorId && d.date === dateStr) {
+        setLockedSlotIds(prev => new Set(prev).add(d.slotId));
+        // If I had it selected (but someone else locked earlier), clear it
+        setSelectedSlot(prev => (prev?._id === d.slotId ? undefined : prev));
+      }
+    };
+    const onUnlocked = (d: { doctorId: string; date: string; slotId: string }) => {
+      if (d.doctorId === doctorId && d.date === dateStr) {
+        setLockedSlotIds(prev => {
+          const next = new Set(prev);
+          next.delete(d.slotId);
+          return next;
+        });
+      }
+    };
+    const onBooked = (d: { doctorId: string; date: string; slotId: string }) => {
+      if (d.doctorId === doctorId && d.date === dateStr) {
+        // Remove lock and reflect permanent unavailability
+        setLockedSlotIds(prev => {
+          const next = new Set(prev);
+          next.delete(d.slotId);
+          return next;
+        });
+        setSlots(prev => prev.map(s => (s._id === d.slotId ? { ...s, isAvailable: false, status: "Booked" as any } : s)));
+        setSelectedSlot(prev => (prev?._id === d.slotId ? undefined : prev));
+      }
+    };
+
+    socketService.onLocked(onLocked);
+    socketService.onUnlocked(onUnlocked);
+    socketService.onBooked(onBooked);
+
+    return () => {
+      // Leave room and release my lock (if any)
+      if (myLockRef.current?.slotId) {
+        socketService.releaseLock({ doctorId, date: dateStr, slotId: myLockRef.current.slotId });
+        myLockRef.current = null;
+      }
+      socketService.leaveRoom(doctorId, dateStr);
+      socketService.offAll();
+      setLockedSlotIds(new Set());
+    };
+  }, [doctorId, dateStr, currentUser?._id, socketService]);
+
+  useEffect(() => { fetchSlots(); }, [fetchSlots]);
 
   useEffect(() => {
-    fetchSlots(); 
-  }, [selectedDate, doctorId]);
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
 
   const filterSlotsByTime = (timeOfDay: 'morning' | 'afternoon' | 'evening') => {
     return slots.filter((slot) => {
@@ -73,15 +141,35 @@ const AppointmentContainer = ({
     });
   };
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
 
-  const handleSlotClick = (slot: Slot) => {
-    setSelectedSlot(slot);
+  const handleSlotClick = async (slot: Slot) => {
+    if (!currentUser?._id) {
+      Swal.fire({ icon: "info", title: "Please login to continue" });
+      return;
+    }
+    if (!slot.isAvailable || slot.status === "Booked" || lockedSlotIds.has(slot._id)) return;
+
+    // If I already locked a different slot, release first
+    if (myLockRef.current?.slotId && myLockRef.current.slotId !== slot._id) {
+      socketService.releaseLock({ doctorId, date: dateStr, slotId: myLockRef.current.slotId });
+      myLockRef.current = null;
+    }
+
+    const ack = await socketService.requestLock({
+      doctorId,
+      date: dateStr,
+      slotId: slot._id,
+      userId: currentUser._id,
+    });
+
+    if (ack.ok) {
+      setLockedSlotIds(prev => new Set(prev).add(slot._id));
+      myLockRef.current = { slotId: slot._id, date: dateStr };
+      setSelectedSlot(slot);
+    } else {
+      Swal.fire({ icon: "warning", title: "Slot just got picked", text: "Please select a different time." });
+      fetchSlots();
+    }
   };
 
   const handleDateChange = (date: Date) => {
@@ -91,6 +179,35 @@ const AppointmentContainer = ({
   const handleModeChange = (mode: string) => {
     setVisitType(mode)
   }
+
+  // From PaymentButton: success
+  const onBookingConfirmed = () => {
+    if (!selectedSlot) return;
+    socketService.announceBooked({ doctorId, date: dateStr, slotId: selectedSlot._id });
+    // Local housekeeping
+    myLockRef.current = null;
+    setLockedSlotIds(prev => { const next = new Set(prev); next.delete(selectedSlot._id); return next; });
+  };
+
+  // From PaymentButton: dismissed/failure
+  const onPaymentAborted = () => {
+    if (myLockRef.current?.slotId) {
+      socketService.releaseLock({ doctorId, date: dateStr, slotId: myLockRef.current.slotId });
+      setLockedSlotIds(prev => { const next = new Set(prev); next.delete(myLockRef.current!.slotId); return next; });
+      myLockRef.current = null;
+    }
+  };
+
+  // Release lock when unmounting component
+  useEffect(() => {
+    return () => {
+      if (myLockRef.current?.slotId) {
+        socketService.releaseLock({ doctorId, date: dateStr, slotId: myLockRef.current.slotId });
+        myLockRef.current = null;
+      }
+    };
+  }, []);
+
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 bg-customBgLight">
@@ -107,18 +224,21 @@ const AppointmentContainer = ({
             slots={filterSlotsByTime("morning")}
             selectedSlot={selectedSlot}
             onSlotClick={handleSlotClick}
+            lockedSlotIds={lockedSlotIds}
           />
           <TimeSlotSection
             title="Afternoon"
             slots={filterSlotsByTime("afternoon")}
             selectedSlot={selectedSlot}
             onSlotClick={handleSlotClick}
+            lockedSlotIds={lockedSlotIds}
           />
           <TimeSlotSection
             title="Evening"
             slots={filterSlotsByTime("evening")}
             selectedSlot={selectedSlot}
             onSlotClick={handleSlotClick}
+            lockedSlotIds={lockedSlotIds}
           />
         </>
       )}
@@ -133,10 +253,12 @@ const AppointmentContainer = ({
         selectedSlot={selectedSlot}
         visitType={visitType}
         selectedDate={selectedDate}
-        doctorId={doctorId || ""} 
+        doctorId={doctorId} 
         slotId={slotId}
         fee={fee}
         currentUser={currentUser}
+        onBookingConfirmed={onBookingConfirmed}
+        onPaymentAborted={onPaymentAborted}
       />
     </div>
   )
