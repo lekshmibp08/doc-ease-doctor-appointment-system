@@ -36,7 +36,7 @@ const AppointmentBookingPage = () => {
       {/* Main Content: Appointment Container */}
       <div className="flex-grow">
         <AppointmentContainer
-          doctorId= {doctorId}
+          doctorId= {doctorId ?? ''}
           modesOfConsultation={doctor?.modesOfConsultation || []}
           fee={doctor?.fee || 300}
                    
