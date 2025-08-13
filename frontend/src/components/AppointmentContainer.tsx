@@ -1,17 +1,14 @@
- 
-import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import DatePicker from "react-datepicker";
+ import { useEffect, useState } from 'react';
 import "react-datepicker/dist/react-datepicker.css";
-import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { RootState } from '../Redux/store';
-import { useNavigate } from 'react-router-dom';
+import DateSelector from './appointmentBooking/DateSelector';
+import TimeSlotSection from './appointmentBooking/TimeSlotSection';
+import ConsultationModeSelector from './appointmentBooking/ConsultationModeSelector';
+import PaymentButton from './appointmentBooking/PaymentButton';
 import { Slot, AppointmentContainerProps } from '../types/interfaces';
 import { 
   getDoctorSlots, 
-  createOrder, 
-  bookAppointment 
 } from '../services/api/userApi'
 
 declare global {
@@ -36,8 +33,6 @@ const AppointmentContainer = ({
   const [slotId, setSlotId] = useState<string>('')
   const { currentUser } = useSelector((state: RootState) => state.userAuth);
 
-  const navigate = useNavigate();
-
   const fetchSlots = async () => {
     setLoading(true); 
     try {
@@ -45,7 +40,6 @@ const AppointmentContainer = ({
   
       setLoading(false); 
   
-      // Check if the response data is empty
       if (Object.keys(data).length === 0 || !data.timeSlots) {
         setSlots([]); 
         setSlotId(''); 
@@ -90,280 +84,62 @@ const AppointmentContainer = ({
     setSelectedSlot(slot);
   };
 
-  //Pay Now Button Handler
-  const handlePayNow = async () => {
-    
-    if (!selectedSlot) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'No Slot Selected',
-        text: 'Please select a time slot before proceeding.',
-        confirmButtonText: 'Okay',
-      });
-      return;
-    }
-    if (!visitType) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'No Mode Selected',
-        text: 'Please select consultation type before proceeding.',
-        confirmButtonText: 'Okay',
-      });
-      return;
-    }
-  
-    try {
-      const totalAmount = fee + 50;
-  
-      // Step 1: Create Order
-      const order = await createOrder(totalAmount);
-  
-      // Step 2: Configure Razorpay
-      const options = {
-        key: 'rzp_test_wyMPk3or5BIJn5', 
-        amount: order.amount,
-        currency: order.currency,
-        name: 'DocEase App',
-        description: `Appointment Booking for ${format(selectedDate, 'yyyy-MM-dd')}`,
-        order_id: order.id,
-        handler: async (response: any) => {
-          console.log('Payment successful:', response);
-          Swal.fire({
-            icon: 'success',
-            title: 'Payment Successful',
-            text: `Payment ID: ${response.razorpay_payment_id}`,
-            confirmButtonText: 'Okay',
-          });
-  
-          try {
-            // Save Appointment Details
-            const appointmentData = {
-              doctorId: doctorId,
-              userId: currentUser?._id,
-              date: selectedDate,
-              slotId,
-              selectedSlot,
-              timeSlotId: selectedSlot._id,
-              time: selectedSlot.time,
-              modeOfVisit: visitType,
-              amount: totalAmount,
-              paymentId: response.razorpay_payment_id,
-            };
-            const res = await bookAppointment(appointmentData);
-            
-            Swal.fire({
-              icon: 'success',
-              title: 'Payment Successful',
-              html: `
-              <h3>Your appointment has been successfully created!</h3>
-              <p><strong>Date:</strong> ${format(new Date(res.newAppoinment.date), 'dd MMM yyyy, EEEE')}</p>
-              <p><strong>Time:</strong> ${res.newAppoinment.time}</p>
-              <div class="mt-4">
-                <button id="go-home" class="swal2-confirm swal2-styled">Go to Home</button>
-                <button id="show-appointments" class="swal2-confirm swal2-styled">Show Appointments</button>
-              </div>
-            `,              
-            showConfirmButton: false,
-            didRender: () => {
-              // Attach custom button handlers
-              const goHomeButton = document.getElementById('go-home');
-              const showAppointmentsButton = document.getElementById('show-appointments');
-    
-              goHomeButton?.addEventListener('click', () => {
-                Swal.close();
-                navigate('/');
-              });
+  const handleDateChange = (date: Date) => {
+    setSelectedDate(date)
+  }
 
-              showAppointmentsButton?.addEventListener('click', () => {
-                Swal.close();
-                navigate(`/appointments`);
-              });
-            },            
-          });
-            
-          } catch (error) {
-            console.error("Error creating appointment:", error);
-            Swal.fire({
-              icon: "error",
-              title: "Appointment Error",
-              text: "There was an error while creating your appointment. Please try again later.",
-              confirmButtonText: "Okay",
-            });            
-          }
-        },
-        prefill: {
-          name: currentUser?.fullName,
-          email: currentUser?.email,
-          contact: currentUser?.mobileNumber,
-        },
-        theme: {
-          color: '#3399cc',
-        },
-      };
-  
-      // Step 3: Open Razorpay Checkout
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
-  
-      // Step 4: Handle Payment Failure
-      razorpay.on('payment.failed', (response: any) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Payment Failed',
-          html: `
-            <p><strong>Reason:</strong> ${response.error.reason}</p>
-            <p><strong>Description:</strong> ${response.error.description}</p>
-            <p><strong>Code:</strong> ${response.error.code}</p>
-          `,
-          showCancelButton: true,
-          confirmButtonText: 'Retry',
-          cancelButtonText: 'Cancel',
-        }).then((result) => {
-          if (result.isConfirmed) {
-            razorpay.open(); // Retry payment with the same order ID
-          }
-        });
-  
-        console.error('Payment failed:', response.error);
-      });
-    } catch (error) {
-      console.error('Error processing payment:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Payment Error',
-        text: 'There was an error while processing your payment. Please try again later.',
-        confirmButtonText: 'Okay',
-      });
-    }
-  };  
+  const handleModeChange = (mode: string) => {
+    setVisitType(mode)
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 bg-customBgLight">
-      <div className="flex items-center gap-4 mb-6">
-        <label htmlFor="appointmentDate" className="font-semibold">
-          Select a Date:
-        </label>
-        <DatePicker
-          selected={selectedDate}
-          onChange={(date) => setSelectedDate(date as Date)}
-          minDate={new Date(new Date().setDate(new Date().getDate() + 1))} // Disable today's date
-          dateFormat="yyyy-MM-dd"
-          className="border rounded-md px-3 py-2"
-          placeholderText="Select a date"
-        />
-      </div>
+      <DateSelector selectedDate={selectedDate} onDateChange={handleDateChange} />
 
-      {/* Loading state */}
       {loading ? (
         <div className="text-center font-semibold text-blue-500">Loading slots...</div>
       ) : slots.length === 0 ? (
         <div className="text-center font-semibold text-red-500">No slots available for this date</div>
       ) : (
         <>
-        {/* Morning Slots */}
-        <div className="mb-6">
-          <h2 className="font-semibold text-lg mb-2">Morning</h2>
-          <div className="flex flex-wrap gap-4">
-            {filterSlotsByTime('morning').map((slot) => (
-              <button
-                key={slot._id}
-                onClick={() => handleSlotClick(slot)}
-                className={`px-3 py-1 rounded-md border ${
-                  selectedSlot?.time === slot.time
-                    ? 'bg-customTeal text-white'
-                    : 'bg-white text-customTeal'
-                } ${
-                  slot.status === 'Booked' || !slot.isAvailable
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed border-gray-300'
-                    : ''
-                }`}
-                disabled={!slot.isAvailable || slot.status === 'Booked'}
-              >
-                {slot.time}
-              </button>
-            ))}
-          </div>
-        </div>
-          
-        {/* Afternoon Slots */}
-        <div className="mb-6">
-          <h2 className="font-semibold text-lg mb-2">Afternoon</h2>
-          <div className="flex flex-wrap gap-4">
-            {filterSlotsByTime('afternoon').map((slot) => (
-              <button
-                key={slot._id}
-                onClick={() => handleSlotClick(slot)}
-                className={`px-3 py-1 rounded-md border ${
-                  selectedSlot?.time === slot.time
-                    ? 'bg-customTeal text-white'
-                    : 'bg-white text-customTeal'
-                } ${
-                  slot.status === 'Booked' || !slot.isAvailable
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed border-gray-300'
-                    : ''
-                }`}
-                disabled={!slot.isAvailable || slot.status === 'Booked'}
-              >
-                {slot.time}
-              </button>
-            ))}
-          </div>
-        </div>
-          
-        {/* Evening Slots */}
-        <div className="mb-6">
-          <h2 className="font-semibold text-lg mb-2">Evening</h2>
-          <div className="flex flex-wrap gap-4">
-            {filterSlotsByTime('evening').map((slot) => (
-              <button
-                key={slot._id}
-                onClick={() => handleSlotClick(slot)}
-                className={`px-3 py-1 rounded-md border ${
-                  selectedSlot?.time === slot.time
-                    ? 'bg-customTeal text-white'
-                    : 'bg-white text-customTeal'
-                } ${
-                  slot.status === 'Booked' || !slot.isAvailable
-                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed border-gray-300'
-                    : ''
-                }`}
-                disabled={!slot.isAvailable || slot.status === 'Booked'}
-              >
-                {slot.time}
-              </button>
-            ))}
-          </div>
-        </div>          
+          <TimeSlotSection
+            title="Morning"
+            slots={filterSlotsByTime("morning")}
+            selectedSlot={selectedSlot}
+            onSlotClick={handleSlotClick}
+          />
+          <TimeSlotSection
+            title="Afternoon"
+            slots={filterSlotsByTime("afternoon")}
+            selectedSlot={selectedSlot}
+            onSlotClick={handleSlotClick}
+          />
+          <TimeSlotSection
+            title="Evening"
+            slots={filterSlotsByTime("evening")}
+            selectedSlot={selectedSlot}
+            onSlotClick={handleSlotClick}
+          />
         </>
       )}
 
-      {/* Consultation Modes */}
-      <div className="mt-4">
-        <div className="flex flex-nowrap gap-16">
-          {modesOfConsultation.map((mode) => (
-            <label key={mode} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="visitType"
-                value={mode}
-                checked={visitType === mode}
-                onChange={(e) => setVisitType(e.target.value)}
-              />
-              <span>{mode}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+      <ConsultationModeSelector
+        modesOfConsultation={modesOfConsultation}
+        visitType={visitType}
+        onModeChange={handleModeChange}
+      />
 
-      {/* Pay Now Button */}
-      <button
-        onClick={handlePayNow}
-        className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-md font-semibold"
-      >
-        Pay Now
-      </button>
+      <PaymentButton
+        selectedSlot={selectedSlot}
+        visitType={visitType}
+        selectedDate={selectedDate}
+        doctorId={doctorId || ""} 
+        slotId={slotId}
+        fee={fee}
+        currentUser={currentUser}
+      />
     </div>
-  );
-};
-
+  )
+}
+    
 export default AppointmentContainer;
