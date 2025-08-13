@@ -17,7 +17,7 @@ import MessagesContainer from "./chat/MessagesContainer"
 import MessageInput from "./chat/MessageInput"
 import IncomingCallModal from "./chat/IncomingCallModal"
 
-const ENDPOINT = import.meta.env.VITE_BASE_URL || "http://localhost:5000"
+const ENDPOINT = import.meta.env.VITE_BASE_URL
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
 const CLOUDINARY_API_URL = import.meta.env.VITE_CLOUDINARY_API_URL
