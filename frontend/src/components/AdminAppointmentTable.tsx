@@ -40,7 +40,7 @@ const AdminAppointmentTable: React.FC = () => {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
-    setCurrentPage(1); // Reset to page 1 on new search
+    setCurrentPage(1); 
   };
 
 
