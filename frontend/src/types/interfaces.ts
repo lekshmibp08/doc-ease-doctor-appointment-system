@@ -220,7 +220,7 @@ export interface Slot {
 }
 
 export interface AppointmentContainerProps {
-  doctorId?: string;
+  doctorId: string;
   modesOfConsultation: string[];
   fee: number;
 }
