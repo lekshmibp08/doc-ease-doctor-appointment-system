@@ -1,3 +1,4 @@
+import { IChatUsecase } from "../interfaces/IChatUsecase"
 import { ChatRepository } from "../../../infrastructure/database/repositories/chatRepository" 
 import { MessageRepository } from "../../../infrastructure/database/repositories/messageRepository" 
 import { IChat } from "../../../domain/entities/chat" 
@@ -6,7 +7,7 @@ import { stripBaseUrl } from "../../helper/stripBaseUrl"
 import { mapToAllDocChatsDTO } from "../../../infrastructure/database/mappers/mapToAllDocChatsDTO" 
 import { mapToAllUserChatsDTO } from "../../../infrastructure/database/mappers/mapToAllUserChatsDTO" 
 
-export class ChatUsecase {
+export class ChatUsecase implements IChatUsecase {
   private chatRepository: ChatRepository;
   private messageRepository: MessageRepository;
 
