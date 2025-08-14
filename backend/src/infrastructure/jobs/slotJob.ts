@@ -1,5 +1,5 @@
 import schedule from "node-schedule";
-import SlotModel from "../database/models/SlotModel";
+import SlotModel from "../database/models/slotModel";
 
 // Utility to generate slots
 const generateSlotsForDate = (date: Date) => {

@@ -1,7 +1,7 @@
 import { PipelineStage } from "mongoose";
-import AppointmentModel from "../models/AppoinmentModel";
+import AppointmentModel from "../models/appoinmentModel";
 import { IAppointmentRepository } from "../../../domain/repositories/IAppointmentRepository";
-import { IAppointment } from "../../../domain/entities/Appoinment";
+import { IAppointment } from "../../../domain/entities/appoinment";
 import { AppointmentInputDTO } from "../../../dtos/dtos";
 import { mapToAppointmentEntity } from "../mappers/appointmentMapper";
 

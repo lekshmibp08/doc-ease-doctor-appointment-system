@@ -1,7 +1,7 @@
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
 
 export class LoginAdmin {

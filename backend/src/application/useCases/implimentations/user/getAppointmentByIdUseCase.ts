@@ -2,7 +2,7 @@ import { IAppointmentRepository } from "../../../../domain/repositories/IAppoint
 import { mapToAppointmentWithDocDetailsDTO } from "../../../../infrastructure/database/mappers/mapToAppointmentWithDocDetails";
 import { AppointmentsByIdWithDocDetailsDTO } from "../../../../dtos/dtos";
 import { AppError } from "../../../../shared/errors/appError";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 export class GetAppointmentsByIdUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
 

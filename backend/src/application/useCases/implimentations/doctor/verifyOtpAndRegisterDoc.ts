@@ -1,9 +1,9 @@
 import { IOtpRepository } from "../../../../domain/repositories/IOtpRepository";
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
-import { Doctor } from "../../../../domain/entities/Doctor";
+import { Doctor } from "../../../../domain/entities/doctor";
 import bcrypt from "bcrypt";
 import { AppError } from "../../../../shared/errors/appError";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
 export class VerifyOtpAndRegisterDocUseCase {
   constructor(

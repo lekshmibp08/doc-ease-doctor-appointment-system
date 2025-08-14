@@ -1,6 +1,6 @@
-import SlotModel from "../models/SlotModel";
+import SlotModel from "../models/slotModel";
 import { ISlotRepository } from "../../../domain/repositories/ISlotRepository";
-import { Slot } from "../../../domain/entities/Slot";
+import { Slot } from "../../../domain/entities/slot";
 import { mapToSlotEntity } from "../mappers/slotMapper";
 
 

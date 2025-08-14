@@ -1,6 +1,6 @@
 import { IOtpRepository } from "../../../../domain/repositories/IOtpRepository";
-import { Otp } from "../../../../domain/entities/Otp";
-import { sendEmail } from "../../../../infrastructure/services/EmailService";
+import { Otp } from "../../../../domain/entities/otp";
+import { sendEmail } from "../../../../infrastructure/services/emailService";
 
 export class SendOtpForSignupUseCase {
   constructor(private otpRepository: IOtpRepository) {}

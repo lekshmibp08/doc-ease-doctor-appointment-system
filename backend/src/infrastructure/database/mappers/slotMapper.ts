@@ -1,5 +1,5 @@
-import { Slot, TimeSlot } from "../../../domain/entities/Slot";
-import { ISlotDocument } from "../models/SlotModel"; 
+import { Slot, TimeSlot } from "../../../domain/entities/slot";
+import { ISlotDocument } from "../models/slotModel"; 
 
 export const mapToSlotEntity = (doc: ISlotDocument): Slot => {
   return new Slot(

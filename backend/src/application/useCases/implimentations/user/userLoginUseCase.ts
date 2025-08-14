@@ -2,7 +2,7 @@ import { IUserRepository } from "../../../../domain/repositories/IUserRepository
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { AppError } from "../../../../shared/errors/appError";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { stripBaseUrl } from "../../../helper/stripBaseUrl";
 
 export class UserLoginUseCase {

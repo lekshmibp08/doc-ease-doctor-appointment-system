@@ -1,7 +1,7 @@
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
-import { Doctor } from "../../../../domain/entities/Doctor";
+import { Doctor } from "../../../../domain/entities/doctor";
 import { AppError } from "../../../../shared/errors/appError";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { stripBaseUrl } from "../../../helper/stripBaseUrl";
 
 export class DoctorDetails {

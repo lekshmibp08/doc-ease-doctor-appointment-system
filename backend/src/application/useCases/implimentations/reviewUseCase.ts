@@ -1,5 +1,5 @@
 import { IReviewRepository } from "../../../domain/repositories/IReviewRepository" 
-import { IReview } from "../../../domain/entities/Review" 
+import { IReview } from "../../../domain/entities/review" 
 import { ReviewsByDoctorIdDTO } from "../../../dtos/reviewDTO/reviewDTOS" 
 import { mapToReviewsByAppointmentIdDTO } from "../../../infrastructure/database/mappers/reviewMapper" 
 import { ReviewsByAppointmentIdDTO } from "../../../dtos/reviewDTO/reviewDTOS" 

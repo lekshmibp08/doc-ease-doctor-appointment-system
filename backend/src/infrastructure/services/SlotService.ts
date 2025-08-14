@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { RRule } from "rrule";
-import { Slot } from "../../domain/entities/Slot";
+import { Slot } from "../../domain/entities/slot";
 
 interface GenerateSlotsDTO {
   doctorId: string;

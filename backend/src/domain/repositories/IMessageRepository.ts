@@ -1,4 +1,4 @@
-import { IMessage } from "../entities/Message";
+import { IMessage } from "../entities/message";
 
 export interface IMessageRepository {
     createMessage(

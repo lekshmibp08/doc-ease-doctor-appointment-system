@@ -1,5 +1,5 @@
-import { IPrescription } from "../../../domain/entities/Prescription"; 
-import { PrescriptionRepository } from "../../../infrastructure/database/repositories/PrescriptionRepository";  
+import { IPrescription } from "../../../domain/entities/prescription"; 
+import { PrescriptionRepository } from "../../../infrastructure/database/repositories/prescriptionRepository";  
 import { mapToPrescriptionDTO } from "../../../infrastructure/database/mappers/mapToPrescriptionDTO "; 
 import { PrescriptionDTO } from "../../../dtos/prescriptionDTO/prescriptionDTOs"; 
 

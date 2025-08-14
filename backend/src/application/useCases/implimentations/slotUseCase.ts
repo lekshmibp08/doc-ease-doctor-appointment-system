@@ -1,7 +1,7 @@
-import { SlotRepository } from "../../../infrastructure/database/repositories/SlotRepository" 
-import SlotService from "../../../infrastructure/services/SlotService" 
+import { SlotRepository } from "../../../infrastructure/database/repositories/slotRepository" 
+import SlotService from "../../../infrastructure/services/slotService" 
 import { filterSlotsByPeriod } from "../../helper/slotFilter" 
-import { Slot } from "../../../domain/entities/Slot" 
+import { Slot } from "../../../domain/entities/slot" 
 
 interface GenerateSlotsDTO {
   doctorId: string;

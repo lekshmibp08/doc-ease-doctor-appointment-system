@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { SlotRepository } from "../../infrastructure/database/repositories/SlotRepository";
+import { SlotRepository } from "../../infrastructure/database/repositories/slotRepository";
 import { UpdateSlotUseCase } from "../../application/useCases/implimentations/doctor/updateSlotUseCase";
 import { FetchSlotUseCase } from "../../application/useCases/implimentations/user/fetchSlotUseCase";
 import { UpdateSlotTimeUseCase } from "../../application/useCases/implimentations/doctor/updateSlotTimeUseCase";

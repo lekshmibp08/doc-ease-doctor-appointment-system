@@ -1,4 +1,4 @@
-import { IAppointment } from "../entities/Appoinment";
+import { IAppointment } from "../entities/appoinment";
 import { AppointmentInputDTO } from "../../dtos/dtos";
 
 export interface IAppointmentRepository {

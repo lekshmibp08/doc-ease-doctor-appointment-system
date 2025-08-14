@@ -1,7 +1,7 @@
-import { Doctor } from "../domain/entities/Doctor";
-import { IUser } from "../domain/entities/User";
-import { Slot } from "../domain/entities/Slot";
-import { TimeSlot } from "../domain/entities/Slot";
+import { Doctor } from "../domain/entities/doctor";
+import { IUser } from "../domain/entities/user";
+import { Slot } from "../domain/entities/slot";
+import { TimeSlot } from "../domain/entities/slot";
 
 export interface AppointmentInputDTO {
   doctorId: string;

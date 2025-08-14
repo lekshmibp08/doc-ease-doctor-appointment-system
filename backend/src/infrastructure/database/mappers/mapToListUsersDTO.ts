@@ -1,4 +1,4 @@
-import { IUser } from "../../../domain/entities/User";
+import { IUser } from "../../../domain/entities/user";
 import { ListUsersDTO } from "../../../dtos/userDTO/userDTOs";
 
 export const mapToUserListDTO = (doc: IUser): ListUsersDTO => {

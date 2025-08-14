@@ -1,6 +1,6 @@
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
-import { IAppointment } from "../../../../domain/entities/Appoinment";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { IAppointment } from "../../../../domain/entities/appoinment";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
 
 export class CancelAppointmentByUserUsecase {

@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { SendOtpForSignupUseCase } from "../../application/useCases/implimentations/user/sendOtpForSignup";
 import { VerifyOtpAndRegister } from "../../application/useCases/implimentations/user/verifyOtpAndRegisterUser";
-import { OtpRepository } from "../../infrastructure/database/repositories/OtpRepository";
-import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
+import { OtpRepository } from "../../infrastructure/database/repositories/otpRepository";
+import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
 import { ListApprovedDoctors } from "../../application/useCases/implimentations/user/listApprovedDoctors";
 import { UpdateUser } from "../../application/useCases/implimentations/user/updateUser";
 import { SendOtpForResetPassword } from "../../application/useCases/implimentations/user/sendOtpForResetPassword";
@@ -10,7 +10,7 @@ import { VerifyOtpAndResetPassword } from "../../application/useCases/implimenta
 import { DoctorDetails } from "../../application/useCases/implimentations/user/doctorDetails";
 import { FetchSpecializationsUseCase } from "../../application/useCases/implimentations/user/fetchSpecializationsUseCase";
 import { UserLoginUseCase } from "../../application/useCases/implimentations/user/userLoginUseCase";
-import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
+import { UserRepository } from "../../infrastructure/database/repositories/userRepository";
 
 const userRepository = new UserRepository();
 const userLoginUseCase = new UserLoginUseCase(userRepository);

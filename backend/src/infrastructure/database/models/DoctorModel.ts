@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { Doctor } from "../../../domain/entities/Doctor";
+import { Doctor } from "../../../domain/entities/doctor";
 
 const DoctorSchema = new Schema<Doctor>(
   {

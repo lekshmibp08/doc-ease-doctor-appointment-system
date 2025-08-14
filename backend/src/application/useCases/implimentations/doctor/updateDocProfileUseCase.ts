@@ -1,7 +1,7 @@
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import bcrypt from "bcrypt";
 import { AppError } from "../../../../shared/errors/appError";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
 export class UpdateDocProfile {
   constructor(private doctorRepository: IDoctorRepository) {}

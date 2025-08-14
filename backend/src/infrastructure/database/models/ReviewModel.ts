@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose"
-import { IReview } from "../../../domain/entities/Review"
+import { IReview } from "../../../domain/entities/review"
 
 
 const ReviewSchema: Schema = new Schema({

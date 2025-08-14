@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { SlotRepository } from "../../infrastructure/database/repositories/SlotRepository";
-import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
+import { SlotRepository } from "../../infrastructure/database/repositories/slotRepository";
+import { AppointmentRepository } from "../../infrastructure/database/repositories/appoinmentRepository";
 import { CreateAppointmentUseCase } from "../../application/useCases/implimentations/user/createAppointmentUseCase ";
 import { GetAppointmentsByUserUseCase } from "../../application/useCases/implimentations/user/getAppointmentsByUserUseCase ";
 import { CancelAppointmentByUserUsecase } from "../../application/useCases/implimentations/user/cancelAppointmentUseCase";

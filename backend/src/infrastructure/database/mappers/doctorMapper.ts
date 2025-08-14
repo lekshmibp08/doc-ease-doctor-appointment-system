@@ -1,4 +1,4 @@
-import { Doctor } from "../../../domain/entities/Doctor";
+import { Doctor } from "../../../domain/entities/doctor";
 import { Document } from "mongoose";
 
 interface IDoctorDoc extends Document {

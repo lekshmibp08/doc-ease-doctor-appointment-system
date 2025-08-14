@@ -1,4 +1,4 @@
-import { IReview } from "../../domain/entities/Review"
+import { IReview } from "../entities/review"
 
 export interface IReviewRepository {
   createReview(reviewData: Partial<IReview>): Promise<IReview>

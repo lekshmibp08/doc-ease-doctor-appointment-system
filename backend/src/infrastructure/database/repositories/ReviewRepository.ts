@@ -1,5 +1,5 @@
-import { IReview } from "../../../domain/entities/Review";
-import ReviewModel from "../models/ReviewModel";
+import { IReview } from "../../../domain/entities/review";
+import ReviewModel from "../models/reviewModel";
 import { IReviewRepository } from "../../../domain/repositories/IReviewRepository";
 
 export class ReviewRepository implements IReviewRepository {

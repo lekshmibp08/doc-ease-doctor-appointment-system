@@ -2,7 +2,7 @@ import { IOtpRepository } from "../../../../domain/repositories/IOtpRepository";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import bcrypt from "bcrypt";
 import { AppError } from "../../../../shared/errors/appError";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
 export class VerifyOtpAndResetPassword {
   constructor(

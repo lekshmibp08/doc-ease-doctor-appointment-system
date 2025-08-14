@@ -1,5 +1,5 @@
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
 
 export const updateAppointmentReviewStatus = async (

@@ -1,5 +1,5 @@
 import { ISlotRepository } from "../../../../domain/repositories/ISlotRepository";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
 
 export class UpdateSlotStatus {

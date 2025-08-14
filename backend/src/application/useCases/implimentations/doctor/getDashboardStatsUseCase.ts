@@ -1,7 +1,7 @@
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
 import { startOfDay, endOfDay, eachDayOfInterval, format } from "date-fns";
 import { AppError } from "../../../../shared/errors/appError";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
 export class GetDashboardStatsUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}

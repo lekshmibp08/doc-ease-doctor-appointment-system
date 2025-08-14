@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { OtpRepository } from "../../infrastructure/database/repositories/OtpRepository";
-import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
+import { OtpRepository } from "../../infrastructure/database/repositories/otpRepository";
+import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
 import { SendOtpForSignupUseCase } from "../../application/useCases/implimentations/user/sendOtpForSignup";
 import { VerifyOtpAndRegisterDocUseCase } from "../../application/useCases/implimentations/doctor/verifyOtpAndRegisterDoc";
 import { LoginDoctorUseCase } from "../../application/useCases/implimentations/doctor/loginDoctorUseCase";
 import { SendOtpForResetPassword } from "../../application/useCases/implimentations/user/sendOtpForResetPassword";
 import { VerifyOtpAndResetDoctorPassword } from "../../application/useCases/implimentations/doctor/resetDoctorPassworduseCase";
 import { UpdateDocProfile } from "../../application/useCases/implimentations/doctor/updateDocProfileUseCase";
-import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
+import { AppointmentRepository } from "../../infrastructure/database/repositories/appoinmentRepository";
 import { GetDashboardStatsUseCase } from "../../application/useCases/implimentations/doctor/getDashboardStatsUseCase";
 
 const otpRepository = new OtpRepository();

@@ -6,14 +6,14 @@ import http from "http";
 import morgan from "morgan";
 
 import connectDB from "./infrastructure/database/connection";
-import userRoutes from "./interfaces/routes/UserRoutes";
+import userRoutes from "./interfaces/routes/userRoutes";
 import doctorRoutes from "./interfaces/routes/doctorRoutes";
-import adminRoutes from "./interfaces/routes/AdminRoutes";
-import authRoutes from "./interfaces/routes/AuthRoutes";
+import adminRoutes from "./interfaces/routes/adminRoutes";
+import authRoutes from "./interfaces/routes/authRoutes";
 import {
   notFound,
   errorHandler,
-} from "./interfaces/middlewares/ErrorMiddleWare ";
+} from "./interfaces/middlewares/errorMiddleWare ";
 import { initializeSocket } from "./infrastructure/socket";
 
 dotenv.config({ path: `${__dirname}/../.env` });

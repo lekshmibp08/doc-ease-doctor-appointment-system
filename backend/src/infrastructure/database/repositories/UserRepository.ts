@@ -1,6 +1,6 @@
 import { IUserRepository } from "../../../domain/repositories/IUserRepository";
-import UserModel from "../models/UserModel";
-import { IUser } from "../../../domain/entities/User";
+import UserModel from "../models/userModel";
+import { IUser } from "../../../domain/entities/user";
 import { mapToUserEntity } from "../mappers/userMapper";
 
 export class UserRepository implements IUserRepository {

@@ -3,7 +3,7 @@ import { IDoctorRepository } from "../../../../domain/repositories/IDoctorReposi
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { AppError } from "../../../../shared/errors/appError";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
 export class LoginDoctorUseCase {
   constructor(private doctorRepository: IDoctorRepository) {}

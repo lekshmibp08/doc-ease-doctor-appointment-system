@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { Otp } from "../../../domain/entities/Otp";
+import { Otp } from "../../../domain/entities/otp";
 
 interface IOtpDocument extends Document, Otp {}
 

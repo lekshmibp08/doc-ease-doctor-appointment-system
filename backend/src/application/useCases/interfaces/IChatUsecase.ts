@@ -1,5 +1,5 @@
-import { IChat } from "../../../domain/entities/Chat";
-import { IMessage } from "../../../domain/entities/Message";
+import { IChat } from "../../../domain/entities/chat";
+import { IMessage } from "../../../domain/entities/message";
 
 export interface IChatUsecase {
   getOrCreateChat(userId: string, doctorId: string): Promise<{ chat: IChat; messages: IMessage[] }>;

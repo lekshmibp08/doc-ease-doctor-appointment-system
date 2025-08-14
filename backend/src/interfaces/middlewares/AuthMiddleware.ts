@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
-import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
-import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
+import { UserRepository } from "../../infrastructure/database/repositories/userRepository";
+import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
 
 
 interface DecodedToken {

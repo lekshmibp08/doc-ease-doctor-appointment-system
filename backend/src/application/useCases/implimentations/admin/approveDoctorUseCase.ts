@@ -1,6 +1,6 @@
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
-import { sendEmail } from "../../../../infrastructure/services/EmailService";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
+import { sendEmail } from "../../../../infrastructure/services/emailService";
 import { AppError } from "../../../../shared/errors/appError";
 
 export class ApproveDoctorUsecase {

@@ -1,8 +1,8 @@
 import type { IAdminDashboardRepository } from "../../../domain/repositories/IAdminDashboardRepository"
-import UserModel from "../models/UserModel"
-import DoctorModel from "../models/DoctorModel"
-import AppointmentModel from "../models/AppoinmentModel"
-import ReviewModel from "../models/ReviewModel"
+import UserModel from "../models/userModel"
+import DoctorModel from "../models/doctorModel"
+import AppointmentModel from "../models/appoinmentModel"
+import ReviewModel from "../models/reviewModel"
 
 export class AdminDashboardRepository implements IAdminDashboardRepository {
   async getTotalUsers(): Promise<number> {

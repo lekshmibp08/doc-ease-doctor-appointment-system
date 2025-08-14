@@ -1,4 +1,4 @@
-import type { IPrescription } from "../entities/Prescription" 
+import type { IPrescription } from "../entities/prescription" 
 
 export interface IPrescriptionRepository {
   create(prescription: IPrescription): Promise<IPrescription>

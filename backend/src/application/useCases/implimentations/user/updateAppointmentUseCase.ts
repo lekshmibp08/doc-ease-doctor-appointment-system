@@ -1,7 +1,7 @@
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
-import { IAppointment } from "../../../../domain/entities/Appoinment";
+import { IAppointment } from "../../../../domain/entities/appoinment";
 import { AppError } from "../../../../shared/errors/appError";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
 export class UpdateAppointment {
   constructor(private appointmentRepository: IAppointmentRepository) {}

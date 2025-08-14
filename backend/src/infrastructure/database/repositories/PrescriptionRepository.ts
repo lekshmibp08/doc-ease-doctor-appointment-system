@@ -1,6 +1,6 @@
-import { IPrescription } from "../../../domain/entities/Prescription";
+import { IPrescription } from "../../../domain/entities/prescription";
 import { IPrescriptionRepository } from "../../../domain/repositories/IPrescriptionRepository";
-import PrescriptionModel from "../models/PrescriptionModel";
+import PrescriptionModel from "../models/prescriptionModel";
 import { Types } from "mongoose";
 
 export class PrescriptionRepository implements IPrescriptionRepository {

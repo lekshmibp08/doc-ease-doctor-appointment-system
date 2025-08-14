@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ErrorLogModel } from "../../infrastructure/database/models/ErrorLogModel";
+import { ErrorLogModel } from "../../infrastructure/database/models/errorLogModel";
 
 interface CustomError extends Error {
   status?: number;

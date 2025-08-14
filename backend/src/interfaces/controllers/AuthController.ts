@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { GoogleOAuthLoginUseCase } from "../../application/useCases/implimentations/auth/googleOAuthLoginUseCase";
 import jwt from "jsonwebtoken";
-import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
-import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
+import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
+import { UserRepository } from "../../infrastructure/database/repositories/userRepository";
 
 const doctorRepository = new DoctorRepository();
 const userRepository = new UserRepository();

@@ -1,5 +1,5 @@
 import mongoose, { type Model } from "mongoose"
-import type { IPrescription, IMedication } from "../../../domain/entities/Prescription"
+import type { IPrescription, IMedication } from "../../../domain/entities/prescription"
 
 const medicationSchema = new mongoose.Schema<IMedication>({
   name: { type: String, required: true },

@@ -1,4 +1,4 @@
-import { IUser } from "../../domain/entities/User";
+import { IUser } from "../../domain/entities/user";
 
 export type ListUsersDTO = Pick<
   IUser,

@@ -1,5 +1,5 @@
 
-import { Slot } from "../entities/Slot";
+import { Slot } from "../entities/slot";
 
 export interface ISlotRepository {
     saveSlots(slots: Slot[]): Promise<void>

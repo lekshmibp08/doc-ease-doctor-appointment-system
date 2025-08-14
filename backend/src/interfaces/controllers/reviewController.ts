@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { ReviewUseCase } from "../../application/useCases/implimentations/reviewUseCase"; 
-import { ReviewRepository } from "../../infrastructure/database/repositories/ReviewRepository";
-import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
+import { ReviewRepository } from "../../infrastructure/database/repositories/reviewRepository";
+import { AppointmentRepository } from "../../infrastructure/database/repositories/appoinmentRepository";
 import { updateAppointmentReviewStatus } from "../../application/useCases/implimentations/user/updateAppointmentReviewStatus";
 
 const reviewRepository = new ReviewRepository();

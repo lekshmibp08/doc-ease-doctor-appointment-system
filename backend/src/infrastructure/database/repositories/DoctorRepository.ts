@@ -1,6 +1,6 @@
 import { IDoctorRepository } from "../../../domain/repositories/IDoctorRepository";
-import DoctorModel from "../models/DoctorModel";
-import { Doctor } from "../../../domain/entities/Doctor";
+import DoctorModel from "../models/doctorModel";
+import { Doctor } from "../../../domain/entities/doctor";
 import { mapToDoctorEntity } from "../mappers/doctorMapper";
 
 export class DoctorRepository implements IDoctorRepository {

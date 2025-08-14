@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { LoginAdmin } from "../../application/useCases/implimentations/admin/loginAdminUseCase";
-import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
+import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
 import { ListDoctorsUseCase } from "../../application/useCases/implimentations/admin/listDoctorsUseCase";
 import { ListUsersUseCase } from "../../application/useCases/implimentations/admin/listUsersUseCase";
 import { ToggleBlockUseruseCase } from "../../application/useCases/implimentations/admin/toggleBlockUserUseCase";
@@ -9,8 +9,8 @@ import { FetchPendingDoctors } from "../../application/useCases/implimentations/
 import { ApproveDoctorUsecase } from "../../application/useCases/implimentations/admin/approveDoctorUseCase";
 import { RejectRequestUseCase } from "../../application/useCases/implimentations/admin/rejectRequestUseCase";
 import { GetAdminDashboardStatsUseCase } from "../../application/useCases/implimentations/admin/getAdminDashboardStats";
-import { AdminDashboardRepository } from "../../infrastructure/database/repositories/AdminDashboardRepository";
-import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
+import { AdminDashboardRepository } from "../../infrastructure/database/repositories/adminDashboardRepository";
+import { UserRepository } from "../../infrastructure/database/repositories/userRepository";
 
 const userRepository = new UserRepository();
 const doctorRepository = new DoctorRepository();

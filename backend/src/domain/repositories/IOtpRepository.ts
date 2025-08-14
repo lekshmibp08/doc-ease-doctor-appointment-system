@@ -1,4 +1,4 @@
-import { Otp } from '../entities/Otp'
+import { Otp } from '../entities/otp'
 
 export type IOtpRepository = {
     saveOtp: (otp: Otp) => Promise<void>;

@@ -1,5 +1,5 @@
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
-import { HttpStatusCode } from "../../../../enums/HttpStatusCode";
+import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
 
 export class ToggleBlockUseruseCase {

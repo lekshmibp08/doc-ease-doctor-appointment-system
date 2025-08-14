@@ -1,6 +1,6 @@
 import { IChatRepository } from "../../../domain/repositories/IChatRepository";
-import ChatModel from "../models/ChatModel";
-import { IChat } from "../../../domain/entities/Chat";
+import ChatModel from "../models/chatModel";
+import { IChat } from "../../../domain/entities/chat";
 
 export class ChatRepository implements IChatRepository {
   // Find chat by user and doctor

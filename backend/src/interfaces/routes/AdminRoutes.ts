@@ -1,8 +1,8 @@
 import express from "express";
-import { adminController } from "../controllers/AdminController"; 
-import { authController } from "../controllers/AuthController";
-import { authenticateUser } from "../middlewares/AuthMiddleware";
-import { appoinmentController } from "../controllers/AppoinmentController";
+import { adminController } from "../controllers/adminController"; 
+import { authController } from "../controllers/authController";
+import { authenticateUser } from "../middlewares/authMiddleware";
+import { appoinmentController } from "../controllers/appoinmentController";
 
 const router = express.Router();
 

@@ -1,4 +1,4 @@
-import { IUser } from "../../../domain/entities/User"; 
+import { IUser } from "../../../domain/entities/user"; 
 import { Document, Types } from "mongoose";
 
 interface IUserDoc extends Document {

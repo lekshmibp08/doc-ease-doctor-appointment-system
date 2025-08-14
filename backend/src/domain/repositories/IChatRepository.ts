@@ -1,4 +1,4 @@
-import { IChat } from "../entities/Chat";
+import { IChat } from "../entities/chat";
 
 export interface IChatRepository {
     findChatByParticipants(userId: string, doctorId: string): Promise<IChat | null>;

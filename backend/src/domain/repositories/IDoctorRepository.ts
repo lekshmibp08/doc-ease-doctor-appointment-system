@@ -1,4 +1,4 @@
-import { Doctor } from "../entities/Doctor";
+import { Doctor } from "../entities/doctor";
 
 export type IDoctorRepository = {
   findByEmail: (email: string) => Promise<Doctor | null>;

@@ -1,5 +1,5 @@
-import { IAppointment } from "../../../domain/entities/Appoinment"; 
-import { IAppointmentDocument } from "../models/AppoinmentModel"; 
+import { IAppointment } from "../../../domain/entities/appoinment"; 
+import { IAppointmentDocument } from "../models/appoinmentModel"; 
 
 
 
