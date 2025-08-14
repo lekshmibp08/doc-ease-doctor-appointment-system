@@ -1,3 +1,4 @@
+import { ICreateAppointmentUseCase } from "../../interfaces/user/userUseCaseInterfaces";
 import { IAppointment } from "../../../../domain/entities/appoinment";
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
 import { ISlotRepository } from "../../../../domain/repositories/ISlotRepository";
@@ -5,7 +6,7 @@ import { AppointmentInputDTO } from "../../../../dtos/dtos";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
-export class CreateAppointmentUseCase {
+export class CreateAppointmentUseCase implements ICreateAppointmentUseCase {
   constructor(
     private appointmentRepository: IAppointmentRepository,
     private slotRepository: ISlotRepository
