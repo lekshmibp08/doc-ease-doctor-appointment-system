@@ -1,9 +1,10 @@
+import { IPrescriptionUseCase } from "../interfaces/IPrescriptionUseCase";
 import { IPrescription } from "../../../domain/entities/prescription"; 
 import { PrescriptionRepository } from "../../../infrastructure/database/repositories/prescriptionRepository";  
 import { mapToPrescriptionDTO } from "../../../infrastructure/database/mappers/mapToPrescriptionDTO "; 
 import { PrescriptionDTO } from "../../../dtos/prescriptionDTO/prescriptionDTOs"; 
 
-class PrescriptionUseCase {
+class PrescriptionUseCase implements IPrescriptionUseCase {
     private prescriptionRepository: PrescriptionRepository;
     constructor() {
         this.prescriptionRepository = new PrescriptionRepository();
@@ -23,7 +24,7 @@ class PrescriptionUseCase {
     }
 
     // Update Prescription
-    async UpdatePrescription(id: string, prescriptionData: Partial<IPrescription>): Promise<IPrescription | null> {
+    async updatePrescription(id: string, prescriptionData: Partial<IPrescription>): Promise<IPrescription | null> {
         return await this.prescriptionRepository.update(id, prescriptionData);
     }
   

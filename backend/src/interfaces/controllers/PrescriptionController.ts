@@ -50,7 +50,7 @@ export const prescriptionController = {
   ): Promise<void> {
     const prescriptionData = req.body.prescription;
     try {
-      const prescription = await PrescriptionUseCase.UpdatePrescription(
+      const prescription = await PrescriptionUseCase.updatePrescription(
         req.params.id,
         prescriptionData
       );
