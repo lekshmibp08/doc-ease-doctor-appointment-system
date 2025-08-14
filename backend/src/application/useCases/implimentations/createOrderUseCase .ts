@@ -1,8 +1,9 @@
+import { ICreateOrderUseCase } from "../interfaces/ICreateOrderUseCase";
 import { HttpStatusCode } from "../../../enums/httpStatusCode"; 
 import { PaymentService } from "../../../infrastructure/services/paymentService"; 
 import { AppError } from "../../../shared/errors/appError"; 
 
-export class CreateOrderUseCase {
+export class CreateOrderUseCase implements ICreateOrderUseCase {
   constructor(private paymentService: PaymentService) {}
 
   async execute(amount: number) {
