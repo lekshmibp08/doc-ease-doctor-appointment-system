@@ -1,8 +1,9 @@
+import { ISendOtpForSignupUseCase } from "../../interfaces/user/userUseCaseInterfaces";
 import { IOtpRepository } from "../../../../domain/repositories/IOtpRepository";
 import { Otp } from "../../../../domain/entities/otp";
 import { sendEmail } from "../../../../infrastructure/services/emailService";
 
-export class SendOtpForSignupUseCase {
+export class SendOtpForSignupUseCase implements ISendOtpForSignupUseCase {
   constructor(private otpRepository: IOtpRepository) {}
 
   async execute(email: string): Promise<void> {

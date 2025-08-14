@@ -1,9 +1,12 @@
+import { IRescheduleAppointmentUseCase } from "../../interfaces/user/userUseCaseInterfaces";
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
 import { ISlotRepository } from "../../../../domain/repositories/ISlotRepository";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
 
-export class RescheduleAppointmentUseCase {
+export class RescheduleAppointmentUseCase
+  implements IRescheduleAppointmentUseCase
+{
   constructor(
     private appointmentRepository: IAppointmentRepository,
     private slotRepository: ISlotRepository

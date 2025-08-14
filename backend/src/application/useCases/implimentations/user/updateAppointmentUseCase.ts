@@ -1,9 +1,10 @@
+import { IUpdateAppointment } from "../../interfaces/user/userUseCaseInterfaces";
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
 import { IAppointment } from "../../../../domain/entities/appoinment";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
-export class UpdateAppointment {
+export class UpdateAppointment implements IUpdateAppointment {
   constructor(private appointmentRepository: IAppointmentRepository) {}
 
   async execute(

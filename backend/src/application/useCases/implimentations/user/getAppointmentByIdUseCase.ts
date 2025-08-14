@@ -1,9 +1,11 @@
+import { IGetAppointmentsByIdUseCase } from "../../interfaces/user/userUseCaseInterfaces";
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
 import { mapToAppointmentWithDocDetailsDTO } from "../../../../infrastructure/database/mappers/mapToAppointmentWithDocDetails";
 import { AppointmentsByIdWithDocDetailsDTO } from "../../../../dtos/dtos";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
-export class GetAppointmentsByIdUseCase {
+
+export class GetAppointmentsByIdUseCase implements IGetAppointmentsByIdUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
 
   async execute(

@@ -1,6 +1,7 @@
+import { IFetchSlotUseCase } from "../../interfaces/user/userUseCaseInterfaces";
 import { ISlotRepository } from "../../../../domain/repositories/ISlotRepository";
 
-export class FetchSlotUseCase {
+export class FetchSlotUseCase implements IFetchSlotUseCase {
   constructor(private slotRepository: ISlotRepository) {}
 
   async execute(doctorId: string, date: any): Promise<any> {

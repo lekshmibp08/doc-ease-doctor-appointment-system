@@ -1,9 +1,10 @@
+import { IUpdateUser } from "../../interfaces/user/userUseCaseInterfaces";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import bcrypt from "bcrypt";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
-export class UpdateUser {
+export class UpdateUser implements IUpdateUser {
   constructor(private userRepository: IUserRepository) {}
 
   async execute(id: string, updatedData: any): Promise<any> {

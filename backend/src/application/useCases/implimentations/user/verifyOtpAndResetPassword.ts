@@ -1,20 +1,20 @@
+import bcrypt from "bcrypt";
+import { IVerifyOtpAndResetPasswordUseCase } from "../../interfaces/user/userUseCaseInterfaces";
 import { IOtpRepository } from "../../../../domain/repositories/IOtpRepository";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
-import bcrypt from "bcrypt";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
+import { VerifyOtpAndResetPasswordDTO } from "../../../dto/userUseCaseDtos";
 
-export class VerifyOtpAndResetPassword {
+export class VerifyOtpAndResetPassword
+  implements IVerifyOtpAndResetPasswordUseCase
+{
   constructor(
     private otpRepository: IOtpRepository,
     private userRepository: IUserRepository
   ) {}
 
-  async execute(data: {
-    email: string;
-    otp: string;
-    newPassword: string;
-  }): Promise<void> {
+  async execute(data: VerifyOtpAndResetPasswordDTO): Promise<void> {
     const { email, otp, newPassword } = data;
 
     const otpEntity = await this.otpRepository.findOtp(email, otp);

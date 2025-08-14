@@ -1,23 +1,15 @@
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import { ListApprovedDoctorsDTO } from "../../../../dtos/doctorDTO/doctorDTOs";
 import { mapToListApprovedDoctorsDTO } from "../../../../infrastructure/database/mappers/mapToListApprovedDoctors";
-export class ListApprovedDoctors {
+import { ListApprovedDoctorsCriteriaDTO } from "../../../dto/userUseCaseDtos";
+import { IListApprovedDoctorsUseCase } from "../../interfaces/user/userUseCaseInterfaces";
+
+export class ListApprovedDoctors implements IListApprovedDoctorsUseCase {
   constructor(private doctorRepository: IDoctorRepository) {}
 
-  async execute(criteria: {
-    page: number;
-    size: number;
-    search?: string;
-    locationName?: string;
-    latitude: number;
-    longitude: number;
-    gender?: string;
-    experience?: string;
-    availability?: string;
-    fee?: string;
-    department?: string;
-    sort?: string;
-  }) {
+  async execute(
+    criteria: ListApprovedDoctorsCriteriaDTO
+  ): Promise<{ doctors: ListApprovedDoctorsDTO[]; totalPages: number }> {
     const query: any = { isBlocked: false, isApproved: true };
 
     if (criteria.search) {
@@ -110,7 +102,9 @@ export class ListApprovedDoctors {
         skip,
         limit
       );
-      const mappedDoctors: ListApprovedDoctorsDTO[] = doctors.map(mapToListApprovedDoctorsDTO);
+    const mappedDoctors: ListApprovedDoctorsDTO[] = doctors.map(
+      mapToListApprovedDoctorsDTO
+    );
 
     return {
       doctors: mappedDoctors,

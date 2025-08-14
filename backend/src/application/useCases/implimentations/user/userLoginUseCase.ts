@@ -1,3 +1,4 @@
+import { IUserLoginUseCase } from "../../interfaces/user/userUseCaseInterfaces";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -5,7 +6,7 @@ import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { stripBaseUrl } from "../../../helper/stripBaseUrl";
 
-export class UserLoginUseCase {
+export class UserLoginUseCase implements IUserLoginUseCase {
   constructor(private userRepository: IUserRepository) {}
   async execute(data: { email: string; password: string }): Promise<{
     token: string;

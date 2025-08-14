@@ -1,8 +1,11 @@
+import { ISendOtpForResetPasswordUseCase } from "../../interfaces/user/userUseCaseInterfaces";
 import { IOtpRepository } from "../../../../domain/repositories/IOtpRepository";
 import { Otp } from "../../../../domain/entities/otp";
 import { sendEmail } from "../../../../infrastructure/services/emailService";
 
-export class SendOtpForResetPassword {
+export class SendOtpForResetPassword
+  implements ISendOtpForResetPasswordUseCase
+{
   constructor(private otpRepository: IOtpRepository) {}
 
   async execute(email: string): Promise<void> {
