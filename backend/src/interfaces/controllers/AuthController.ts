@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { GoogleOAuthLoginUseCase } from "../../application/useCases/auth/googleOAuthLoginUseCase";
+import { GoogleOAuthLoginUseCase } from "../../application/useCases/implimentations/auth/googleOAuthLoginUseCase";
 import jwt from "jsonwebtoken";
 import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
 import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";

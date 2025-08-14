@@ -1,5 +1,5 @@
 import { Server as SocketIOServer } from "socket.io";
-import { ChatUsecase } from "../../application/useCases/chatUseCase";
+import { ChatUsecase } from "../../application/useCases/implimentations/chatUseCase"; 
 import { registerSlotEvents } from "./slotSocketHandlers";
 import dotenv from "dotenv";
 dotenv.config();

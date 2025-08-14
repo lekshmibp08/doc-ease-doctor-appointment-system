@@ -1,5 +1,5 @@
 import { Request, Response, RequestHandler, NextFunction } from "express";
-import { CreateOrderUseCase } from "../../application/useCases/createOrderUseCase ";
+import { CreateOrderUseCase } from "../../application/useCases/implimentations/createOrderUseCase "; 
 import { paymentService } from "../../infrastructure/services";
 
 const createOrderUseCase = new CreateOrderUseCase(paymentService);

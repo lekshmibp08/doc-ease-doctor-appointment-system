@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { OtpRepository } from "../../infrastructure/database/repositories/OtpRepository";
 import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
-import { SendOtpForSignupUseCase } from "../../application/useCases/user/sendOtpForSignup";
-import { VerifyOtpAndRegisterDocUseCase } from "../../application/useCases/doctor/verifyOtpAndRegisterDoc";
-import { LoginDoctorUseCase } from "../../application/useCases/doctor/loginDoctorUseCase";
-import { SendOtpForResetPassword } from "../../application/useCases/user/sendOtpForResetPassword";
-import { VerifyOtpAndResetDoctorPassword } from "../../application/useCases/doctor/ResetDoctorPassworduseCase";
-import { UpdateDocProfile } from "../../application/useCases/doctor/updateDocProfileUseCase";
+import { SendOtpForSignupUseCase } from "../../application/useCases/implimentations/user/sendOtpForSignup";
+import { VerifyOtpAndRegisterDocUseCase } from "../../application/useCases/implimentations/doctor/verifyOtpAndRegisterDoc";
+import { LoginDoctorUseCase } from "../../application/useCases/implimentations/doctor/loginDoctorUseCase";
+import { SendOtpForResetPassword } from "../../application/useCases/implimentations/user/sendOtpForResetPassword";
+import { VerifyOtpAndResetDoctorPassword } from "../../application/useCases/implimentations/doctor/resetDoctorPassworduseCase";
+import { UpdateDocProfile } from "../../application/useCases/implimentations/doctor/updateDocProfileUseCase";
 import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
-import { GetDashboardStatsUseCase } from "../../application/useCases/doctor/getDashboardStatsUseCase";
+import { GetDashboardStatsUseCase } from "../../application/useCases/implimentations/doctor/getDashboardStatsUseCase";
 
 const otpRepository = new OtpRepository();
 const sendOtpForSignupUseCase = new SendOtpForSignupUseCase(otpRepository);

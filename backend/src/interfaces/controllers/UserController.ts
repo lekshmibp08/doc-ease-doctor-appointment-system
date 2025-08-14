@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { SendOtpForSignupUseCase } from "../../application/useCases/user/sendOtpForSignup";
-import { VerifyOtpAndRegister } from "../../application/useCases/user/verifyOtpAndRegisterUser";
+import { SendOtpForSignupUseCase } from "../../application/useCases/implimentations/user/sendOtpForSignup";
+import { VerifyOtpAndRegister } from "../../application/useCases/implimentations/user/verifyOtpAndRegisterUser";
 import { OtpRepository } from "../../infrastructure/database/repositories/OtpRepository";
 import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
-import { ListApprovedDoctors } from "../../application/useCases/user/listApprovedDoctors";
-import { UpdateUser } from "../../application/useCases/user/updateUser";
-import { SendOtpForResetPassword } from "../../application/useCases/user/sendOtpForResetPassword";
-import { VerifyOtpAndResetPassword } from "../../application/useCases/user/verifyOtpAndResetPassword";
-import { DoctorDetails } from "../../application/useCases/user/doctorDetails";
-import { FetchSpecializationsUseCase } from "../../application/useCases/user/fetchSpecializationsUseCase";
-import { UserLoginUseCase } from "../../application/useCases/user/userLoginUseCase";
+import { ListApprovedDoctors } from "../../application/useCases/implimentations/user/listApprovedDoctors";
+import { UpdateUser } from "../../application/useCases/implimentations/user/updateUser";
+import { SendOtpForResetPassword } from "../../application/useCases/implimentations/user/sendOtpForResetPassword";
+import { VerifyOtpAndResetPassword } from "../../application/useCases/implimentations/user/verifyOtpAndResetPassword";
+import { DoctorDetails } from "../../application/useCases/implimentations/user/doctorDetails";
+import { FetchSpecializationsUseCase } from "../../application/useCases/implimentations/user/fetchSpecializationsUseCase";
+import { UserLoginUseCase } from "../../application/useCases/implimentations/user/userLoginUseCase";
 import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
 
 const userRepository = new UserRepository();

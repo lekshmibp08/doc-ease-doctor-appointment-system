@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import { SlotRepository } from "../../infrastructure/database/repositories/SlotRepository";
 import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
-import { CreateAppointmentUseCase } from "../../application/useCases/user/CreateAppointmentUseCase ";
-import { GetAppointmentsByUserUseCase } from "../../application/useCases/user/getAppointmentsByUserUseCase ";
-import { CancelAppointmentByUserUsecase } from "../../application/useCases/user/cancelAppointmentUseCase";
-import { ListAllAppointmentsForAdmin } from "../../application/useCases/admin/listAllAppointmentsUseCase";
-import { GetAppointmentsByDoctorIdUseCase } from "../../application/useCases/doctor/getAppointmentsByDoctorIdUseCase";
-import { UpdateAppointmentUseCase } from "../../application/useCases/doctor/updateAppointmentUseCase";
-import { UpdateSlotStatus } from "../../application/useCases/user/updateSlotStatusUseCase";
-import { RescheduleAppointmentUseCase } from "../../application/useCases/user/rescheduleAppointmentUseCase";
-import { UpdateAppointment } from "../../application/useCases/user/updateAppointmentUseCase";
+import { CreateAppointmentUseCase } from "../../application/useCases/implimentations/user/createAppointmentUseCase ";
+import { GetAppointmentsByUserUseCase } from "../../application/useCases/implimentations/user/getAppointmentsByUserUseCase ";
+import { CancelAppointmentByUserUsecase } from "../../application/useCases/implimentations/user/cancelAppointmentUseCase";
+import { ListAllAppointmentsForAdmin } from "../../application/useCases/implimentations/admin/listAllAppointmentsUseCase";
+import { GetAppointmentsByDoctorIdUseCase } from "../../application/useCases/implimentations/doctor/getAppointmentsByDoctorIdUseCase";
+import { UpdateAppointmentUseCase } from "../../application/useCases/implimentations/doctor/updateAppointmentUseCase";
+import { UpdateSlotStatus } from "../../application/useCases/implimentations/user/updateSlotStatusUseCase";
+import { RescheduleAppointmentUseCase } from "../../application/useCases/implimentations/user/rescheduleAppointmentUseCase";
+import { UpdateAppointment } from "../../application/useCases/implimentations/user/updateAppointmentUseCase";
 import { paymentService } from "../../infrastructure/services";
 
 const slotRepository = new SlotRepository();

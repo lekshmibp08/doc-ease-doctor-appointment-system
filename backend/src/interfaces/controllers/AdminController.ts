@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-import { LoginAdmin } from "../../application/useCases/admin/loginAdminUseCase";
+import { LoginAdmin } from "../../application/useCases/implimentations/admin/loginAdminUseCase";
 import { DoctorRepository } from "../../infrastructure/database/repositories/DoctorRepository";
-import { ListDoctorsUseCase } from "../../application/useCases/admin/listDoctorsUseCase";
-import { ListUsersUseCase } from "../../application/useCases/admin/listUsersUseCase";
-import { ToggleBlockUseruseCase } from "../../application/useCases/admin/toggleBlockUserUseCase";
-import { ToggleBlockDoctorUseCase } from "../../application/useCases/admin/toggleBlockDoctorUseCase";
-import { FetchPendingDoctors } from "../../application/useCases/admin/fetchPendingDoctorsUseCase";
-import { ApproveDoctorUsecase } from "../../application/useCases/admin/approveDoctorUseCase";
-import { RejectRequestUseCase } from "../../application/useCases/admin/rejectRequestUseCase";
-import { GetAdminDashboardStatsUseCase } from "../../application/useCases/admin/getAdminDashboardStats";
+import { ListDoctorsUseCase } from "../../application/useCases/implimentations/admin/listDoctorsUseCase";
+import { ListUsersUseCase } from "../../application/useCases/implimentations/admin/listUsersUseCase";
+import { ToggleBlockUseruseCase } from "../../application/useCases/implimentations/admin/toggleBlockUserUseCase";
+import { ToggleBlockDoctorUseCase } from "../../application/useCases/implimentations/admin/toggleBlockDoctorUseCase";
+import { FetchPendingDoctors } from "../../application/useCases/implimentations/admin/fetchPendingDoctorsUseCase";
+import { ApproveDoctorUsecase } from "../../application/useCases/implimentations/admin/approveDoctorUseCase";
+import { RejectRequestUseCase } from "../../application/useCases/implimentations/admin/rejectRequestUseCase";
+import { GetAdminDashboardStatsUseCase } from "../../application/useCases/implimentations/admin/getAdminDashboardStats";
 import { AdminDashboardRepository } from "../../infrastructure/database/repositories/AdminDashboardRepository";
 import { UserRepository } from "../../infrastructure/database/repositories/UserRepository";
 

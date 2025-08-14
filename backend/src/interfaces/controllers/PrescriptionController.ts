@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import PrescriptionUseCase from "../../application/useCases/PrescriptionUseCase";
-import { GetAppointmentsByIdUseCase } from "../../application/useCases/user/getAppointmentByIdUseCase";
+import PrescriptionUseCase from "../../application/useCases/implimentations/prescriptionUseCase";  
+import { GetAppointmentsByIdUseCase } from "../../application/useCases/implimentations/user/getAppointmentByIdUseCase";
 import { AppointmentRepository } from "../../infrastructure/database/repositories/AppoinmentRepository";
 
 const appointmentRepository = new AppointmentRepository();

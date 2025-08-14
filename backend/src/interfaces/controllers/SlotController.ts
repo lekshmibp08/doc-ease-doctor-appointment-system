@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { SlotRepository } from "../../infrastructure/database/repositories/SlotRepository";
-import { UpdateSlotUseCase } from "../../application/useCases/doctor/updateSlotUseCase";
-import { FetchSlotUseCase } from "../../application/useCases/user/fetchSlotUseCase";
-import { UpdateSlotTimeUseCase } from "../../application/useCases/doctor/updateSlotTimeUseCase";
-import SlotUseCase from "../../application/useCases/SlotUseCase";
+import { UpdateSlotUseCase } from "../../application/useCases/implimentations/doctor/updateSlotUseCase";
+import { FetchSlotUseCase } from "../../application/useCases/implimentations/user/fetchSlotUseCase";
+import { UpdateSlotTimeUseCase } from "../../application/useCases/implimentations/doctor/updateSlotTimeUseCase";
+import SlotUseCase from "../../application/useCases/implimentations/slotUseCase"; 
 
 const slotRepository = new SlotRepository();
 const updateSlotUseCase = new UpdateSlotUseCase(slotRepository);

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ChatUsecase } from "../../application/useCases/chatUseCase";
+import { ChatUsecase } from "../../application/useCases/implimentations/chatUseCase"; 
 
 export const chatController = {
   // Create or fetch chat
