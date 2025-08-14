@@ -45,17 +45,14 @@ export const authController = {
         return;
       }
 
+      const data = { fullName: fullname, email, profilePicture, role };
+
       const {
         token,
         refreshToken,
         role: userRole,
         user,
-      } = await googleOAuthLoginUseCase.execute(
-        fullname,
-        email,
-        profilePicture,
-        role
-      );
+      } = await googleOAuthLoginUseCase.execute(data);
 
       const userData = user;
 

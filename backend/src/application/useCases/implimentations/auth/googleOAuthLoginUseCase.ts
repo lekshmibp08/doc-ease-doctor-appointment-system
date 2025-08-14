@@ -1,29 +1,27 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { IGoogleOAuthLoginUseCase } from "../../interfaces/auth/authUseCaseInterfaces";
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import { stripBaseUrl } from "../../../helper/stripBaseUrl";
+import { GoogleOAuthLoginDTO } from "../../../dto/authUseCaseDtos";
 
-export class GoogleOAuthLoginUseCase {
+export class GoogleOAuthLoginUseCase implements IGoogleOAuthLoginUseCase {
   constructor(
     private doctorRepository: IDoctorRepository,
     private userRepository: IUserRepository
   ) {}
 
-  async execute(
-    fullName: string,
-    email: string,
-    profilePicture: string,
-    role: "doctor" | "user" | "admin"
-  ): Promise<{
+  async execute(data: GoogleOAuthLoginDTO): Promise<{
     token: string;
     refreshToken: string;
     user: Record<string, any>;
     role: string;
   }> {
+    
+    const { fullName, email, profilePicture, role } = data;
     let entity;
 
-    // Determine repository
     if (role === "doctor") {
       entity = await this.doctorRepository.findByEmail(email);
 
