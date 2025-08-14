@@ -1,9 +1,10 @@
+import { IApproveDoctorUsecase } from "../../interfaces/admin/adminUseCaseInterfaces";
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { sendEmail } from "../../../../infrastructure/services/emailService";
 import { AppError } from "../../../../shared/errors/appError";
 
-export class ApproveDoctorUsecase {
+export class ApproveDoctorUsecase implements IApproveDoctorUsecase {
   constructor(private doctorRepository: IDoctorRepository) {}
 
   async execute(id: string) {

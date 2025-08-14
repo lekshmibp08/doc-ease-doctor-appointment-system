@@ -1,9 +1,10 @@
+import { IRejectRequestUseCase } from "../../interfaces/admin/adminUseCaseInterfaces";
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { sendEmail } from "../../../../infrastructure/services/emailService";
 import { AppError } from "../../../../shared/errors/appError";
 
-export class RejectRequestUseCase {
+export class RejectRequestUseCase implements IRejectRequestUseCase {
   constructor(private doctorRepository: IDoctorRepository) {}
 
   async execute(id: string, reason: string) {

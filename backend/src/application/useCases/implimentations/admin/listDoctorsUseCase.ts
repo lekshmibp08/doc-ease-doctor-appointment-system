@@ -1,6 +1,7 @@
+import { IListDoctorsUseCase } from "../../interfaces/admin/adminUseCaseInterfaces";
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 
-export class ListDoctorsUseCase {
+export class ListDoctorsUseCase implements IListDoctorsUseCase {
   constructor(private doctorRepository: IDoctorRepository) {}
 
   private mapToDoctorListDTO(doc: any) {

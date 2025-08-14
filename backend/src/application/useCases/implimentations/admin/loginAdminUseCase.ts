@@ -1,10 +1,11 @@
-import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import { ILoginAdmin } from "../../interfaces/admin/adminUseCaseInterfaces";
+import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
 
-export class LoginAdmin {
+export class LoginAdmin implements ILoginAdmin {
   constructor(private userRepository: IUserRepository) {}
 
   async execute(data: {

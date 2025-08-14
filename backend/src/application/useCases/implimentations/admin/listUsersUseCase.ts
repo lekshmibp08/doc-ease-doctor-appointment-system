@@ -1,7 +1,8 @@
+import { IListUsersUseCase } from "../../interfaces/admin/adminUseCaseInterfaces";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import { mapToUserListDTO } from "../../../../infrastructure/database/mappers/mapToListUsersDTO";
 
-export class ListUsersUseCase {
+export class ListUsersUseCase implements IListUsersUseCase {
   constructor(private userRepository: IUserRepository) {}
 
   async execute(page: number, size: number, search: string) {
@@ -23,7 +24,7 @@ export class ListUsersUseCase {
       limit,
       query
     );
-    
+
     const users = usersData.map((user) => mapToUserListDTO(user));
     const totalUsers = await this.userRepository.countUsers(query);
     const totalPages = Math.ceil(totalUsers / size);

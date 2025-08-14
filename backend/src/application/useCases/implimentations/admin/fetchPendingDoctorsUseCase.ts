@@ -1,7 +1,8 @@
+import { IFetchPendingDoctorsUsecase } from "../../interfaces/admin/adminUseCaseInterfaces";
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import { stripBaseUrl } from "../../../helper/stripBaseUrl";
 
-export class FetchPendingDoctors {
+export class FetchPendingDoctors implements IFetchPendingDoctorsUsecase {
   constructor(private doctorRepository: IDoctorRepository) {}
   private mapToPendingDoctorDTO(doc: any) {
     return {

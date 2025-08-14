@@ -1,8 +1,9 @@
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
+import { IToggleBlockUseruseCase } from "../../interfaces/admin/adminUseCaseInterfaces";
 
-export class ToggleBlockUseruseCase {
+export class ToggleBlockUseruseCase implements IToggleBlockUseruseCase {
   constructor(private userRepository: IUserRepository) {}
 
   async execute(id: string) {

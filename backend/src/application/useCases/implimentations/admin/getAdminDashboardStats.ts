@@ -1,10 +1,17 @@
+import { IGetAdminDashboardStatsUseCase } from "../../interfaces/admin/adminUseCaseInterfaces";
+import { GetAdminDashboardStatsOutputDTO } from "../../../dto/adminUseCaseDtos";
 import type { IAdminDashboardRepository } from "../../../../domain/repositories/IAdminDashboardRepository";
 import { startOfDay, endOfDay, eachDayOfInterval, format } from "date-fns";
 
-export class GetAdminDashboardStatsUseCase {
+export class GetAdminDashboardStatsUseCase
+  implements IGetAdminDashboardStatsUseCase
+{
   constructor(private adminDashboardRepository: IAdminDashboardRepository) {}
 
-  async execute(startDate: Date, endDate: Date) {
+  async execute(
+    startDate: Date,
+    endDate: Date
+  ): Promise<GetAdminDashboardStatsOutputDTO> {
     const start = startOfDay(new Date(startDate));
     const end = endOfDay(new Date(endDate));
 
