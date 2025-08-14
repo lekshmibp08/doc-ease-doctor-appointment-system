@@ -1,9 +1,10 @@
+import { IUpdateDocProfileUseCase } from "../../interfaces/doctor/doctorUsecaseInterfaces";
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import bcrypt from "bcrypt";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
-export class UpdateDocProfile {
+export class UpdateDocProfile implements IUpdateDocProfileUseCase {
   constructor(private doctorRepository: IDoctorRepository) {}
 
   async execute(id: string, updatedData: any): Promise<any> {

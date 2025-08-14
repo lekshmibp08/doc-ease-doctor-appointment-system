@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { ILoginDoctorUseCase } from "../../interfaces/doctor/doctorUsecaseInterfaces";
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
-export class LoginDoctorUseCase {
+export class LoginDoctorUseCase implements ILoginDoctorUseCase {
   constructor(private doctorRepository: IDoctorRepository) {}
 
   async execute(data: { email: string; password: string }): Promise<{

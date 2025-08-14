@@ -1,24 +1,19 @@
+import { IVerifyOtpAndRegisterDocUseCase } from "../../interfaces/doctor/doctorUsecaseInterfaces";
 import { IOtpRepository } from "../../../../domain/repositories/IOtpRepository";
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import { Doctor } from "../../../../domain/entities/doctor";
 import bcrypt from "bcrypt";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
+import { RegisterDoctorDTO } from "../../../dto/doctorUseCaseDtos";
 
-export class VerifyOtpAndRegisterDocUseCase {
+export class VerifyOtpAndRegisterDocUseCase implements IVerifyOtpAndRegisterDocUseCase {
   constructor(
     private otpRepository: IOtpRepository,
     private userRepository: IDoctorRepository
   ) {}
 
-  async execute(data: {
-    email: string;
-    otp: string;
-    fullName: string;
-    mobileNumber: string;
-    registerNumber: string;
-    password: string;
-  }): Promise<Doctor> {
+  async execute(data: RegisterDoctorDTO): Promise<Doctor> {
     const { email, otp, fullName, mobileNumber, registerNumber, password } =
       data;
 

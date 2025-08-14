@@ -1,9 +1,10 @@
+import { IGetDashboardStatsUseCase } from "../../interfaces/doctor/doctorUsecaseInterfaces";
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
 import { startOfDay, endOfDay, eachDayOfInterval, format } from "date-fns";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
-export class GetDashboardStatsUseCase {
+export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
 
   async execute(doctorId: string, startDate: Date, endDate: Date) {

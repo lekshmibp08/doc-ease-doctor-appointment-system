@@ -1,10 +1,13 @@
+import { IVerifyOtpAndResetDoctorPasswordUseCase } from "../../interfaces/doctor/doctorUsecaseInterfaces";
 import { IOtpRepository } from "../../../../domain/repositories/IOtpRepository";
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import bcrypt from "bcrypt";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 
-export class VerifyOtpAndResetDoctorPassword {
+export class VerifyOtpAndResetDoctorPassword
+  implements IVerifyOtpAndResetDoctorPasswordUseCase
+{
   constructor(
     private otpRepository: IOtpRepository,
     private doctorRepository: IDoctorRepository

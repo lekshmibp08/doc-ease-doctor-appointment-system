@@ -1,6 +1,7 @@
+import { IUpdateAppointmentUseCase } from "../../interfaces/doctor/doctorUsecaseInterfaces";
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
 
-export class UpdateAppointmentUseCase {
+export class UpdateAppointmentUseCase implements IUpdateAppointmentUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
 
   async execute(appointmentId: string, isCompleted: boolean) {

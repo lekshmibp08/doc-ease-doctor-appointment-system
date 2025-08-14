@@ -1,6 +1,7 @@
+import { IUpdateSlotTimeUseCase } from "../../interfaces/doctor/doctorUsecaseInterfaces";
 import { ISlotRepository } from "../../../../domain/repositories/ISlotRepository";
 
-export class UpdateSlotTimeUseCase {
+export class UpdateSlotTimeUseCase implements IUpdateSlotTimeUseCase {
   constructor(private slotRepository: ISlotRepository) {}
 
   async execute(

@@ -1,8 +1,9 @@
+import { IUpdateSlotUseCase } from "../../interfaces/doctor/doctorUsecaseInterfaces";
 import { ISlotRepository } from "../../../../domain/repositories/ISlotRepository";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
 
-export class UpdateSlotUseCase {
+export class UpdateSlotUseCase implements IUpdateSlotUseCase {
   constructor(private slotRepository: ISlotRepository) {}
 
   async execute(
