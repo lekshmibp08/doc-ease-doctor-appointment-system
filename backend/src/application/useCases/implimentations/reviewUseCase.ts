@@ -1,10 +1,11 @@
+import { IReviewUseCase } from "../interfaces/IReviewUseCase"
 import { IReviewRepository } from "../../../domain/repositories/IReviewRepository" 
 import { IReview } from "../../../domain/entities/review" 
 import { ReviewsByDoctorIdDTO } from "../../../dtos/reviewDTO/reviewDTOS" 
 import { mapToReviewsByAppointmentIdDTO } from "../../../infrastructure/database/mappers/reviewMapper" 
 import { ReviewsByAppointmentIdDTO } from "../../../dtos/reviewDTO/reviewDTOS" 
 
-export class ReviewUseCase {
+export class ReviewUseCase implements IReviewUseCase {
   constructor(private reviewRepository: IReviewRepository) {}
 
   async createReview(reviewData: Partial<IReview>): Promise<Partial<IReview>> {
