@@ -1,9 +1,10 @@
+import { ICancelAppointmentByUserUseCase } from "../../interfaces/user/userUseCaseInterfaces";
 import { IAppointmentRepository } from "../../../../domain/repositories/IAppointmentRepository";
 import { IAppointment } from "../../../../domain/entities/appoinment";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
 
-export class CancelAppointmentByUserUsecase {
+export class CancelAppointmentByUserUsecase implements ICancelAppointmentByUserUseCase {
   constructor(private appointmentRepository: IAppointmentRepository) {}
 
   async execute(appointmentId: string): Promise<Partial<IAppointment>> {
