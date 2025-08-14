@@ -1,21 +1,11 @@
+import { GenerateSlotsDTO, ISlotUseCase } from "../interfaces/ISlotUseCase"
 import { SlotRepository } from "../../../infrastructure/database/repositories/slotRepository" 
 import SlotService from "../../../infrastructure/services/slotService" 
 import { filterSlotsByPeriod } from "../../helper/slotFilter" 
 import { Slot } from "../../../domain/entities/slot" 
 
-interface GenerateSlotsDTO {
-  doctorId: string;
-  startDate: string;
-  repeat: "weekly" | "monthly";
-  availableDays: {
-    day: string;
-    startTime: string;
-    endTime: string;
-  }[];
-  duration: number;
-}
 
-class SlotUseCase {
+class SlotUseCase implements ISlotUseCase {
   private slotRepository: SlotRepository;
 
   constructor() {
