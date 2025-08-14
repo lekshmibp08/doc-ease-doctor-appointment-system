@@ -32,6 +32,7 @@ const AppointmentContainer = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [slotId, setSlotId] = useState<string>('')
   const [lockedSlotIds, setLockedSlotIds] = useState<Set<string>>(new Set());
+  const prevSelectedSlotRef = useRef<Slot | null>(null);
 
   const { currentUser } = useSelector((state: RootState) => state.userAuth);
   const socketService = useMemo(() => BookingSocketService.getInstance(), []);
@@ -149,6 +150,8 @@ const AppointmentContainer = ({
     }
     if (!slot.isAvailable || slot.status === "Booked" || lockedSlotIds.has(slot._id)) return;
 
+    prevSelectedSlotRef.current = selectedSlot || null;
+
     // If I already locked a different slot, release first
     if (myLockRef.current?.slotId && myLockRef.current.slotId !== slot._id) {
       socketService.releaseLock({ doctorId, date: dateStr, slotId: myLockRef.current.slotId });
@@ -191,17 +194,30 @@ const AppointmentContainer = ({
 
   // From PaymentButton: dismissed/failure
   const onPaymentAborted = () => {
-    if (myLockRef.current?.slotId) {
-      socketService.releaseLock({ doctorId, date: dateStr, slotId: myLockRef.current.slotId });
-      setLockedSlotIds(prev => { const next = new Set(prev); next.delete(myLockRef.current!.slotId); return next; });
-      myLockRef.current = null;
-    }
+    if (!myLockRef.current?.slotId) return;
+    
+    const lockedSlotId = myLockRef.current.slotId;
+
+    socketService.releaseLock({ doctorId, date: dateStr, slotId: myLockRef.current.slotId });
+    
+    setLockedSlotIds(prev => { 
+      const next = new Set(prev); 
+      next.delete(lockedSlotId); 
+      return next; 
+    });
+      
+    myLockRef.current = null;
+    if (prevSelectedSlotRef.current) {
+    setSelectedSlot(prevSelectedSlotRef.current);
+    setSlotId(prevSelectedSlotRef.current._id);
+  }
+    
   };
 
   // Release lock when unmounting component
   useEffect(() => {
-    return () => {
-      if (myLockRef.current?.slotId) {
+    return () => {      
+      if (myLockRef.current?.slotId) {        
         socketService.releaseLock({ doctorId, date: dateStr, slotId: myLockRef.current.slotId });
         myLockRef.current = null;
       }
