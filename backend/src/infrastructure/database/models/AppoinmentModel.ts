@@ -1,5 +1,4 @@
 import mongoose, { Model, Document, Types } from "mongoose";
-import { IAppointment } from "../../../domain/entities/appoinment";
 
 export interface IAppointmentDocument extends Document {
   _id: Types.ObjectId;
