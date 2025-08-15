@@ -15,7 +15,7 @@ export function mapToListApprovedDoctorsDTO(doctor: any): ListApprovedDoctorsDTO
   } else if (profilePicture?.startsWith(GOOGLE_IMAGE_BASE_URL)) {
     profilePicture = `go:${profilePicture.replace(GOOGLE_IMAGE_BASE_URL, "")}`;
   } else {
-    profilePicture = profilePicture;
+    profilePicture;
   }
   return {
     _id: doctor._id,
