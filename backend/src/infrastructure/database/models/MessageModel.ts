@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { IMessage } from "../../../domain/entities/message";
 
 export interface IMessageDocument extends Omit<IMessage, "_id">, Document { }

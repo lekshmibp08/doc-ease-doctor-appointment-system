@@ -1,7 +1,6 @@
 import { IPrescription } from "../../../domain/entities/prescription";
 import { IPrescriptionRepository } from "../../../domain/repositories/IPrescriptionRepository";
 import PrescriptionModel from "../models/prescriptionModel";
-import { Types } from "mongoose";
 
 export class PrescriptionRepository implements IPrescriptionRepository {
   async create(prescription: any): Promise<IPrescription> {

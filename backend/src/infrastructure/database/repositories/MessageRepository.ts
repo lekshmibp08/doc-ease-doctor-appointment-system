@@ -1,6 +1,5 @@
 import { IMessageRepository } from "../../../domain/repositories/IMessageRepository";
 import MessageModel from "../models/messageModel";
-import { IMessage } from "../../../domain/entities/message";
 
 export class MessageRepository implements IMessageRepository {
   // Create a new message

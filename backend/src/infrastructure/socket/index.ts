@@ -141,6 +141,8 @@ export const initializeSocket = (server: any) => {
     })
 
     socket.on("signal", ({ chatId, userId, receiverId, signal }) => {
+      console.log(chatId);
+      
       const receiverSocketId = connectedUsers.get(receiverId)
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("signal", { signal, userId })

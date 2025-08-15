@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { ErrorLogModel } from "../../infrastructure/database/models/errorLogModel";
 
 interface CustomError extends Error {
@@ -6,7 +6,7 @@ interface CustomError extends Error {
 }
 
 // 404 Not Found Middleware
-export const notFound = (req: Request, res: Response, next: NextFunction) => {
+export const notFound = (req: Request, res: Response) => {
   res.status(404).json({ success: false, message: "API route not found" });
 };
 
@@ -15,7 +15,6 @@ export const errorHandler = async (
   err: CustomError,
   req: Request,
   res: Response,
-  next: NextFunction
 ) => {
   const statusCode = err.status || 500;
   try {

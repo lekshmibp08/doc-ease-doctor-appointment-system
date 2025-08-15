@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { IChat } from "../../../domain/entities/chat";
 
 export interface IChatDocument extends Omit<Document, '_id'>, IChat {}

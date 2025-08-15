@@ -1,5 +1,3 @@
-import { Slot } from "../../../domain/entities/slot";
-
 export interface GenerateSlotsDTO {
   doctorId: string;
   startDate: string;
