@@ -8,7 +8,7 @@ import {
   ListApprovedDoctorsCriteriaDTO,
   VerifyOtpAndRegisterDTO,
   VerifyOtpAndResetPasswordDTO,
-} from "../../../dto/userUseCaseDtos";
+} from "../../../../dtos/useCaseDtos/userUseCaseDtos";
 import { IUser } from "../../../../domain/entities/user";
 
 export interface ICancelAppointmentByUserUseCase {

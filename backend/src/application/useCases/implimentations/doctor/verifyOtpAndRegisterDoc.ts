@@ -5,7 +5,7 @@ import { Doctor } from "../../../../domain/entities/doctor";
 import bcrypt from "bcrypt";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
-import { RegisterDoctorDTO } from "../../../dto/doctorUseCaseDtos";
+import { RegisterDoctorDTO } from "../../../../dtos/useCaseDtos/doctorUseCaseDtos";
 
 export class VerifyOtpAndRegisterDocUseCase implements IVerifyOtpAndRegisterDocUseCase {
   constructor(

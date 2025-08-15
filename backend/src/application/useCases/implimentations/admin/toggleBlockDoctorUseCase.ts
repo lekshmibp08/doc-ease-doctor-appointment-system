@@ -2,7 +2,7 @@ import { IToggleBlockDoctorUseCase } from "../../interfaces/admin/adminUseCaseIn
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
 import { AppError } from "../../../../shared/errors/appError";
-import { ToggleBlockDoctorOutputDTO } from "../../../dto/adminUseCaseDtos";
+import { ToggleBlockDoctorOutputDTO } from "../../../../dtos/useCaseDtos/adminUseCaseDtos";
 
 export class ToggleBlockDoctorUseCase implements IToggleBlockDoctorUseCase {
   constructor(private doctorRepository: IDoctorRepository) {}

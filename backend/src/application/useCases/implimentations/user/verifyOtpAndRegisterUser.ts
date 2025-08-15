@@ -5,7 +5,7 @@ import { IUserRepository } from "../../../../domain/repositories/IUserRepository
 import { IUser } from "../../../../domain/entities/user";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
-import { VerifyOtpAndRegisterDTO } from "../../../dto/userUseCaseDtos";
+import { VerifyOtpAndRegisterDTO } from "../../../../dtos/useCaseDtos/userUseCaseDtos";
 
 export class VerifyOtpAndRegister implements IVerifyOtpAndRegisterUseCase {
   constructor(

@@ -4,7 +4,7 @@ import { IGoogleOAuthLoginUseCase } from "../../interfaces/auth/authUseCaseInter
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import { stripBaseUrl } from "../../../helper/stripBaseUrl";
-import { GoogleOAuthLoginDTO } from "../../../dto/authUseCaseDtos";
+import { GoogleOAuthLoginDTO } from "../../../../dtos/useCaseDtos/authUseCaseDtos";
 
 export class GoogleOAuthLoginUseCase implements IGoogleOAuthLoginUseCase {
   constructor(

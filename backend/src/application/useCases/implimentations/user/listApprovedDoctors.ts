@@ -1,7 +1,7 @@
 import { IDoctorRepository } from "../../../../domain/repositories/IDoctorRepository";
 import { ListApprovedDoctorsDTO } from "../../../../dtos/doctorDTO/doctorDTOs";
 import { mapToListApprovedDoctorsDTO } from "../../../../infrastructure/database/mappers/mapToListApprovedDoctors";
-import { ListApprovedDoctorsCriteriaDTO } from "../../../dto/userUseCaseDtos";
+import { ListApprovedDoctorsCriteriaDTO } from "../../../../dtos/useCaseDtos/userUseCaseDtos";
 import { IListApprovedDoctorsUseCase } from "../../interfaces/user/userUseCaseInterfaces";
 
 export class ListApprovedDoctors implements IListApprovedDoctorsUseCase {

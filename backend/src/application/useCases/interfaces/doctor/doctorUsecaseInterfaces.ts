@@ -1,7 +1,7 @@
 import { IAppointment } from "../../../../domain/entities/appoinment";
 import { Doctor } from "../../../../domain/entities/doctor";
 import { AppointmentsByDocIdDTO } from "../../../../dtos/dtos"; 
-import { DashboardStatsDTO, RegisterDoctorDTO } from "../../../dto/doctorUseCaseDtos";
+import { DashboardStatsDTO, RegisterDoctorDTO } from "../../../../dtos/useCaseDtos/doctorUseCaseDtos";
 
 // ---------------- GetAppointmentsByDoctorId ----------------
 export interface IGetAppointmentsByDoctorIdUseCase {

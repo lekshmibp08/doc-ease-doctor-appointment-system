@@ -1,4 +1,4 @@
-import { GoogleOAuthLoginDTO } from "../../../dto/authUseCaseDtos";
+import { GoogleOAuthLoginDTO } from "../../../../dtos/useCaseDtos/authUseCaseDtos";
 
 export interface IGoogleOAuthLoginUseCase {
   execute(data: GoogleOAuthLoginDTO): Promise<{

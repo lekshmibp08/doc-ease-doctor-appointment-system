@@ -1,5 +1,5 @@
 import { IGetAdminDashboardStatsUseCase } from "../../interfaces/admin/adminUseCaseInterfaces";
-import { GetAdminDashboardStatsOutputDTO } from "../../../dto/adminUseCaseDtos";
+import { GetAdminDashboardStatsOutputDTO } from "../../../../dtos/useCaseDtos/adminUseCaseDtos";
 import type { IAdminDashboardRepository } from "../../../../domain/repositories/IAdminDashboardRepository";
 import { startOfDay, endOfDay, eachDayOfInterval, format } from "date-fns";
 

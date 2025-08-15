@@ -4,7 +4,7 @@ import { IOtpRepository } from "../../../../domain/repositories/IOtpRepository";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import { AppError } from "../../../../shared/errors/appError";
 import { HttpStatusCode } from "../../../../enums/httpStatusCode";
-import { VerifyOtpAndResetPasswordDTO } from "../../../dto/userUseCaseDtos";
+import { VerifyOtpAndResetPasswordDTO } from "../../../../dtos/useCaseDtos/userUseCaseDtos";
 
 export class VerifyOtpAndResetPassword
   implements IVerifyOtpAndResetPasswordUseCase

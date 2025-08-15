@@ -4,7 +4,7 @@ import {
   GetAdminDashboardStatsOutputDTO,
   ToggleBlockDoctorOutputDTO,
   ToggleBlockUserOutputDTO,
-} from "../../../dto/adminUseCaseDtos";
+} from "../../../../dtos/useCaseDtos/adminUseCaseDtos";
 
 export interface IApproveDoctorUsecase {
   execute(id: string): Promise<void>;
