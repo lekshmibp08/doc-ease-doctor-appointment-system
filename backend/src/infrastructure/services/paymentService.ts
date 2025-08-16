@@ -24,7 +24,7 @@ export class PaymentService {
   }
 
   async processRefund(paymentId: string, refundAmount: number) {
-    const refundResponse =  await this.razorpay.payments.refund(paymentId, {
+    const refundResponse = await this.razorpay.payments.refund(paymentId, {
       amount: refundAmount * 100,
       speed: "normal",
     });

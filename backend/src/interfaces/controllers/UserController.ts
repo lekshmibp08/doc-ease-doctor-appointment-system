@@ -169,8 +169,6 @@ export const userController = {
 
   // Update User profile
   updateUserProfile: async (req: Request, res: Response): Promise<void> => {
-    console.log("ENTERED UPDATION");
-
     try {
       const { id } = req.params;
       const updatedData = req.body;

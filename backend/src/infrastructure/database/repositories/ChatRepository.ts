@@ -4,26 +4,28 @@ import { IChat } from "../../../domain/entities/chat";
 
 export class ChatRepository implements IChatRepository {
   // Find chat by user and doctor
-  async findChatByParticipants(userId: string, doctorId: string): Promise<IChat | null> {
-    return await ChatModel.findOne({ userId, doctorId })
-      .populate([
-        { path: "doctorId", select: "fullName" },
-        { path: "userId", select: "fullName" }
-      ]);
+  async findChatByParticipants(
+    userId: string,
+    doctorId: string
+  ): Promise<IChat | null> {
+    return await ChatModel.findOne({ userId, doctorId }).populate([
+      { path: "doctorId", select: "fullName" },
+      { path: "userId", select: "fullName" },
+    ]);
   }
 
   // Find all chats for the User
   async findChatByUserId(userId: string): Promise<IChat[] | null> {
     return await ChatModel.find({ userId }).populate([
-      { path: "doctorId"},
+      { path: "doctorId" },
       { path: "lastMessage", select: "text" },
     ]);
   }
-  
+
   // Find all chats for the Doctor
   async findChatByDoctorId(doctorId: string): Promise<IChat[] | null> {
     return await ChatModel.find({ doctorId }).populate([
-      { path: "userId"},
+      { path: "userId" },
       { path: "lastMessage", select: "text" },
     ]);
   }
@@ -36,7 +38,6 @@ export class ChatRepository implements IChatRepository {
       { path: "doctorId", select: "fullName" },
       { path: "userId", select: "fullName" },
       { path: "lastMessage", select: "text" },
-
     ]);
   }
 
@@ -44,11 +45,4 @@ export class ChatRepository implements IChatRepository {
   async updateChatLastMessage(chatId: string, messageId: string) {
     await ChatModel.findByIdAndUpdate(chatId, { lastMessage: messageId });
   }
-
-
-
-
-
-
-
 }

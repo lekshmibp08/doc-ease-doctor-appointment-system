@@ -5,7 +5,6 @@ import { IAppointment } from "../../../domain/entities/appoinment";
 import { AppointmentInputDTO } from "../../../dtos/dtos";
 import { mapToAppointmentEntity } from "../mappers/appointmentMapper";
 
-
 export class AppointmentRepository implements IAppointmentRepository {
   async createAppointment(appoinmentData: AppointmentInputDTO) {
     const appointmentDoc = await AppointmentModel.create(appoinmentData);
@@ -13,11 +12,10 @@ export class AppointmentRepository implements IAppointmentRepository {
   }
 
   async getAppointmentsByUserId(userId: string) {
-    console.log(userId);
-
     const appointments = await AppointmentModel.find({ userId })
       .populate("doctorId slotId")
-      .sort({ createdAt: -1 }).lean();
+      .sort({ createdAt: -1 })
+      .lean();
     return appointments;
   }
 
@@ -27,9 +25,9 @@ export class AppointmentRepository implements IAppointmentRepository {
   }
 
   async findAppointmentsByIdWithDocDetails(appointmentId: string) {
-    const appointment = await AppointmentModel.findById(appointmentId).populate(
-      "doctorId"
-    ).lean();
+    const appointment = await AppointmentModel.findById(appointmentId)
+      .populate("doctorId")
+      .lean();
     return appointment;
   }
 

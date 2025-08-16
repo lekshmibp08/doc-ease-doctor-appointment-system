@@ -85,7 +85,6 @@ export const appoinmentController = {
       const appointments = await getAppointmentsByUserUseCase.execute(
         userId as string
       );
-      console.log(appointments);
 
       res.status(200).json({ appointments });
     } catch (error) {

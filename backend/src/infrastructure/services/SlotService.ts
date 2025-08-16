@@ -26,7 +26,13 @@ class SlotService {
     return `${formattedHours}:${minutes} ${period}`;
   }
 
-  generateSlots({ doctorId, startDate, repeat, availableDays, duration }: GenerateSlotsDTO): Slot[] {
+  generateSlots({
+    doctorId,
+    startDate,
+    repeat,
+    availableDays,
+    duration,
+  }: GenerateSlotsDTO): Slot[] {
     const startDateObj = new Date(startDate);
     const slotsToSave: Slot[] = [];
 
@@ -59,9 +65,14 @@ class SlotService {
         interval: 1,
         byweekday: [weekday],
         dtstart: startDateObj,
-        until: repeat === "weekly"
-          ? new Date(startDateObj.getTime() + 7 * 24 * 60 * 60 * 1000) 
-          : new Date(startDateObj.getFullYear(), startDateObj.getMonth() + 1, startDateObj.getDate()), 
+        until:
+          repeat === "weekly"
+            ? new Date(startDateObj.getTime() + 7 * 24 * 60 * 60 * 1000)
+            : new Date(
+                startDateObj.getFullYear(),
+                startDateObj.getMonth() + 1,
+                startDateObj.getDate()
+              ),
       });
 
       const dates = rule.all();

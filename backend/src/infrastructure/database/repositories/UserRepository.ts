@@ -43,6 +43,3 @@ export class UserRepository implements IUserRepository {
     return updatedUser ? mapToUserEntity(updatedUser) : null;
   }
 }
-
-
-

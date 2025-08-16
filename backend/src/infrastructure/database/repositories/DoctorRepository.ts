@@ -32,7 +32,7 @@ export class DoctorRepository implements IDoctorRepository {
   }
 
   async countDoctors(query: Partial<Doctor>) {
-    return await DoctorModel.countDocuments(query); 
+    return await DoctorModel.countDocuments(query);
   }
 
   async getAllApprovedDoctors() {

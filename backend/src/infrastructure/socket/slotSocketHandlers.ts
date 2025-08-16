@@ -1,11 +1,11 @@
 import type { Server, Socket } from "socket.io";
 
-type LockKey = string; // `${doctorId}:${date}:${slotId}`
+type LockKey = string; 
 
 interface LockRecord {
   key: LockKey;
   doctorId: string;
-  date: string;     // "YYYY-MM-DD"
+  date: string;     
   slotId: string;
   ownerSocketId: string;
   userId?: string;
@@ -14,7 +14,7 @@ interface LockRecord {
 }
 
 const locks = new Map<LockKey, LockRecord>();
-const DEFAULT_TTL_MS = 2 * 60 * 1000; // 2 minutes
+const DEFAULT_TTL_MS = 2 * 60 * 1000; 
 
 const roomName = (doctorId: string, date: string) => `appointment:${doctorId}:${date}`;
 const makeKey  = (doctorId: string, date: string, slotId: string) => `${doctorId}:${date}:${slotId}`;

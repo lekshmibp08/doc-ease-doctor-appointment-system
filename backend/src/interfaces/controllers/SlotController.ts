@@ -3,7 +3,7 @@ import { SlotRepository } from "../../infrastructure/database/repositories/slotR
 import { UpdateSlotUseCase } from "../../application/useCases/implimentations/doctor/updateSlotUseCase";
 import { FetchSlotUseCase } from "../../application/useCases/implimentations/user/fetchSlotUseCase";
 import { UpdateSlotTimeUseCase } from "../../application/useCases/implimentations/doctor/updateSlotTimeUseCase";
-import SlotUseCase from "../../application/useCases/implimentations/slotUseCase"; 
+import SlotUseCase from "../../application/useCases/implimentations/slotUseCase";
 
 const slotRepository = new SlotRepository();
 const updateSlotUseCase = new UpdateSlotUseCase(slotRepository);
@@ -30,7 +30,6 @@ export const slotController = {
     next: NextFunction
   ): Promise<void> {
     try {
-      console.log("Received params:", req.query);
       const { filteredSlots, slotDataAll, slotId } =
         await SlotUseCase.fetchSlots(req.query);
       res
@@ -47,7 +46,6 @@ export const slotController = {
     next: NextFunction
   ): Promise<void> => {
     const { slotId, timeSlotId, status } = req.body;
-    console.log("REQ BODY:", slotId, timeSlotId, status);
 
     try {
       const { updation } = await updateSlotUseCase.execute(

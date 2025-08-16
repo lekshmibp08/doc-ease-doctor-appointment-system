@@ -19,8 +19,8 @@ export class ReviewRepository implements IReviewRepository {
   async getReviewsByDoctorId(doctorId: string): Promise<IReview[]> {
     return await ReviewModel.find({ doctorId })
       .populate({
-        path: 'userId',
-        select: 'fullName'
+        path: "userId",
+        select: "fullName",
       })
       .lean();
   }
