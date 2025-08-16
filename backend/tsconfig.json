@@ -114,5 +114,6 @@
 
 
   },
-  "include": ["src/**/*", "src/types/express.d.ts"]
+  "include": ["src/**/*", "src/types/express.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }
