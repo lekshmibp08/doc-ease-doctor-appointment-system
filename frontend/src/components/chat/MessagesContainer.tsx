@@ -18,11 +18,10 @@ interface MessageWithLoading {
 
 interface MessagesContainerProps {
   messages: MessageWithLoading[]
-  currentUserId: string
-  _userType: "doctor" | "user"
+  currentUserId: string  
 }
 
-const MessagesContainer: React.FC<MessagesContainerProps> = ({ messages, currentUserId, _userType }) => {
+const MessagesContainer: React.FC<MessagesContainerProps> = ({ messages, currentUserId }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

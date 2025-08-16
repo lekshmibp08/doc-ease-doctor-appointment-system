@@ -280,7 +280,7 @@ const DoctorChat: React.FC = () => {
               userType="doctor"
             />
 
-            <MessagesContainer messages={messages} currentUserId={doctorId || ""} _userType="doctor" />
+            <MessagesContainer messages={messages} currentUserId={doctorId || ""} />
 
             <MessageInput
               newMessage={newMessage}
