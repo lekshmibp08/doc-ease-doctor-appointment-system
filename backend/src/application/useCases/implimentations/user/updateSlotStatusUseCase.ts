@@ -12,7 +12,7 @@ export class UpdateSlotStatus implements IUpdateSlotStatus {
     status: string
   ): Promise<void> {
     try {
-      const updatedSlot = await this.slotRepository.updateSlotStatus(
+      await this.slotRepository.updateSlotStatus(
         slotId,
         timeSlotId,
         status

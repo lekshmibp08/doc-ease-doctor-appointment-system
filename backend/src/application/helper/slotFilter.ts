@@ -17,8 +17,8 @@ export const filterSlotsByPeriod = (
   const parseTime = (time: string) => {
     // Split time into hours, minutes and AM/PM
     const [timeString, modifier] = time.split(" ");
-    let [hours, minutes] = timeString.split(":").map(Number);
-    console.log(minutes);
+    const [hoursStr, minutes] = timeString.split(":").map(Number);
+    let hours = hoursStr;
 
     // Handle AM/PM conversion
     if (modifier === "AM" && hours === 12) {

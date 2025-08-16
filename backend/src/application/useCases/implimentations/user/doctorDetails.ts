@@ -12,7 +12,7 @@ export class DoctorDetails implements IDoctorDetailsUseCase {
     if (!docDetails) {
       throw new AppError("User not found", HttpStatusCode.NOT_FOUND);
     }
-    const { password, documents, ...rest } = docDetails;
+    const { password: _password, documents: _documents, ...rest } = docDetails;
 
     const details: Partial<Doctor> = {
       ...rest,
