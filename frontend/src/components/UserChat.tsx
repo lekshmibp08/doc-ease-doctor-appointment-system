@@ -317,7 +317,7 @@ const UserChat: React.FC<UserChatProps> = ({ isOpen, onClose, initialDoctorId })
                 userType="user"
               />
 
-              <MessagesContainer messages={messages} currentUserId={userId || ""} userType="user" />
+              <MessagesContainer messages={messages} currentUserId={userId || ""} _userType="user" />
 
               <MessageInput
                 newMessage={newMessage}
