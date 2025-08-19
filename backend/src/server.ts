@@ -13,7 +13,7 @@ import authRoutes from "./interfaces/routes/authRoutes";
 import {
   notFound,
   errorHandler,
-} from "./interfaces/middlewares/errorMiddleWare ";
+} from './interfaces/middlewares/errorMiddleWare'
 import { initializeSocket } from "./infrastructure/socket";
 
 dotenv.config({ path: `${__dirname}/../.env` });
