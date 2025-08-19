@@ -7,6 +7,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Swal from "sweetalert2";
 import { updateUserProfile } from '../services/api/userApi'
+import { getFullImageUrl } from "../utils/getFullImageUrl";
 
 const CLOUDINARY_API_URL = import.meta.env.VITE_CLOUDINARY_API_URL;
 
@@ -148,7 +149,7 @@ const UserAccountDetails = () => {
 
               {/* Profile Image */}
               <img
-                src={values.profilePicture || currentUser?.profilePicture}
+                src={getFullImageUrl(values.profilePicture) || getFullImageUrl(currentUser?.profilePicture)}
                 alt="Profile"
                 className="h-24 w-24 rounded-full object-cover cursor-pointer"
                 onClick={() => fileRef.current!.click()}

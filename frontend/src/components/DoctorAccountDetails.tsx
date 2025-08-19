@@ -9,6 +9,7 @@ import {
   uploadDoctorProfileImage, 
   updateDoctorProfile
 } from '../services/api/doctorApi'
+import { getFullImageUrl } from "../utils/getFullImageUrl";
 
 
 const validationSchema = Yup.object({
@@ -19,9 +20,9 @@ const validationSchema = Yup.object({
       function (value) {
         const { password, confirmPassword } = this.parent;
         if (password || confirmPassword) {
-          return !!value; // If password or confirmPassword is filled, currentPassword must be filled
+          return !!value; 
         }
-        return true; // Otherwise, currentPassword is not required
+        return true; 
       }
     ),
   password: Yup.string()
@@ -90,7 +91,7 @@ const DoctorAccountDetails = () => {
       setFieldValue("profilePicture", updatedUserData.profilePicture);
       resetForm({ 
         values: { 
-          profilePicture: updatedUserData.profilePicture, 
+          profilePicture: getFullImageUrl(updatedUserData.profilePicture), 
           currentPassword: "",
           password: "", 
           confirmPassword: "" 
@@ -141,7 +142,7 @@ const DoctorAccountDetails = () => {
 
               {/* Profile Image */}
               <img
-                src={values.profilePicture || currentUser?.profilePicture}
+                src={getFullImageUrl(values.profilePicture) || getFullImageUrl(currentUser?.profilePicture)}
                 alt="Profile"
                 className="h-24 w-24 rounded-full object-cover cursor-pointer"
                 onClick={() => fileRef.current!.click()}
