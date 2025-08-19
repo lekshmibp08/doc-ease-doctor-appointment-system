@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
 import { ErrorLogModel } from "../../infrastructure/database/models/errorLogModel";
+import { AppError } from "../../shared/errors/appError";
 
-interface CustomError extends Error {
-  status?: number;
-}
+
 
 // 404 Not Found Middleware
 export const notFound = (req: Request, res: Response) => {
@@ -12,9 +11,10 @@ export const notFound = (req: Request, res: Response) => {
 
 // Global Error Handling Middleware
 export const errorHandler = async (
-  err: CustomError,
+  err: AppError,
   req: Request,
   res: Response,
+  next: Function
 ) => {
   const statusCode = err.status || 500;
   try {
