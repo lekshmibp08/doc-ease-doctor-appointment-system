@@ -20,7 +20,7 @@ export class UserLoginUseCase implements IUserLoginUseCase {
     if (!user) {
       throw new AppError(
         "Invalid email or password",
-        HttpStatusCode.UNAUTHORIZED
+        HttpStatusCode.NOT_FOUND
       );
     }
 
@@ -28,7 +28,7 @@ export class UserLoginUseCase implements IUserLoginUseCase {
     if (!isPasswordValid) {
       throw new AppError(
         "Invalid email or password",
-        HttpStatusCode.UNAUTHORIZED
+        HttpStatusCode.NOT_FOUND
       );
     }
 
