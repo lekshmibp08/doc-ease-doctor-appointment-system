@@ -25,9 +25,8 @@ export class CancelAppointmentByUserUsecase
         );
 
       return updatedAppointment;
-    } catch (error) {
-      console.error("Failed to fetch appointments:", error);
-      throw new Error("Failed to fetch appointments.");
+    } catch (error: any) {
+      throw new AppError(error.message || "Failed to fetch appointments.", HttpStatusCode.INTERNAL_SERVER_ERROR);
     }
   }
 }
