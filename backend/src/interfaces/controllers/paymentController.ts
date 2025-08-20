@@ -1,4 +1,5 @@
 import { Request, Response, RequestHandler, NextFunction } from "express";
+import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { CreateOrderUseCase } from "../../application/useCases/implimentations/createOrderUseCase "; 
 import { paymentService } from "../../infrastructure/services";
 
@@ -13,12 +14,12 @@ export const paymentController = {
     try {
       const { amount } = req.body; 
       if (!amount) {
-        res.status(400).json({ message: "Amount is required" });
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Amount is required" });
         return;
       }
 
       const order = await createOrderUseCase.execute(amount);
-      res.status(200).json(order);
+      res.status(HttpStatusCode.OK).json(order);
     } catch (error) {
       next(error);
     }
