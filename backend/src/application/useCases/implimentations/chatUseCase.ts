@@ -1,6 +1,4 @@
 import { IChatUsecase } from "../interfaces/IChatUsecase"
-import { ChatRepository } from "../../../infrastructure/database/repositories/chatRepository" 
-import { MessageRepository } from "../../../infrastructure/database/repositories/messageRepository" 
 import { IChat } from "../../../domain/entities/chat" 
 import { IMessage } from "../../../domain/entities/message" 
 import { stripBaseUrl } from "../../helper/stripBaseUrl" 

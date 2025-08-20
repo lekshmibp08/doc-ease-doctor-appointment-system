@@ -2,7 +2,13 @@ import { Server as SocketIOServer } from "socket.io";
 import { ChatUsecase } from "../../application/useCases/implimentations/chatUseCase";
 import { registerSlotEvents } from "./slotSocketHandlers";
 import dotenv from "dotenv";
+import { ChatRepository } from "../database/repositories/chatRepository";
+import { MessageRepository } from "../database/repositories/messageRepository";
 dotenv.config();
+
+const chatRepository = new ChatRepository();
+const messageRepository = new MessageRepository();
+const chatUsecase = new ChatUsecase(chatRepository, messageRepository);
 
 const FRONT_END_URL = process.env.FRONT_END_URL;
 
@@ -43,7 +49,6 @@ export const initializeSocket = (server: any) => {
 
     socket.on("mark messages as read", async ({ chatId, receiverId }) => {
       try {
-        const chatUsecase = new ChatUsecase();
         await chatUsecase.markMessagesAsRead(chatId, receiverId);
 
         socket.to(chatId).emit("messages read", { chatId });
