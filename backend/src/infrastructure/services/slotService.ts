@@ -1,4 +1,3 @@
-/* eslint-disable prefer-const */
 import { RRule } from "rrule";
 import { Slot } from "../../domain/entities/slot";
 

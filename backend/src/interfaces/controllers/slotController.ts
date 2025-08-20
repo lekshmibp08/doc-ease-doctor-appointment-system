@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { SlotRepository } from "../../infrastructure/database/repositories/slotRepository";
 import { UpdateSlotUseCase } from "../../application/useCases/implimentations/doctor/updateSlotUseCase";
 import { FetchSlotUseCase } from "../../application/useCases/implimentations/user/fetchSlotUseCase";
@@ -19,7 +20,7 @@ export const slotController = {
   ): Promise<void> {
     try {
       await slotUseCase.generateSlots(req.body);
-      res.status(201).json({ message: "Slots generated successfully!" });
+      res.status(HttpStatusCode.CREATED).json({ message: "Slots generated successfully!" });
     } catch (error) {
       next(error);
     }
@@ -34,7 +35,7 @@ export const slotController = {
       const { filteredSlots, slotDataAll, slotId } =
         await slotUseCase.fetchSlots(req.query);
       res
-        .status(200)
+        .status(HttpStatusCode.OK)
         .json({ slotDataFiltered: filteredSlots, slotDataAll, slotId });
     } catch (error) {
       next(error);
@@ -55,7 +56,7 @@ export const slotController = {
         status
       );
       res
-        .status(200)
+        .status(HttpStatusCode.OK)
         .json({ message: "Slot status updated successfully.", updation });
     } catch (error: any) {
       next(error);
@@ -71,7 +72,7 @@ export const slotController = {
     const date = req.query.date as string;
     try {
       const existingSlot = await fetchSlotUseCase.execute(doctorId, date);
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         timeSlots: existingSlot?.timeSlots,
         slotId: existingSlot?._id,
       });
@@ -93,7 +94,7 @@ export const slotController = {
         timeSlotId,
         newTime
       );
-      res.status(200).json({ success });
+      res.status(HttpStatusCode.OK).json({ success });
     } catch (error: any) {
       next(error);
     }
