@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { SlotRepository } from "../../infrastructure/database/repositories/slotRepository";
 import { AppointmentRepository } from "../../infrastructure/database/repositories/appoinmentRepository";
 import { CreateAppointmentUseCase } from "../../application/useCases/implimentations/user/createAppointmentUseCase ";
@@ -11,6 +12,7 @@ import { UpdateSlotStatus } from "../../application/useCases/implimentations/use
 import { RescheduleAppointmentUseCase } from "../../application/useCases/implimentations/user/rescheduleAppointmentUseCase";
 import { UpdateAppointment } from "../../application/useCases/implimentations/user/updateAppointmentUseCase";
 import { paymentService } from "../../infrastructure/services";
+import { AppError } from "../../shared/errors/appError";
 
 const slotRepository = new SlotRepository();
 const appointmentRepository = new AppointmentRepository();
@@ -67,7 +69,7 @@ export const appoinmentController = {
         paymentId,
       });
       res
-        .status(201)
+        .status(HttpStatusCode.CREATED)
         .json({ message: "Appointment created successfully.", newAppoinment });
     } catch (error) {
       next(error);
@@ -86,7 +88,7 @@ export const appoinmentController = {
         userId as string
       );
 
-      res.status(200).json({ appointments });
+      res.status(HttpStatusCode.OK).json({ appointments });
     } catch (error) {
       next(error);
     }
@@ -110,10 +112,7 @@ export const appoinmentController = {
       const paymentId = updatedAppointment.paymentId;
 
       if (!paymentId) {
-        res
-          .status(400)
-          .json({ error: "No payment information found for this appointment" });
-        return;
+        throw new AppError("No payment information found for this appointment", HttpStatusCode.BAD_REQUEST)        
       }
 
       await updateSlotStatus.execute(
@@ -144,7 +143,7 @@ export const appoinmentController = {
         refundTransactionId,
       });
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         message: "Appointment cancelled and refund initiated Successfully.",
         updatedData,
         refundTransactionId,
@@ -172,7 +171,7 @@ export const appoinmentController = {
         modeOfVisit
       );
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         message: "Appointment rescheduled successfully",
         updatedAppointment,
       });
@@ -199,7 +198,7 @@ export const appoinmentController = {
           pageSize,
           searchQuery
         );
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         appointments,
         totalAppointments,
         totalPages,
@@ -229,7 +228,7 @@ export const appoinmentController = {
           pageSize
         );
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         appointments,
         totalAppointments,
         totalPages,
@@ -254,7 +253,7 @@ export const appoinmentController = {
         isCompleted
       );
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         success: true,
         message: "Appointment status updated successfully",
       });
