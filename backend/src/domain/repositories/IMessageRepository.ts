@@ -9,6 +9,7 @@ export interface IMessageRepository {
         imageUrl: string
     ): Promise<IMessage>;
     getMessagesByChatId(chatId: string): Promise<IMessage[]>;
-    
-    
+    markMessagesAsRead(chatId: string, receiverId: string): Promise<void>;
+    getUnreadCountForUser(chatId: string, userId: string): Promise<number>;
+    getUnreadCountForDoc(chatId: string, doctorId: string): Promise<number>;
 }

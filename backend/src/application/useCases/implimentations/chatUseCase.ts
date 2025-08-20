@@ -6,15 +6,17 @@ import { IMessage } from "../../../domain/entities/message"
 import { stripBaseUrl } from "../../helper/stripBaseUrl" 
 import { mapToAllDocChatsDTO } from "../../../infrastructure/database/mappers/mapToAllDocChatsDTO" 
 import { mapToAllUserChatsDTO } from "../../../infrastructure/database/mappers/mapToAllUserChatsDTO" 
+import { IChatRepository } from "../../../domain/repositories/IChatRepository"
+import { IMessageRepository } from "../../../domain/repositories/IMessageRepository"
 
 export class ChatUsecase implements IChatUsecase {
-  private chatRepository: ChatRepository;
-  private messageRepository: MessageRepository;
-
-  constructor() {
-    this.chatRepository = new ChatRepository();
-    this.messageRepository = new MessageRepository();
-  }
+  constructor(
+    private chatRepository: IChatRepository,
+    private messageRepository: IMessageRepository
+  ) {
+  this.chatRepository = chatRepository;
+  this.messageRepository = messageRepository;
+}
 
   async getOrCreateChat(userId: string, doctorId: string) {
     let chat: IChat | null = await this.chatRepository.findChatByParticipants(userId, doctorId);

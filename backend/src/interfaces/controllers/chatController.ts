@@ -1,12 +1,17 @@
 import { NextFunction, Request, Response } from "express";
-import { ChatUsecase } from "../../application/useCases/implimentations/chatUseCase"; 
+import { ChatUsecase } from "../../application/useCases/implimentations/chatUseCase";
+import { ChatRepository } from "../../infrastructure/database/repositories/chatRepository";
+import { MessageRepository } from "../../infrastructure/database/repositories/messageRepository";
+
+const chatRepository = new ChatRepository();
+const messageRepository = new MessageRepository();
+const chatUsecase = new ChatUsecase(chatRepository, messageRepository);
 
 export const chatController = {
   // Create or fetch chat
   getOrCreateChat: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId, doctorId } = req.body;
-      const chatUsecase = new ChatUsecase();
       const { chat, messages } = await chatUsecase.getOrCreateChat(
         userId,
         doctorId
@@ -20,7 +25,6 @@ export const chatController = {
   getAllChats: async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.query;
     try {
-      const chatUsecase = new ChatUsecase();
       const chats = await chatUsecase.getAllChatsForUser(userId as string);
 
       const unreadCounts = await chatUsecase.getUnreadMessageCountsForUser(
@@ -41,7 +45,6 @@ export const chatController = {
   ) => {
     const { doctorId } = req.query;
     try {
-      const chatUsecase = new ChatUsecase();
       const chats = await chatUsecase.getAllDoctorChats(doctorId as string);
       const unreadCounts = await chatUsecase.getUnreadMessageCountsForDoc(
         doctorId as string
@@ -56,7 +59,6 @@ export const chatController = {
   sendMessage: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { chatId, senderId, receiverId, text, imageUrl } = req.body;
-      const chatUsecase = new ChatUsecase();
       const newMessage = await chatUsecase.sendMessage(
         chatId,
         senderId,
@@ -77,7 +79,6 @@ export const chatController = {
   ) => {
     const { chatId } = req.query;
     try {
-      const chatUsecase = new ChatUsecase();
       const messages = await chatUsecase.getAChatUsingChatId(chatId as string);
       res.status(200).json(messages);
     } catch (error: any) {
