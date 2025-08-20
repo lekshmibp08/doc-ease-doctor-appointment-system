@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { ReviewUseCase } from "../../application/useCases/implimentations/reviewUseCase"; 
 import { ReviewRepository } from "../../infrastructure/database/repositories/reviewRepository";
 import { AppointmentRepository } from "../../infrastructure/database/repositories/appoinmentRepository";
@@ -25,7 +26,7 @@ export const reviewController = {
         appointmentRepository,
         isReviewed
       );
-      res.status(201).json({ success: true, review, result });
+      res.status(HttpStatusCode.CREATED).json({ success: true, review, result });
     } catch (error) {
       next(error);
     }
@@ -41,7 +42,7 @@ export const reviewController = {
       const review = await reviewUseCase.getReviewsByAppointmentId(
         appointmentId as string
       );
-      res.status(200).json({ success: true, review });
+      res.status(HttpStatusCode.OK).json({ success: true, review });
     } catch (error) {
       next(error);
     }
@@ -52,7 +53,7 @@ export const reviewController = {
       const { reviewId } = req.params;
       const updateData = req.body;
       await reviewUseCase.updateReview(reviewId, updateData);
-      res.status(200).json({ success: true });
+      res.status(HttpStatusCode.OK).json({ success: true });
     } catch (error) {
       next(error);
     }
@@ -67,7 +68,7 @@ export const reviewController = {
       const { doctorId } = req.params;
 
       const reviews = await reviewUseCase.getReviewsByDoctorId(doctorId);
-      res.status(200).json({ success: true, reviews });
+      res.status(HttpStatusCode.OK).json({ success: true, reviews });
     } catch (error) {
       next(error);
     }
