@@ -3,9 +3,10 @@ import { SlotRepository } from "../../infrastructure/database/repositories/slotR
 import { UpdateSlotUseCase } from "../../application/useCases/implimentations/doctor/updateSlotUseCase";
 import { FetchSlotUseCase } from "../../application/useCases/implimentations/user/fetchSlotUseCase";
 import { UpdateSlotTimeUseCase } from "../../application/useCases/implimentations/doctor/updateSlotTimeUseCase";
-import SlotUseCase from "../../application/useCases/implimentations/slotUseCase";
+import { SlotUseCase } from "../../application/useCases/implimentations/slotUseCase";
 
 const slotRepository = new SlotRepository();
+const slotUseCase = new SlotUseCase(slotRepository)
 const updateSlotUseCase = new UpdateSlotUseCase(slotRepository);
 const fetchSlotUseCase = new FetchSlotUseCase(slotRepository);
 const updateSlotTimeUseCase = new UpdateSlotTimeUseCase(slotRepository);
@@ -17,7 +18,7 @@ export const slotController = {
     next: NextFunction
   ): Promise<void> {
     try {
-      await SlotUseCase.generateSlots(req.body);
+      await slotUseCase.generateSlots(req.body);
       res.status(201).json({ message: "Slots generated successfully!" });
     } catch (error) {
       next(error);
@@ -31,7 +32,7 @@ export const slotController = {
   ): Promise<void> {
     try {
       const { filteredSlots, slotDataAll, slotId } =
-        await SlotUseCase.fetchSlots(req.query);
+        await slotUseCase.fetchSlots(req.query);
       res
         .status(200)
         .json({ slotDataFiltered: filteredSlots, slotDataAll, slotId });

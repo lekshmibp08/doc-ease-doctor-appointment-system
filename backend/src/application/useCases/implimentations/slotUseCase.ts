@@ -1,15 +1,14 @@
 import { GenerateSlotsDTO, ISlotUseCase } from "../interfaces/ISlotUseCase"
-import { SlotRepository } from "../../../infrastructure/database/repositories/slotRepository" 
 import SlotService from "../../../infrastructure/services/slotService" 
 import { filterSlotsByPeriod } from "../../helper/slotFilter" 
 import { Slot } from "../../../domain/entities/slot" 
+import { ISlotRepository } from "../../../domain/repositories/ISlotRepository"
 
 
-class SlotUseCase implements ISlotUseCase {
-  private slotRepository: SlotRepository;
+export class SlotUseCase implements ISlotUseCase {
 
-  constructor() {
-    this.slotRepository = new SlotRepository();
+  constructor(private slotRepository: ISlotRepository) {
+    this.slotRepository = slotRepository;
   }
 
   //Generate Slots
@@ -40,4 +39,3 @@ class SlotUseCase implements ISlotUseCase {
   }
 }
 
-export default new SlotUseCase();
