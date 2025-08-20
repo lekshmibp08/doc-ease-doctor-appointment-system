@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { LoginAdmin } from "../../application/useCases/implimentations/admin/loginAdminUseCase";
 import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
 import { ListDoctorsUseCase } from "../../application/useCases/implimentations/admin/listDoctorsUseCase";
@@ -28,13 +29,19 @@ const getAdminDashboardStatsUseCase = new GetAdminDashboardStatsUseCase(
 );
 
 export const adminController = {
-
-  login: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  login: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        throw { status: 400, message: "Email and Password are required" };
+        throw {
+          status: HttpStatusCode.BAD_REQUEST,
+          message: "Email and Password are required",
+        };
       }
 
       const { token, refreshToken, role } = await loginAdmin.execute({
@@ -50,7 +57,7 @@ export const adminController = {
       });
 
       res
-        .status(200)
+        .status(HttpStatusCode.OK)
         .json({ message: "Login successful", token, refreshToken, role });
     } catch (error: any) {
       next(error);
@@ -58,7 +65,11 @@ export const adminController = {
   },
 
   // List all doctors
-  getDoctors: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getDoctors: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { page, size, search } = req.query;
       const pageNumber = parseInt(page as string);
@@ -69,15 +80,19 @@ export const adminController = {
         await listDoctorsUseCase.execute(pageNumber, pageSize, searchQuery);
 
       res
-        .status(200)
+        .status(HttpStatusCode.OK)
         .json({ doctors, totalDoctors, totalPages, currentPage: pageNumber });
     } catch (error: any) {
-      next(error)
+      next(error);
     }
   },
 
   //List all pending requests
-  getPendingDoctors: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getPendingDoctors: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const { page = 1, size = 8, search = "" } = req.query;
 
     const pageNumber = parseInt(page as string);
@@ -89,15 +104,19 @@ export const adminController = {
         await fetchPendingDoctors.execute(pageNumber, pageSize, searchQuery);
 
       res
-        .status(200)
+        .status(HttpStatusCode.OK)
         .json({ doctors, totalDoctors, totalPages, currentPage: pageNumber });
     } catch (error: any) {
-      next(error)
+      next(error);
     }
   },
 
   // List all users
-  getAllUsers: async (req: Request, res: Response): Promise<void> => {
+  getAllUsers: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { page, size, search } = req.query;
 
@@ -112,80 +131,88 @@ export const adminController = {
       );
 
       res
-        .status(200)
+        .status(HttpStatusCode.OK)
         .json({ users, totalUsers, totalPages, currentPage: pageNumber });
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ message: "Failed to fetch users", error: error.message });
+      next(error);
     }
   },
 
   //Handle Doctor Approval
-  doctorApproval: async (req: Request, res: Response): Promise<void> => {
+  doctorApproval: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { id } = req.params;
 
       await approveDoctorUsecase.execute(id);
 
-      res.status(200).json({ message: "Doctor Approved Successfully..!" });
-    } catch (error: any) {
-      console.error("Error in doctor Approval:", error.message);
       res
-        .status(500)
-        .json({ message: error.message || "Internal server error" });
+        .status(HttpStatusCode.OK)
+        .json({ message: "Doctor Approved Successfully..!" });
+    } catch (error: any) {
+      next(error);
     }
   },
 
   //Handle Doctor Reject
-  rejectDoctor: async (req: Request, res: Response): Promise<void> => {
+  rejectDoctor: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { id } = req.params;
       const reason = req.body.reason;
 
       const result = await rejectRequestUseCase.execute(id, reason);
 
-      res.status(200).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ message: error.message || "Internal server error" });
+      next(error);
     }
   },
 
   //Handle Block and unblock Doctor
-  blockAndUnblockDoctor: async (req: Request, res: Response): Promise<void> => {
+  blockAndUnblockDoctor: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { id } = req.params;
 
       const result = await toggleBlockDoctorUseCase.execute(id);
 
-      res.status(200).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ message: error.message || "Internal server error" });
+      next(error);
     }
   },
 
   //Handle Block and unblock User
-  blockAndUnblockUser: async (req: Request, res: Response): Promise<void> => {
+  blockAndUnblockUser: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { id } = req.params;
 
       const result = await toggleBlockUseruseCase.execute(id);
 
-      res.status(200).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error: any) {
-      res
-        .status(500)
-        .json({ message: error.message || "Internal server error" });
+      next(error);
     }
   },
 
   getAdminDashboardStats: async (
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ): Promise<void> => {
     try {
       const { startDate, endDate } = req.body;
@@ -195,12 +222,9 @@ export const adminController = {
         new Date(endDate)
       );
 
-      res.status(200).json(stats);
+      res.status(HttpStatusCode.OK).json(stats);
     } catch (error) {
-      console.error("Error fetching admin dashboard stats:", error);
-      res
-        .status(500)
-        .json({ message: "Failed to fetch admin dashboard stats" });
+      next(error);
     }
   },
 };
