@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { HttpStatusCode } from "../../enums/httpStatusCode";
 import {PrescriptionUseCase} from "../../application/useCases/implimentations/prescriptionUseCase";  
 import { GetAppointmentsByIdUseCase } from "../../application/useCases/implimentations/user/getAppointmentByIdUseCase";
 import { AppointmentRepository } from "../../infrastructure/database/repositories/appoinmentRepository";
@@ -21,7 +22,7 @@ export const prescriptionController = {
       const prescription = await prescriptionUseCase.createPrescription(
         req.body
       );
-      res.status(201).json(prescription);
+      res.status(HttpStatusCode.CREATED).json(prescription);
     } catch (error: any) {
       next(error);
     }
@@ -37,9 +38,9 @@ export const prescriptionController = {
         req.params.appointmentId
       );
       if (prescription) {
-        res.status(200).json({ prescription });
+        res.status(HttpStatusCode.OK).json({ prescription });
       } else {
-        res.status(404).json({ error: "Prescription not found" });
+        res.status(HttpStatusCode.NOT_FOUND).json({ error: "Prescription not found" });
       }
     } catch (error: any) {
       next(error);
@@ -60,7 +61,7 @@ export const prescriptionController = {
       if (prescription) {
         res.json(prescription);
       } else {
-        res.status(404).json({ error: "Prescription not found" });
+        res.status(HttpStatusCode.NOT_FOUND).json({ error: "Prescription not found" });
       }
     } catch (error: any) {
       next(error);
@@ -78,7 +79,7 @@ export const prescriptionController = {
         appointmentId
       );
       if (!prescription) {
-        res.status(404).json({ error: "Prescription not found" });
+        res.status(HttpStatusCode.NOT_FOUND).json({ error: "Prescription not found" });
         return;
       }
 
@@ -87,7 +88,7 @@ export const prescriptionController = {
       );
       const doctor = appointment.doctorId;
 
-      res.status(200).json({ prescription, doctor });
+      res.status(HttpStatusCode.OK).json({ prescription, doctor });
     } catch (error: any) {
       next(error);
     }
