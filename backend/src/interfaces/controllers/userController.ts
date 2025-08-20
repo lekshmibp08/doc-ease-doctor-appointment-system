@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import { HttpStatusCode } from "../../enums/httpStatusCode";
+import { AppError } from "../../shared/errors/appError";
 import { SendOtpForSignupUseCase } from "../../application/useCases/implimentations/user/sendOtpForSignup";
 import { VerifyOtpAndRegister } from "../../application/useCases/implimentations/user/verifyOtpAndRegisterUser";
 import { OtpRepository } from "../../infrastructure/database/repositories/otpRepository";
@@ -39,7 +41,7 @@ export const userController = {
 
     if (password !== confirmPassword) {
       res
-        .status(400)
+        .status(HttpStatusCode.BAD_REQUEST)
         .json({ message: "Passwords entered are not matching...!" });
       return;
     }
@@ -47,11 +49,13 @@ export const userController = {
     try {
       const existingUser = await userRepository.findByEmail(email);
       if (existingUser) {
-        res.status(400).json({ message: "Email is already registered" });
-        return;
+        throw new AppError(
+          "Email is already registered",
+          HttpStatusCode.BAD_REQUEST
+        );
       }
       await sendOtpForSignupUseCase.execute(email);
-      res.status(200).json({ message: "OTP sent successfully" });
+      res.status(HttpStatusCode.OK).json({ message: "OTP sent successfully" });
     } catch (error: any) {
       next(error);
     }
@@ -73,7 +77,7 @@ export const userController = {
         mobileNumber,
         password,
       });
-      res.status(201).json({
+      res.status(HttpStatusCode.CREATED).json({
         message:
           "OTP verified and User registered successfully, You can now log in..!",
         user,
@@ -107,7 +111,7 @@ export const userController = {
       });
 
       res
-        .status(200)
+        .status(HttpStatusCode.OK)
         .json({ message: "Login successful", token, role, userData });
     } catch (error: any) {
       next(error);
@@ -147,7 +151,7 @@ export const userController = {
         sort: sort as string,
       });
 
-      res.status(200).json(result);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       next(error);
     }
@@ -176,23 +180,27 @@ export const userController = {
       const updatedUser = await updateUser.execute(id, updatedData);
 
       res
-        .status(200)
+        .status(HttpStatusCode.OK)
         .json({ message: "User Profile Updated Successfully..!", updatedUser });
     } catch (error: any) {
       console.error("Error in updateDoctorProfile:", error.message);
 
       if (error.message === "Doctor not found") {
-        res.status(404).json({ message: "Doctor not found" });
+        res
+          .status(HttpStatusCode.NOT_FOUND)
+          .json({ message: "Doctor not found" });
         return;
       }
 
       if (error.message === "Current password is incorrect") {
-        res.status(400).json({ message: "Current password is incorrect" });
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "Current password is incorrect" });
         return;
       }
 
       res
-        .status(500)
+        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
         .json({ message: "Failed to update profile", error: error.message });
       return;
     }
@@ -209,11 +217,13 @@ export const userController = {
     try {
       const existingUser = await userRepository.findByEmail(email);
       if (!existingUser) {
-        res.status(400).json({ message: "Please enter valid Email id" });
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "Please enter valid Email id" });
         return;
       }
       await sendOtpForResetPassword.execute(email);
-      res.status(200).json({ message: "OTP sent successfully" });
+      res.status(HttpStatusCode.OK).json({ message: "OTP sent successfully" });
     } catch (error: any) {
       next(error);
     }
@@ -229,7 +239,7 @@ export const userController = {
 
     try {
       await verifyOtpAndResetPassword.execute({ email, newPassword, otp });
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         message: "Password changed successfully, You can now log in..!",
       });
     } catch (error: any) {
@@ -242,7 +252,7 @@ export const userController = {
     const { id } = req.params;
     try {
       const details = await doctorDetails.execute(id);
-      res.status(200).json(details);
+      res.status(HttpStatusCode.OK).json(details);
     } catch (error: any) {
       next(error);
     }
