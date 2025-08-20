@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 import { UserRepository } from "../../infrastructure/database/repositories/userRepository";
 import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
-
+import { HttpStatusCode } from "../../enums/httpStatusCode";
 
 interface DecodedToken {
   id: string;
@@ -11,28 +11,41 @@ interface DecodedToken {
   exp: number;
 }
 
-export const authenticateUser = (allowedRoles: string[] = []): RequestHandler => {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const authenticateUser = (
+  allowedRoles: string[] = []
+): RequestHandler => {
+  return async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     const authHeader = req.headers.authorization;
-        
+
     if (!authHeader) {
-      res.status(401).json({ message: "Authentication token is missing" });
+      res
+        .status(HttpStatusCode.UNAUTHORIZED)
+        .json({ message: "Authentication token is missing" });
       return;
     }
-    
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    const token = req.header("Authorization")?.replace("Bearer ", "");
     if (!token) {
-      res.status(401).json({ message: "Authentication token is missing" });
+      res
+        .status(HttpStatusCode.UNAUTHORIZED)
+        .json({ message: "Authentication token is missing" });
       return;
     }
 
     try {
-      
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'DocEaseSecret',) as DecodedToken;
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || "DocEaseSecret"
+      ) as DecodedToken;
 
       if (allowedRoles.length > 0 && !allowedRoles.includes(decoded.role)) {
-                
-        res.status(403).json({ message: "You do not have the required permissions" });
+        res
+          .status(HttpStatusCode.FORBIDDEN)
+          .json({ message: "You do not have the required permissions" });
         return;
       }
 
@@ -40,19 +53,23 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
       const doctorRepository = new DoctorRepository();
 
       let user;
-      if(decoded.role === 'user' || decoded.role === "admin") {
+      if (decoded.role === "user" || decoded.role === "admin") {
         user = await userRepository.findUserById(decoded.id);
       } else if (decoded.role === "doctor") {
         user = await doctorRepository.findDoctorById(decoded.id);
       }
 
       if (!user) {
-        res.status(404).json({ message: "User not found" });
+        res
+          .status(HttpStatusCode.NOT_FOUND)
+          .json({ message: "User not found" });
         return;
       }
 
       if (user.isBlocked) {
-        res.status(403).json({ message: "Your account is blocked. Please contact support." });
+        res.status(HttpStatusCode.FORBIDDEN).json({
+          message: "Your account is blocked. Please contact support.",
+        });
         return;
       }
 
@@ -61,13 +78,15 @@ export const authenticateUser = (allowedRoles: string[] = []): RequestHandler =>
 
       next();
     } catch (error: any) {
-      if (error.name === 'TokenExpiredError') {
-        console.error('Token has expired');
+      if (error.name === "TokenExpiredError") {
+        console.error("Token has expired");
       } else {
-        console.error('Token verification error:', error.message);
+        console.error("Token verification error:", error.message);
       }
-      
-      res.status(401).json({ message: "Invalid or expired token" });
+
+      res
+        .status(HttpStatusCode.UNAUTHORIZED)
+        .json({ message: "Invalid or expired token" });
     }
   };
 };
