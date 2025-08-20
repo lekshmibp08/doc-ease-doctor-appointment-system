@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { ChatUsecase } from "../../application/useCases/implimentations/chatUseCase";
 import { ChatRepository } from "../../infrastructure/database/repositories/chatRepository";
 import { MessageRepository } from "../../infrastructure/database/repositories/messageRepository";
@@ -16,7 +17,7 @@ export const chatController = {
         userId,
         doctorId
       );
-      res.json({ chat, messages });
+      res.status(HttpStatusCode.OK).json({ chat, messages });
     } catch (error) {
       next(error);
     }
@@ -31,7 +32,7 @@ export const chatController = {
         userId as string
       );
 
-      res.status(200).json({ chats, unreadCounts });
+      res.status(HttpStatusCode.OK).json({ chats, unreadCounts });
     } catch (error: any) {
       next(error);
     }
@@ -49,7 +50,7 @@ export const chatController = {
       const unreadCounts = await chatUsecase.getUnreadMessageCountsForDoc(
         doctorId as string
       );
-      res.status(200).json({ chats, unreadCounts });
+      res.status(HttpStatusCode.OK).json({ chats, unreadCounts });
     } catch (error: any) {
       next(error);
     }
@@ -80,7 +81,7 @@ export const chatController = {
     const { chatId } = req.query;
     try {
       const messages = await chatUsecase.getAChatUsingChatId(chatId as string);
-      res.status(200).json(messages);
+      res.status(HttpStatusCode.OK).json(messages);
     } catch (error: any) {
       next(error);
     }
