@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { OtpRepository } from "../../infrastructure/database/repositories/otpRepository";
 import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
 import { SendOtpForSignupUseCase } from "../../application/useCases/implimentations/user/sendOtpForSignup";
@@ -36,7 +37,7 @@ export const doctorController = {
 
     if (password !== confirmPassword) {
       res
-        .status(400)
+        .status(HttpStatusCode.BAD_REQUEST)
         .json({ message: "Passwords entered are not matching...!" });
       return;
     }
@@ -44,11 +45,13 @@ export const doctorController = {
     try {
       const existingDoctor = await doctorRepository.findByEmail(email);
       if (existingDoctor) {
-        res.status(400).json({ message: "Email is already registered" });
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "Email is already registered" });
         return;
       }
       await sendOtpForSignupUseCase.execute(email);
-      res.status(200).json({ message: "OTP sent successfully" });
+      res.status(HttpStatusCode.OK).json({ message: "OTP sent successfully" });
     } catch (error: any) {
       next(error);
     }
@@ -72,7 +75,7 @@ export const doctorController = {
         registerNumber,
         password,
       });
-      res.status(201).json({
+      res.status(HttpStatusCode.CREATED).json({
         message:
           "OTP verified and Doctor registered successfully, You can now log in and update profile..!",
         doctor,
@@ -92,7 +95,7 @@ export const doctorController = {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        res.status(400).json({ message: "Email and Password are required" });
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Email and Password are required" });
         return;
       }
 
@@ -108,7 +111,7 @@ export const doctorController = {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         message: "Login successful",
         token,
         refreshToken,
@@ -131,11 +134,11 @@ export const doctorController = {
     try {
       const existingUser = await doctorRepository.findByEmail(email);
       if (!existingUser) {
-        res.status(400).json({ message: "Please enter valid Email id" });
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Please enter valid Email id" });
         return;
       }
       await sendOtpForResetPassword.execute(email);
-      res.status(200).json({ message: "OTP sent successfully" });
+      res.status(HttpStatusCode.OK).json({ message: "OTP sent successfully" });
     } catch (error: any) {
       next(error);
     }
@@ -155,7 +158,7 @@ export const doctorController = {
         newPassword,
         otp,
       });
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         message: "Password changed successfully, You can now log in..!",
       });
     } catch (error: any) {
@@ -175,7 +178,7 @@ export const doctorController = {
 
       const updatedDocProfile = await updateDocProfile.execute(id, updatedData);
 
-      res.status(200).json({
+      res.status(HttpStatusCode.OK).json({
         message: "User Profile Updated Successfully..!",
         updatedDocProfile,
       });
@@ -197,7 +200,7 @@ export const doctorController = {
         new Date(startDate),
         new Date(endDate)
       );
-      res.status(200).json(stats);
+      res.status(HttpStatusCode.OK).json(stats);
     } catch (error) {
       next(error);
     }
