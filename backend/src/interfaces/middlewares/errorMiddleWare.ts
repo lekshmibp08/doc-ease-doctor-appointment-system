@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import { ErrorLogModel } from "../../infrastructure/database/models/errorLogModel";
 import { AppError } from "../../shared/errors/appError";
-
-
+import { HttpStatusCode } from "../../enums/httpStatusCode";
 
 // 404 Not Found Middleware
 export const notFound = (req: Request, res: Response) => {
-  res.status(404).json({ success: false, message: "API route not found" });
+  res
+    .status(HttpStatusCode.NOT_FOUND)
+    .json({ success: false, message: "API route not found" });
 };
 
 // Global Error Handling Middleware
@@ -16,7 +17,7 @@ export const errorHandler = async (
   res: Response,
   next: Function
 ) => {
-  const statusCode = err.status || 500;
+  const statusCode = err.status || HttpStatusCode.INTERNAL_SERVER_ERROR;
   try {
     await ErrorLogModel.create({
       message: err.message,
