@@ -1,12 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import PrescriptionUseCase from "../../application/useCases/implimentations/prescriptionUseCase";  
+import {PrescriptionUseCase} from "../../application/useCases/implimentations/prescriptionUseCase";  
 import { GetAppointmentsByIdUseCase } from "../../application/useCases/implimentations/user/getAppointmentByIdUseCase";
 import { AppointmentRepository } from "../../infrastructure/database/repositories/appoinmentRepository";
+import { PrescriptionRepository } from "../../infrastructure/database/repositories/prescriptionRepository";
 
 const appointmentRepository = new AppointmentRepository();
 const getAppointmentsByIdUseCase = new GetAppointmentsByIdUseCase(
   appointmentRepository
 );
+const prescriptionRepository = new PrescriptionRepository()
+const prescriptionUseCase = new PrescriptionUseCase(prescriptionRepository);
 
 export const prescriptionController = {
   async createPrescription(
@@ -15,7 +18,7 @@ export const prescriptionController = {
     next: NextFunction
   ): Promise<void> {
     try {
-      const prescription = await PrescriptionUseCase.createPrescription(
+      const prescription = await prescriptionUseCase.createPrescription(
         req.body
       );
       res.status(201).json(prescription);
@@ -30,7 +33,7 @@ export const prescriptionController = {
     next: NextFunction
   ): Promise<void> {
     try {
-      const prescription = await PrescriptionUseCase.getPrescription(
+      const prescription = await prescriptionUseCase.getPrescription(
         req.params.appointmentId
       );
       if (prescription) {
@@ -50,7 +53,7 @@ export const prescriptionController = {
   ): Promise<void> {
     const prescriptionData = req.body.prescription;
     try {
-      const prescription = await PrescriptionUseCase.updatePrescription(
+      const prescription = await prescriptionUseCase.updatePrescription(
         req.params.id,
         prescriptionData
       );
@@ -71,7 +74,7 @@ export const prescriptionController = {
   ): Promise<void> {
     const appointmentId = req.params.appointmentId;
     try {
-      const prescription = await PrescriptionUseCase.getPrescription(
+      const prescription = await prescriptionUseCase.getPrescription(
         appointmentId
       );
       if (!prescription) {
