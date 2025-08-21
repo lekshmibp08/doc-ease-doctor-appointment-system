@@ -1,96 +1,98 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { HttpStatusCode } from "../../enums/httpStatusCode";
-import {PrescriptionUseCase} from "../../application/useCases/implimentations/prescriptionUseCase";  
+import { PrescriptionUseCase } from "../../application/useCases/implimentations/prescriptionUseCase";
 import { GetAppointmentsByIdUseCase } from "../../application/useCases/implimentations/user/getAppointmentByIdUseCase";
-import { AppointmentRepository } from "../../infrastructure/database/repositories/appoinmentRepository";
-import { PrescriptionRepository } from "../../infrastructure/database/repositories/prescriptionRepository";
 
-const appointmentRepository = new AppointmentRepository();
-const getAppointmentsByIdUseCase = new GetAppointmentsByIdUseCase(
-  appointmentRepository
-);
-const prescriptionRepository = new PrescriptionRepository()
-const prescriptionUseCase = new PrescriptionUseCase(prescriptionRepository);
+export class PrescriptionController {
+  constructor(
+    private prescriptionUseCase: PrescriptionUseCase,
+    private getAppointmentsByIdUseCase: GetAppointmentsByIdUseCase
+  ) {}
 
-export const prescriptionController = {
-  async createPrescription(
+  createPrescription = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
-      const prescription = await prescriptionUseCase.createPrescription(
+      const prescription = await this.prescriptionUseCase.createPrescription(
         req.body
       );
       res.status(HttpStatusCode.CREATED).json(prescription);
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  async getPrescription(
+  getPrescription = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
-      const prescription = await prescriptionUseCase.getPrescription(
+      const prescription = await this.prescriptionUseCase.getPrescription(
         req.params.appointmentId
       );
       if (prescription) {
         res.status(HttpStatusCode.OK).json({ prescription });
       } else {
-        res.status(HttpStatusCode.NOT_FOUND).json({ error: "Prescription not found" });
+        res
+          .status(HttpStatusCode.NOT_FOUND)
+          .json({ error: "Prescription not found" });
       }
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  async updatePrescription(
+  updatePrescription = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ): Promise<void> => {
     const prescriptionData = req.body.prescription;
     try {
-      const prescription = await prescriptionUseCase.updatePrescription(
+      const prescription = await this.prescriptionUseCase.updatePrescription(
         req.params.id,
         prescriptionData
       );
       if (prescription) {
         res.json(prescription);
       } else {
-        res.status(HttpStatusCode.NOT_FOUND).json({ error: "Prescription not found" });
+        res
+          .status(HttpStatusCode.NOT_FOUND)
+          .json({ error: "Prescription not found" });
       }
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  async getPrescriptionForUser(
+  getPrescriptionForUser = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ): Promise<void> => {
     const appointmentId = req.params.appointmentId;
     try {
-      const prescription = await prescriptionUseCase.getPrescription(
+      const prescription = await this.prescriptionUseCase.getPrescription(
         appointmentId
       );
       if (!prescription) {
-        res.status(HttpStatusCode.NOT_FOUND).json({ error: "Prescription not found" });
+        res
+          .status(HttpStatusCode.NOT_FOUND)
+          .json({ error: "Prescription not found" });
         return;
       }
 
-      const appointment = await getAppointmentsByIdUseCase.execute(
+      const appointment = await this.getAppointmentsByIdUseCase.execute(
         appointmentId
       );
       const doctor = appointment.doctorId;
 
       res.status(HttpStatusCode.OK).json({ prescription, doctor });
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
-};
+  };
+}
