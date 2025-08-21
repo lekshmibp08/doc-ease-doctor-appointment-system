@@ -1,10 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { AppError } from "../../shared/errors/appError";
+
 import { SendOtpForSignupUseCase } from "../../application/useCases/implimentations/user/sendOtpForSignup";
 import { VerifyOtpAndRegister } from "../../application/useCases/implimentations/user/verifyOtpAndRegisterUser";
-import { OtpRepository } from "../../infrastructure/database/repositories/otpRepository";
-import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
 import { ListApprovedDoctors } from "../../application/useCases/implimentations/user/listApprovedDoctors";
 import { UpdateUser } from "../../application/useCases/implimentations/user/updateUser";
 import { SendOtpForResetPassword } from "../../application/useCases/implimentations/user/sendOtpForResetPassword";
@@ -12,67 +11,47 @@ import { VerifyOtpAndResetPassword } from "../../application/useCases/implimenta
 import { DoctorDetails } from "../../application/useCases/implimentations/user/doctorDetails";
 import { FetchSpecializationsUseCase } from "../../application/useCases/implimentations/user/fetchSpecializationsUseCase";
 import { UserLoginUseCase } from "../../application/useCases/implimentations/user/userLoginUseCase";
-import { UserRepository } from "../../infrastructure/database/repositories/userRepository";
 import { FindExistingUserUseCase } from "../../application/useCases/implimentations/user/findExistingUserUseCase";
 
-const userRepository = new UserRepository();
-const userLoginUseCase = new UserLoginUseCase(userRepository);
-const findExistingUserUseCase = new FindExistingUserUseCase(userRepository);
-const otpRepository = new OtpRepository();
-const sendOtpForSignupUseCase = new SendOtpForSignupUseCase(otpRepository);
-const verifyOtpAndRegister = new VerifyOtpAndRegister(
-  otpRepository,
-  userRepository
-);
-const updateUser = new UpdateUser(userRepository);
-const sendOtpForResetPassword = new SendOtpForResetPassword(otpRepository);
-const verifyOtpAndResetPassword = new VerifyOtpAndResetPassword(
-  otpRepository,
-  userRepository
-);
-const doctorRepository = new DoctorRepository();
-const listApprovedDoctors = new ListApprovedDoctors(doctorRepository);
-const fetchSpecializationsUseCase = new FetchSpecializationsUseCase(
-  doctorRepository
-);
-const doctorDetails = new DoctorDetails(doctorRepository);
+export class UserController {
+  constructor(
+    private sendOtpForSignupUseCase: SendOtpForSignupUseCase,
+    private verifyOtpAndRegister: VerifyOtpAndRegister,
+    private userLoginUseCase: UserLoginUseCase,
+    private findExistingUserUseCase: FindExistingUserUseCase,
+    private updateUser: UpdateUser,
+    private sendOtpForResetPassword: SendOtpForResetPassword,
+    private verifyOtpAndResetPassword: VerifyOtpAndResetPassword,
+    private listApprovedDoctors: ListApprovedDoctors,
+    private fetchSpecializationsUseCase: FetchSpecializationsUseCase,
+    private doctorDetails: DoctorDetails
+  ) {}
 
-export const userController = {
-  register: async (req: Request, res: Response, next: NextFunction) => {
+  register = async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
-      res
-        .status(HttpStatusCode.BAD_REQUEST)
-        .json({ message: "Passwords entered are not matching...!" });
+      res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Passwords entered are not matching...!" });
       return;
     }
 
     try {
-      const existingUser = await findExistingUserUseCase.execute(email);
+      const existingUser = await this.findExistingUserUseCase.execute(email);
       if (existingUser) {
-        throw new AppError(
-          "Email is already registered",
-          HttpStatusCode.BAD_REQUEST
-        );
+        throw new AppError("Email is already registered", HttpStatusCode.BAD_REQUEST);
       }
-      await sendOtpForSignupUseCase.execute(email);
+      await this.sendOtpForSignupUseCase.execute(email);
       res.status(HttpStatusCode.OK).json({ message: "OTP sent successfully" });
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  // Verify OTP and register user
-  verifyOtpAndRegisterUser: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  verifyOtpAndRegisterUser = async (req: Request, res: Response, next: NextFunction) => {
     const { email, otp, fullName, mobileNumber, password } = req.body;
 
     try {
-      const user = await verifyOtpAndRegister.execute({
+      const user = await this.verifyOtpAndRegister.execute({
         email,
         otp,
         fullName,
@@ -80,30 +59,19 @@ export const userController = {
         password,
       });
       res.status(HttpStatusCode.CREATED).json({
-        message:
-          "OTP verified and User registered successfully, You can now log in..!",
+        message: "OTP verified and User registered successfully, You can now log in..!",
         user,
       });
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  login: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body;
 
-      const { token, refreshToken, role, user } =
-        await userLoginUseCase.execute({
-          email,
-          password,
-        });
-
-      const userData = user;
+      const { token, refreshToken, role, user } = await this.userLoginUseCase.execute({ email, password });
 
       res.cookie("user_refresh_token", refreshToken, {
         httpOnly: true,
@@ -112,16 +80,13 @@ export const userController = {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res
-        .status(HttpStatusCode.OK)
-        .json({ message: "Login successful", token, role, userData });
-    } catch (error: any) {
+      res.status(HttpStatusCode.OK).json({ message: "Login successful", token, role, userData: user });
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  // List all approved doctors
-  getDoctors: async (req: Request, res: Response, next: NextFunction) => {
+  getDoctors = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const {
         page = 1,
@@ -138,7 +103,7 @@ export const userController = {
         sort,
       } = req.query;
 
-      const result = await listApprovedDoctors.execute({
+      const result = await this.listApprovedDoctors.execute({
         page: Number(page),
         size: Number(size),
         search: search as string,
@@ -157,106 +122,72 @@ export const userController = {
     } catch (error) {
       next(error);
     }
-  },
+  };
 
-  // List Specializations
-  listSpecializations: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  listSpecializations = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const specializations = await fetchSpecializationsUseCase.execute();
+      const specializations = await this.fetchSpecializationsUseCase.execute();
       res.json({ specializations });
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  // Update User profile
-  updateUserProfile: async (req: Request, res: Response): Promise<void> => {
+  updateUserProfile = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const updatedData = req.body;
+      const updatedUser = await this.updateUser.execute(id, req.body);
 
-      const updatedUser = await updateUser.execute(id, updatedData);
-
-      res
-        .status(HttpStatusCode.OK)
-        .json({ message: "User Profile Updated Successfully..!", updatedUser });
+      res.status(HttpStatusCode.OK).json({
+        message: "User Profile Updated Successfully..!",
+        updatedUser,
+      });
     } catch (error: any) {
-      console.error("Error in updateDoctorProfile:", error.message);
-
       if (error.message === "Doctor not found") {
-        res
-          .status(HttpStatusCode.NOT_FOUND)
-          .json({ message: "Doctor not found" });
+        res.status(HttpStatusCode.NOT_FOUND).json({ message: "Doctor not found" });
         return;
       }
-
       if (error.message === "Current password is incorrect") {
-        res
-          .status(HttpStatusCode.BAD_REQUEST)
-          .json({ message: "Current password is incorrect" });
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Current password is incorrect" });
         return;
       }
-
-      res
-        .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: "Failed to update profile", error: error.message });
-      return;
+      res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({ message: "Failed to update profile", error: error.message });
     }
-  },
+  };
 
-  //Send OTP for forget Password
-  sendOtpForForgetPassword: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  sendOtpForForgetPassword = async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
 
     try {
-      const existingUser = await findExistingUserUseCase.execute(email);
+      const existingUser = await this.findExistingUserUseCase.execute(email);
       if (!existingUser) {
-        res
-          .status(HttpStatusCode.BAD_REQUEST)
-          .json({ message: "Please enter valid Email id" });
+        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Please enter valid Email id" });
         return;
       }
-      await sendOtpForResetPassword.execute(email);
+      await this.sendOtpForResetPassword.execute(email);
       res.status(HttpStatusCode.OK).json({ message: "OTP sent successfully" });
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  //Verify the OTP and reset password
-  verifyAndResetPassword: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  verifyAndResetPassword = async (req: Request, res: Response, next: NextFunction) => {
     const { email, newPassword, otp } = req.body;
 
     try {
-      await verifyOtpAndResetPassword.execute({ email, newPassword, otp });
-      res.status(HttpStatusCode.OK).json({
-        message: "Password changed successfully, You can now log in..!",
-      });
-    } catch (error: any) {
+      await this.verifyOtpAndResetPassword.execute({ email, newPassword, otp });
+      res.status(HttpStatusCode.OK).json({ message: "Password changed successfully, You can now log in..!" });
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  // Get doctor Details
-  getDoctorDetails: async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
+  getDoctorDetails = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const details = await doctorDetails.execute(id);
+      const details = await this.doctorDetails.execute(req.params.id);
       res.status(HttpStatusCode.OK).json(details);
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
-};
+  };
+}

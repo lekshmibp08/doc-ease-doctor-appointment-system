@@ -5,3 +5,4 @@ export { createDoctorController } from "./doctorDI";
 export { createPrescriptionController } from "./prescriptionDI";
 export { createReviewController } from "./reviewDI";
 export { createSlotController } from "./slotDI";
+export { createUserController } from "./userDI";
