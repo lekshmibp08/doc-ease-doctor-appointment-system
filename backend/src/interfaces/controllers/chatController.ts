@@ -1,19 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { ChatUsecase } from "../../application/useCases/implimentations/chatUseCase";
-import { ChatRepository } from "../../infrastructure/database/repositories/chatRepository";
-import { MessageRepository } from "../../infrastructure/database/repositories/messageRepository";
 
-const chatRepository = new ChatRepository();
-const messageRepository = new MessageRepository();
-const chatUsecase = new ChatUsecase(chatRepository, messageRepository);
+export class ChatController {
+  constructor(private chatUsecase: ChatUsecase) {}
 
-export const chatController = {
   // Create or fetch chat
-  getOrCreateChat: async (req: Request, res: Response, next: NextFunction) => {
+  getOrCreateChat = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId, doctorId } = req.body;
-      const { chat, messages } = await chatUsecase.getOrCreateChat(
+      const { chat, messages } = await this.chatUsecase.getOrCreateChat(
         userId,
         doctorId
       );
@@ -21,14 +17,15 @@ export const chatController = {
     } catch (error) {
       next(error);
     }
-  },
-  //get all the chats for a particular user
-  getAllChats: async (req: Request, res: Response, next: NextFunction) => {
+  };
+
+  // Get all chats for a particular user
+  getAllChats = async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req.query;
     try {
-      const chats = await chatUsecase.getAllChatsForUser(userId as string);
+      const chats = await this.chatUsecase.getAllChatsForUser(userId as string);
 
-      const unreadCounts = await chatUsecase.getUnreadMessageCountsForUser(
+      const unreadCounts = await this.chatUsecase.getUnreadMessageCountsForUser(
         userId as string
       );
 
@@ -36,31 +33,35 @@ export const chatController = {
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
-  //get all the chats for a particular user
-  getAllChatsForDoctor: async (
+  // Get all chats for a doctor
+  getAllChatsForDoctor = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
     const { doctorId } = req.query;
     try {
-      const chats = await chatUsecase.getAllDoctorChats(doctorId as string);
-      const unreadCounts = await chatUsecase.getUnreadMessageCountsForDoc(
+      const chats = await this.chatUsecase.getAllDoctorChats(
         doctorId as string
       );
+
+      const unreadCounts = await this.chatUsecase.getUnreadMessageCountsForDoc(
+        doctorId as string
+      );
+
       res.status(HttpStatusCode.OK).json({ chats, unreadCounts });
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
   // Send message in chat
-  sendMessage: async (req: Request, res: Response, next: NextFunction) => {
+  sendMessage = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { chatId, senderId, receiverId, text, imageUrl } = req.body;
-      const newMessage = await chatUsecase.sendMessage(
+      const newMessage = await this.chatUsecase.sendMessage(
         chatId,
         senderId,
         receiverId,
@@ -71,19 +72,22 @@ export const chatController = {
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
-  getAChatUsingChatId: async (
+  // Get chat by chatId
+  getAChatUsingChatId = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
     const { chatId } = req.query;
     try {
-      const messages = await chatUsecase.getAChatUsingChatId(chatId as string);
+      const messages = await this.chatUsecase.getAChatUsingChatId(
+        chatId as string
+      );
       res.status(HttpStatusCode.OK).json(messages);
     } catch (error: any) {
       next(error);
     }
-  },
-};
+  };
+}

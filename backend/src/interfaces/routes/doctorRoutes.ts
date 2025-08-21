@@ -1,15 +1,19 @@
 import express from "express";
 import { doctorController } from "../controllers/doctorController"; 
-import { createAuthController } from "../../infrastructure/dependencyInjection";
 import { slotController } from "../controllers/slotController"; 
 import { authenticateUser } from "../middlewares/authMiddleware"; 
 import { appoinmentController } from "../controllers/appoinmentController"; 
-import { chatController } from "../controllers/chatController"; 
 import { prescriptionController } from "../controllers/prescriptionController"; 
+import { 
+    createAuthController, 
+    createChatController 
+} from "../../infrastructure/dependencyInjection";
 
 const router = express.Router();
 
 const authController = createAuthController();
+const chatController = createChatController();
+
 
 
 // Send OTP during signup
