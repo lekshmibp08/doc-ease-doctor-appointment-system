@@ -79,3 +79,8 @@ export interface IGetDashboardStatsUseCase {
 export interface IVerifyOtpAndResetDoctorPasswordUseCase {
   execute(data: { email: string; otp: string; newPassword: string }): Promise<void>;
 }
+
+// ------------------- FindExistingDoctor -------------------
+export interface IFindExistingDoctorUseCase {
+  execute(email: string): any
+}
