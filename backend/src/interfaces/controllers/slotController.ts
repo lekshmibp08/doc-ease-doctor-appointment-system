@@ -1,77 +1,52 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { HttpStatusCode } from "../../enums/httpStatusCode";
-import { SlotRepository } from "../../infrastructure/database/repositories/slotRepository";
+import { SlotUseCase } from "../../application/useCases/implimentations/slotUseCase";
 import { UpdateSlotUseCase } from "../../application/useCases/implimentations/doctor/updateSlotUseCase";
 import { FetchSlotUseCase } from "../../application/useCases/implimentations/user/fetchSlotUseCase";
 import { UpdateSlotTimeUseCase } from "../../application/useCases/implimentations/doctor/updateSlotTimeUseCase";
-import { SlotUseCase } from "../../application/useCases/implimentations/slotUseCase";
 
-const slotRepository = new SlotRepository();
-const slotUseCase = new SlotUseCase(slotRepository)
-const updateSlotUseCase = new UpdateSlotUseCase(slotRepository);
-const fetchSlotUseCase = new FetchSlotUseCase(slotRepository);
-const updateSlotTimeUseCase = new UpdateSlotTimeUseCase(slotRepository);
+export class SlotController {
+  constructor(
+    private slotUseCase: SlotUseCase,
+    private updateSlotUseCase: UpdateSlotUseCase,
+    private fetchSlotUseCase: FetchSlotUseCase,
+    private updateSlotTimeUseCase: UpdateSlotTimeUseCase
+  ) {}
 
-export const slotController = {
-  async generateSlots(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  generateSlots = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await slotUseCase.generateSlots(req.body);
+      await this.slotUseCase.generateSlots(req.body);
       res.status(HttpStatusCode.CREATED).json({ message: "Slots generated successfully!" });
     } catch (error) {
       next(error);
     }
-  },
+  };
 
-  async fetchSlot(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  fetchSlot = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { filteredSlots, slotDataAll, slotId } =
-        await slotUseCase.fetchSlots(req.query);
-      res
-        .status(HttpStatusCode.OK)
-        .json({ slotDataFiltered: filteredSlots, slotDataAll, slotId });
+        await this.slotUseCase.fetchSlots(req.query);
+      res.status(HttpStatusCode.OK).json({ slotDataFiltered: filteredSlots, slotDataAll, slotId });
     } catch (error) {
       next(error);
     }
-  },
+  };
 
-  updateSlotStatus: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    const { slotId, timeSlotId, status } = req.body;
-
+  updateSlotStatus = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { updation } = await updateSlotUseCase.execute(
-        slotId,
-        timeSlotId,
-        status
-      );
-      res
-        .status(HttpStatusCode.OK)
-        .json({ message: "Slot status updated successfully.", updation });
-    } catch (error: any) {
+      const { slotId, timeSlotId, status } = req.body;
+      const { updation } = await this.updateSlotUseCase.execute(slotId, timeSlotId, status);
+      res.status(HttpStatusCode.OK).json({ message: "Slot status updated successfully.", updation });
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  fetchSlotsForUser: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    const { doctorId } = req.params;
-    const date = req.query.date as string;
+  fetchSlotsForUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const existingSlot = await fetchSlotUseCase.execute(doctorId, date);
+      const { doctorId } = req.params;
+      const date = req.query.date as string;
+      const existingSlot = await this.fetchSlotUseCase.execute(doctorId, date);
       res.status(HttpStatusCode.OK).json({
         timeSlots: existingSlot?.timeSlots,
         slotId: existingSlot?._id,
@@ -79,24 +54,15 @@ export const slotController = {
     } catch (error) {
       next(error);
     }
-  },
+  };
 
-  updateSlotTime: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    const { slotId, timeSlotId, newTime } = req.body;
-
+  updateSlotTime = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const success = await updateSlotTimeUseCase.execute(
-        slotId,
-        timeSlotId,
-        newTime
-      );
+      const { slotId, timeSlotId, newTime } = req.body;
+      const success = await this.updateSlotTimeUseCase.execute(slotId, timeSlotId, newTime);
       res.status(HttpStatusCode.OK).json({ success });
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
-};
+  };
+}

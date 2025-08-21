@@ -1,14 +1,14 @@
 import express from "express";
 import { userController } from "../controllers/userController"; 
 import { authenticateUser } from "../middlewares/authMiddleware";
-import { slotController } from "../controllers/slotController";
 import { paymentController } from "../controllers/paymentController";
 import { appoinmentController } from "../controllers/appoinmentController";
 import { 
     createAuthController, 
     createChatController, 
     createPrescriptionController,
-    createReviewController
+    createReviewController,
+    createSlotController
 } from "../../infrastructure/dependencyInjection";
 
 
@@ -18,6 +18,7 @@ const authController = createAuthController();
 const chatController = createChatController();
 const prescriptionController = createPrescriptionController();
 const reviewController = createReviewController();
+const slotController = createSlotController();
 
 
 router.post("/send-otp", userController.register);

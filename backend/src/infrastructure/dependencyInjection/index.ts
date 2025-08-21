@@ -4,3 +4,4 @@ export { createChatController } from "./chatDI";
 export { createDoctorController } from "./doctorDI";
 export { createPrescriptionController } from "./prescriptionDI";
 export { createReviewController } from "./reviewDI";
+export { createSlotController } from "./slotDI";
