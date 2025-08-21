@@ -1,27 +1,21 @@
-import { Request, Response, RequestHandler, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { CreateOrderUseCase } from "../../application/useCases/implimentations/createOrderUseCase "; 
-import { paymentService } from "../../infrastructure/services";
+export class PaymentController {
+  constructor(private readonly createOrderUseCase: CreateOrderUseCase) {}
 
-const createOrderUseCase = new CreateOrderUseCase(paymentService);
-
-export const paymentController = {
-  createOrder: (async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  createOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { amount } = req.body; 
+      const { amount } = req.body;
       if (!amount) {
         res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Amount is required" });
         return;
       }
 
-      const order = await createOrderUseCase.execute(amount);
+      const order = await this.createOrderUseCase.execute(amount);
       res.status(HttpStatusCode.OK).json(order);
     } catch (error) {
       next(error);
     }
-  }) as RequestHandler,
-};
+  };
+}

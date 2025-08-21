@@ -7,3 +7,4 @@ export { createReviewController } from "./reviewDI";
 export { createSlotController } from "./slotDI";
 export { createUserController } from "./userDI";
 export { createAppointmentController } from "./appointmentDI";
+export { createPaymentController } from "./paymentDI";

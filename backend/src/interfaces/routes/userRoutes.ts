@@ -1,10 +1,10 @@
 import express from "express";
 import { authenticateUser } from "../middlewares/authMiddleware";
-import { paymentController } from "../controllers/paymentController";
 import { 
     createAppointmentController,
     createAuthController, 
     createChatController, 
+    createPaymentController, 
     createPrescriptionController,
     createReviewController,
     createSlotController,
@@ -21,6 +21,7 @@ const reviewController = createReviewController();
 const slotController = createSlotController();
 const userController = createUserController();
 const appoinmentController = createAppointmentController();
+const paymentController = createPaymentController();
 
 
 router.post("/send-otp", userController.register);
