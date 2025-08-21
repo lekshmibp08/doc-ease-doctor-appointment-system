@@ -1,12 +1,12 @@
 import express from "express";
-import { createAdminController } from "../../infrastructure/dependencyInjection";  
+import { createAdminController, createAppointmentController } from "../../infrastructure/dependencyInjection";  
 import { createAuthController  } from '../../infrastructure/dependencyInjection'  
 import { authenticateUser } from "../middlewares/authMiddleware";
-import { appoinmentController } from "../controllers/appoinmentController";
 
 const router = express.Router();
 const adminController = createAdminController();
 const authController = createAuthController();
+const appoinmentController = createAppointmentController();
 
 
 // Login route

@@ -1,8 +1,8 @@
 import express from "express";
 import { authenticateUser } from "../middlewares/authMiddleware";
 import { paymentController } from "../controllers/paymentController";
-import { appoinmentController } from "../controllers/appoinmentController";
 import { 
+    createAppointmentController,
     createAuthController, 
     createChatController, 
     createPrescriptionController,
@@ -20,6 +20,7 @@ const prescriptionController = createPrescriptionController();
 const reviewController = createReviewController();
 const slotController = createSlotController();
 const userController = createUserController();
+const appoinmentController = createAppointmentController();
 
 
 router.post("/send-otp", userController.register);
@@ -48,7 +49,7 @@ router.get("/slots/:doctorId", authenticateUser(['user']), slotController.fetchS
 
 router.post("/create-order", authenticateUser(['user']), paymentController.createOrder);
 
-router.post("/book-appointment", authenticateUser(['user']), appoinmentController.createNewAppoinment);
+router.post("/book-appointment", authenticateUser(['user']), appoinmentController.createNewAppointment);
 
 router.get("/appointments/:userId", authenticateUser(['user']), appoinmentController.getAppointmentsByUser);
 

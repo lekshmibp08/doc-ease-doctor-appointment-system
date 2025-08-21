@@ -1,7 +1,7 @@
 import express from "express";
 import { authenticateUser } from "../middlewares/authMiddleware"; 
-import { appoinmentController } from "../controllers/appoinmentController"; 
 import { 
+    createAppointmentController,
     createAuthController, 
     createChatController, 
     createDoctorController,
@@ -16,8 +16,7 @@ const chatController = createChatController();
 const doctorController = createDoctorController();
 const prescriptionController = createPrescriptionController();
 const slotController = createSlotController();
-
-
+const appoinmentController = createAppointmentController();
 
 
 // Send OTP during signup
