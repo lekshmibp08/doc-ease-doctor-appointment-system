@@ -13,9 +13,11 @@ import { DoctorDetails } from "../../application/useCases/implimentations/user/d
 import { FetchSpecializationsUseCase } from "../../application/useCases/implimentations/user/fetchSpecializationsUseCase";
 import { UserLoginUseCase } from "../../application/useCases/implimentations/user/userLoginUseCase";
 import { UserRepository } from "../../infrastructure/database/repositories/userRepository";
+import { FindExistingUserUseCase } from "../../application/useCases/implimentations/user/findExistingUserUseCase";
 
 const userRepository = new UserRepository();
 const userLoginUseCase = new UserLoginUseCase(userRepository);
+const findExistingUserUseCase = new FindExistingUserUseCase(userRepository);
 const otpRepository = new OtpRepository();
 const sendOtpForSignupUseCase = new SendOtpForSignupUseCase(otpRepository);
 const verifyOtpAndRegister = new VerifyOtpAndRegister(
@@ -47,7 +49,7 @@ export const userController = {
     }
 
     try {
-      const existingUser = await userRepository.findByEmail(email);
+      const existingUser = await findExistingUserUseCase.execute(email);
       if (existingUser) {
         throw new AppError(
           "Email is already registered",
@@ -215,7 +217,7 @@ export const userController = {
     const { email } = req.body;
 
     try {
-      const existingUser = await userRepository.findByEmail(email);
+      const existingUser = await findExistingUserUseCase.execute(email);
       if (!existingUser) {
         res
           .status(HttpStatusCode.BAD_REQUEST)
