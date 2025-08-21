@@ -7,18 +7,9 @@ import { DoctorRepository } from "../../infrastructure/database/repositories/doc
 import { UserRepository } from "../../infrastructure/database/repositories/userRepository";
 
 export class AuthController {
-  private googleOAuthLoginUseCase: GoogleOAuthLoginUseCase;
-
-  constructor(
-    doctorRepository: DoctorRepository,
-    userRepository: UserRepository
-  ) {
-    this.googleOAuthLoginUseCase = new GoogleOAuthLoginUseCase(
-      doctorRepository,
-      userRepository
-    );
-  }
-
+  
+  constructor(private googleOAuthLoginUseCase: GoogleOAuthLoginUseCase) {}
+    
   // Logout for all roles (User, Doctor, Admin)
   logout = (req: Request, res: Response, next: NextFunction): void => {
     try {
