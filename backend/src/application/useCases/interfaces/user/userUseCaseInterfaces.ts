@@ -98,3 +98,7 @@ export interface IVerifyOtpAndRegisterUseCase {
 export interface IVerifyOtpAndResetPasswordUseCase {
   execute(data: VerifyOtpAndResetPasswordDTO): Promise<void>;
 }
+
+export interface IFindExistingUserUseCase {
+  execute(email: string): Promise<IUser | null>
+}
