@@ -1,7 +1,9 @@
 import express from "express";
-import { authController } from "../controllers/authController"; 
+import { createAuthController } from "../../infrastructure/dependencyInjection";
 
 const router = express.Router();
+
+const authController = createAuthController();
 
 
 router.post("/google", authController.googleLogin);

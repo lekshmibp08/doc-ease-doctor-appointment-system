@@ -1,6 +1,6 @@
 import express from "express";
 import { userController } from "../controllers/userController"; 
-import { authController } from "../controllers/authController";
+import { createAuthController } from "../../infrastructure/dependencyInjection";
 import { authenticateUser } from "../middlewares/authMiddleware";
 import { slotController } from "../controllers/slotController";
 import { paymentController } from "../controllers/paymentController";
@@ -11,6 +11,9 @@ import { reviewController } from "../controllers/reviewController";
 
 
 const router = express.Router();
+
+const authController = createAuthController();
+
 
 router.post("/send-otp", userController.register);
 

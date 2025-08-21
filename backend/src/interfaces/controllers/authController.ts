@@ -6,19 +6,25 @@ import { GoogleOAuthLoginUseCase } from "../../application/useCases/implimentati
 import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
 import { UserRepository } from "../../infrastructure/database/repositories/userRepository";
 
-const doctorRepository = new DoctorRepository();
-const userRepository = new UserRepository();
-const googleOAuthLoginUseCase = new GoogleOAuthLoginUseCase(
-  doctorRepository,
-  userRepository
-);
+export class AuthController {
+  private googleOAuthLoginUseCase: GoogleOAuthLoginUseCase;
 
-export const authController = {
+  constructor(
+    doctorRepository: DoctorRepository,
+    userRepository: UserRepository
+  ) {
+    this.googleOAuthLoginUseCase = new GoogleOAuthLoginUseCase(
+      doctorRepository,
+      userRepository
+    );
+  }
+
   // Logout for all roles (User, Doctor, Admin)
-  logout: (req: Request, res: Response, next: NextFunction): void => {
+  logout = (req: Request, res: Response, next: NextFunction): void => {
     try {
       const { role } = req.body;
       let cookieName = "";
+
       if (role === "user") {
         cookieName = "user_refresh_token";
       } else if (role === "doctor") {
@@ -32,9 +38,9 @@ export const authController = {
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
-  googleLogin: async (
+  googleLogin = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -53,7 +59,7 @@ export const authController = {
         refreshToken,
         role: userRole,
         user,
-      } = await googleOAuthLoginUseCase.execute(data);
+      } = await this.googleOAuthLoginUseCase.execute(data);
 
       const userData = user;
 
@@ -78,9 +84,9 @@ export const authController = {
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
-  refreshAccessToken: async (
+  refreshAccessToken = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -95,11 +101,15 @@ export const authController = {
     } else if (role === "admin") {
       refresh_token = req.cookies["admin_refresh_token"];
     } else {
-      return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Invalid role" });
+      return res
+        .status(HttpStatusCode.BAD_REQUEST)
+        .json({ message: "Invalid role" });
     }
 
     if (!refresh_token) {
-      return res.status(HttpStatusCode.FORBIDDEN).json({ message: "Refresh token not found" });
+      return res
+        .status(HttpStatusCode.FORBIDDEN)
+        .json({ message: "Refresh token not found" });
     }
 
     try {
@@ -124,5 +134,5 @@ export const authController = {
     } catch (error) {
       next(error);
     }
-  },
-};
+  };
+}

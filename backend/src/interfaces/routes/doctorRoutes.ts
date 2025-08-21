@@ -1,6 +1,6 @@
 import express from "express";
 import { doctorController } from "../controllers/doctorController"; 
-import { authController } from "../controllers/authController"; 
+import { createAuthController } from "../../infrastructure/dependencyInjection";
 import { slotController } from "../controllers/slotController"; 
 import { authenticateUser } from "../middlewares/authMiddleware"; 
 import { appoinmentController } from "../controllers/appoinmentController"; 
@@ -8,6 +8,9 @@ import { chatController } from "../controllers/chatController";
 import { prescriptionController } from "../controllers/prescriptionController"; 
 
 const router = express.Router();
+
+const authController = createAuthController();
+
 
 // Send OTP during signup
 router.post("/send-otp", doctorController.register);
