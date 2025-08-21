@@ -4,11 +4,11 @@ import { authenticateUser } from "../middlewares/authMiddleware";
 import { slotController } from "../controllers/slotController";
 import { paymentController } from "../controllers/paymentController";
 import { appoinmentController } from "../controllers/appoinmentController";
-import { reviewController } from "../controllers/reviewController";
 import { 
     createAuthController, 
     createChatController, 
-    createPrescriptionController
+    createPrescriptionController,
+    createReviewController
 } from "../../infrastructure/dependencyInjection";
 
 
@@ -17,6 +17,7 @@ const router = express.Router();
 const authController = createAuthController();
 const chatController = createChatController();
 const prescriptionController = createPrescriptionController();
+const reviewController = createReviewController();
 
 
 router.post("/send-otp", userController.register);
