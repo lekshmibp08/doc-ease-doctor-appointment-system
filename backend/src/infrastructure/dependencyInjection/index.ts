@@ -1,0 +1,1 @@
+export { createAdminController } from './adminDI';

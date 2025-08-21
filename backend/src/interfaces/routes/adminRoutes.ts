@@ -1,10 +1,11 @@
 import express from "express";
-import { adminController } from "../controllers/adminController"; 
+import { createAdminController } from "../../infrastructure/dependencyInjection";  
 import { authController } from "../controllers/authController";
 import { authenticateUser } from "../middlewares/authMiddleware";
 import { appoinmentController } from "../controllers/appoinmentController";
 
 const router = express.Router();
+const adminController = createAdminController();
 
 
 // Login route

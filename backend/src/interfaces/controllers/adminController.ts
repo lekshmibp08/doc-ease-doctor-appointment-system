@@ -1,7 +1,6 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { HttpStatusCode } from "../../enums/httpStatusCode";
 import { LoginAdmin } from "../../application/useCases/implimentations/admin/loginAdminUseCase";
-import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
 import { ListDoctorsUseCase } from "../../application/useCases/implimentations/admin/listDoctorsUseCase";
 import { ListUsersUseCase } from "../../application/useCases/implimentations/admin/listUsersUseCase";
 import { ToggleBlockUseruseCase } from "../../application/useCases/implimentations/admin/toggleBlockUserUseCase";
@@ -10,33 +9,23 @@ import { FetchPendingDoctors } from "../../application/useCases/implimentations/
 import { ApproveDoctorUsecase } from "../../application/useCases/implimentations/admin/approveDoctorUseCase";
 import { RejectRequestUseCase } from "../../application/useCases/implimentations/admin/rejectRequestUseCase";
 import { GetAdminDashboardStatsUseCase } from "../../application/useCases/implimentations/admin/getAdminDashboardStats";
-import { AdminDashboardRepository } from "../../infrastructure/database/repositories/adminDashboardRepository";
-import { UserRepository } from "../../infrastructure/database/repositories/userRepository";
 
-const userRepository = new UserRepository();
-const doctorRepository = new DoctorRepository();
-const loginAdmin = new LoginAdmin(userRepository);
-const listDoctorsUseCase = new ListDoctorsUseCase(doctorRepository);
-const fetchPendingDoctors = new FetchPendingDoctors(doctorRepository);
-const listUsersUseCase = new ListUsersUseCase(userRepository);
-const approveDoctorUsecase = new ApproveDoctorUsecase(doctorRepository);
-const rejectRequestUseCase = new RejectRequestUseCase(doctorRepository);
-const toggleBlockDoctorUseCase = new ToggleBlockDoctorUseCase(doctorRepository);
-const toggleBlockUseruseCase = new ToggleBlockUseruseCase(userRepository);
-const adminDashboardRepository = new AdminDashboardRepository();
-const getAdminDashboardStatsUseCase = new GetAdminDashboardStatsUseCase(
-  adminDashboardRepository
-);
+export class AdminController {
+  constructor(
+    private loginAdmin: LoginAdmin,
+    private listDoctorsUseCase: ListDoctorsUseCase,
+    private fetchPendingDoctors: FetchPendingDoctors,
+    private listUsersUseCase: ListUsersUseCase,
+    private approveDoctorUsecase: ApproveDoctorUsecase,
+    private rejectRequestUseCase: RejectRequestUseCase,
+    private toggleBlockDoctorUseCase: ToggleBlockDoctorUseCase,
+    private toggleBlockUseruseCase: ToggleBlockUseruseCase,
+    private getAdminDashboardStatsUseCase: GetAdminDashboardStatsUseCase
+  ) {}
 
-export const adminController = {
-  login: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body;
-
       if (!email || !password) {
         throw {
           status: HttpStatusCode.BAD_REQUEST,
@@ -44,7 +33,7 @@ export const adminController = {
         };
       }
 
-      const { token, refreshToken, role } = await loginAdmin.execute({
+      const { token, refreshToken, role } = await this.loginAdmin.execute({
         email,
         password,
       });
@@ -59,17 +48,12 @@ export const adminController = {
       res
         .status(HttpStatusCode.OK)
         .json({ message: "Login successful", token, refreshToken, role });
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  // List all doctors
-  getDoctors: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  getDoctors = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { page, size, search } = req.query;
       const pageNumber = parseInt(page as string);
@@ -77,154 +61,112 @@ export const adminController = {
       const searchQuery = search ? String(search) : "";
 
       const { doctors, totalDoctors, totalPages } =
-        await listDoctorsUseCase.execute(pageNumber, pageSize, searchQuery);
+        await this.listDoctorsUseCase.execute(pageNumber, pageSize, searchQuery);
 
-      res
-        .status(HttpStatusCode.OK)
-        .json({ doctors, totalDoctors, totalPages, currentPage: pageNumber });
-    } catch (error: any) {
+      res.status(HttpStatusCode.OK).json({
+        doctors,
+        totalDoctors,
+        totalPages,
+        currentPage: pageNumber,
+      });
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  //List all pending requests
-  getPendingDoctors: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    const { page = 1, size = 8, search = "" } = req.query;
-
-    const pageNumber = parseInt(page as string);
-    const pageSize = parseInt(size as string);
-    const searchQuery = search ? String(search) : "";
-
+  getPendingDoctors = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { doctors, totalDoctors, totalPages } =
-        await fetchPendingDoctors.execute(pageNumber, pageSize, searchQuery);
+      const { page = 1, size = 8, search = "" } = req.query;
+      const pageNumber = parseInt(page as string);
+      const pageSize = parseInt(size as string);
+      const searchQuery = String(search);
 
-      res
-        .status(HttpStatusCode.OK)
-        .json({ doctors, totalDoctors, totalPages, currentPage: pageNumber });
-    } catch (error: any) {
+      const { doctors, totalDoctors, totalPages } =
+        await this.fetchPendingDoctors.execute(pageNumber, pageSize, searchQuery);
+
+      res.status(HttpStatusCode.OK).json({
+        doctors,
+        totalDoctors,
+        totalPages,
+        currentPage: pageNumber,
+      });
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  // List all users
-  getAllUsers: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { page, size, search } = req.query;
-
       const pageNumber = parseInt(page as string);
       const pageSize = parseInt(size as string);
       const searchQuery = search ? String(search) : "";
 
-      const { users, totalUsers, totalPages } = await listUsersUseCase.execute(
-        pageNumber,
-        pageSize,
-        searchQuery
-      );
+      const { users, totalUsers, totalPages } =
+        await this.listUsersUseCase.execute(pageNumber, pageSize, searchQuery);
 
-      res
-        .status(HttpStatusCode.OK)
-        .json({ users, totalUsers, totalPages, currentPage: pageNumber });
-    } catch (error: any) {
+      res.status(HttpStatusCode.OK).json({
+        users,
+        totalUsers,
+        totalPages,
+        currentPage: pageNumber,
+      });
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  //Handle Doctor Approval
-  doctorApproval: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  doctorApproval = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params;
-
-      await approveDoctorUsecase.execute(id);
-
+      await this.approveDoctorUsecase.execute(req.params.id);
       res
         .status(HttpStatusCode.OK)
         .json({ message: "Doctor Approved Successfully..!" });
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  //Handle Doctor Reject
-  rejectDoctor: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  rejectDoctor = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params;
-      const reason = req.body.reason;
-
-      const result = await rejectRequestUseCase.execute(id, reason);
-
+      const result = await this.rejectRequestUseCase.execute(
+        req.params.id,
+        req.body.reason
+      );
       res.status(HttpStatusCode.OK).json(result);
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  //Handle Block and unblock Doctor
-  blockAndUnblockDoctor: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  blockAndUnblockDoctor = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params;
-
-      const result = await toggleBlockDoctorUseCase.execute(id);
-
+      const result = await this.toggleBlockDoctorUseCase.execute(req.params.id);
       res.status(HttpStatusCode.OK).json(result);
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  //Handle Block and unblock User
-  blockAndUnblockUser: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  blockAndUnblockUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params;
-
-      const result = await toggleBlockUseruseCase.execute(id);
-
+      const result = await this.toggleBlockUseruseCase.execute(req.params.id);
       res.status(HttpStatusCode.OK).json(result);
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
-  },
+  };
 
-  getAdminDashboardStats: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  getAdminDashboardStats = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { startDate, endDate } = req.body;
-
-      const stats = await getAdminDashboardStatsUseCase.execute(
+      const stats = await this.getAdminDashboardStatsUseCase.execute(
         new Date(startDate),
         new Date(endDate)
       );
-
       res.status(HttpStatusCode.OK).json(stats);
     } catch (error) {
       next(error);
     }
-  },
-};
+  };
+}
