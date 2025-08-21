@@ -82,5 +82,5 @@ export interface IVerifyOtpAndResetDoctorPasswordUseCase {
 
 // ------------------- FindExistingDoctor -------------------
 export interface IFindExistingDoctorUseCase {
-  execute(email: string): any
+  execute(email: string): Promise<Doctor | null>
 }
