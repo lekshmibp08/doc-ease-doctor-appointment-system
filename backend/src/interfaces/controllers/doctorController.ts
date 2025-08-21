@@ -1,38 +1,29 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpStatusCode } from "../../enums/httpStatusCode";
-import { OtpRepository } from "../../infrastructure/database/repositories/otpRepository";
-import { DoctorRepository } from "../../infrastructure/database/repositories/doctorRepository";
+
 import { SendOtpForSignupUseCase } from "../../application/useCases/implimentations/user/sendOtpForSignup";
 import { VerifyOtpAndRegisterDocUseCase } from "../../application/useCases/implimentations/doctor/verifyOtpAndRegisterDoc";
 import { LoginDoctorUseCase } from "../../application/useCases/implimentations/doctor/loginDoctorUseCase";
 import { SendOtpForResetPassword } from "../../application/useCases/implimentations/user/sendOtpForResetPassword";
 import { VerifyOtpAndResetDoctorPassword } from "../../application/useCases/implimentations/doctor/resetDoctorPassworduseCase";
 import { UpdateDocProfile } from "../../application/useCases/implimentations/doctor/updateDocProfileUseCase";
-import { AppointmentRepository } from "../../infrastructure/database/repositories/appoinmentRepository";
 import { GetDashboardStatsUseCase } from "../../application/useCases/implimentations/doctor/getDashboardStatsUseCase";
+import { FindExistingDoctorUseCase } from "../../application/useCases/implimentations/doctor/findExistingDoctorUseCase";
 
-const otpRepository = new OtpRepository();
-const sendOtpForSignupUseCase = new SendOtpForSignupUseCase(otpRepository);
-const sendOtpForResetPassword = new SendOtpForResetPassword(otpRepository);
-const doctorRepository = new DoctorRepository();
-const verifyOtpAndRegisterDocUseCase = new VerifyOtpAndRegisterDocUseCase(
-  otpRepository,
-  doctorRepository
-);
-const loginDoctorUseCase = new LoginDoctorUseCase(doctorRepository);
-const verifyOtpAndResetDoctorPassword = new VerifyOtpAndResetDoctorPassword(
-  otpRepository,
-  doctorRepository
-);
-const updateDocProfile = new UpdateDocProfile(doctorRepository);
-const appoinmentRepository = new AppointmentRepository();
-const getDashboardStatsUseCase = new GetDashboardStatsUseCase(
-  appoinmentRepository
-);
+export class DoctorController {
+  constructor(
+    private findExistingDoctorUseCase: FindExistingDoctorUseCase,
+    private sendOtpForSignupUseCase: SendOtpForSignupUseCase,
+    private sendOtpForResetPassword: SendOtpForResetPassword,
+    private verifyOtpAndRegisterDocUseCase: VerifyOtpAndRegisterDocUseCase,
+    private loginDoctorUseCase: LoginDoctorUseCase,
+    private verifyOtpAndResetDoctorPassword: VerifyOtpAndResetDoctorPassword,
+    private updateDocProfile: UpdateDocProfile,
+    private getDashboardStatsUseCase: GetDashboardStatsUseCase
+  ) {}
 
-export const doctorController = {
   // Send OTP during signup
-  register: async (req: Request, res: Response, next: NextFunction) => {
+  register = async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
@@ -43,31 +34,26 @@ export const doctorController = {
     }
 
     try {
-      const existingDoctor = await doctorRepository.findByEmail(email);
+      const existingDoctor = await this.findExistingDoctorUseCase.execute(email);
       if (existingDoctor) {
         res
           .status(HttpStatusCode.BAD_REQUEST)
           .json({ message: "Email is already registered" });
         return;
       }
-      await sendOtpForSignupUseCase.execute(email);
+      await this.sendOtpForSignupUseCase.execute(email);
       res.status(HttpStatusCode.OK).json({ message: "OTP sent successfully" });
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
   // Verify OTP and register doctor
-  verifyOtpAndRegisterUser: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    const { email, otp, fullName, mobileNumber, registerNumber, password } =
-      req.body;
+  verifyOtpAndRegisterUser = async (req: Request, res: Response, next: NextFunction) => {
+    const { email, otp, fullName, mobileNumber, registerNumber, password } = req.body;
 
     try {
-      const doctor = await verifyOtpAndRegisterDocUseCase.execute({
+      const doctor = await this.verifyOtpAndRegisterDocUseCase.execute({
         email,
         otp,
         fullName,
@@ -83,24 +69,22 @@ export const doctorController = {
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
   // Doctor Login
-  login: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Email and Password are required" });
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "Email and Password are required" });
         return;
       }
 
       const { token, refreshToken, role, doctor } =
-        await loginDoctorUseCase.execute({ email, password });
+        await this.loginDoctorUseCase.execute({ email, password });
 
       const userData = doctor;
 
@@ -121,39 +105,33 @@ export const doctorController = {
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
-  //Send OTP for forget Password
-  sendOtpForForgetPassword: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  // Send OTP for forget Password
+  sendOtpForForgetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { email } = req.body;
 
     try {
-      const existingUser = await doctorRepository.findByEmail(email);
+      const existingUser = await this.findExistingDoctorUseCase.execute(email);
       if (!existingUser) {
-        res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Please enter valid Email id" });
+        res
+          .status(HttpStatusCode.BAD_REQUEST)
+          .json({ message: "Please enter valid Email id" });
         return;
       }
-      await sendOtpForResetPassword.execute(email);
+      await this.sendOtpForResetPassword.execute(email);
       res.status(HttpStatusCode.OK).json({ message: "OTP sent successfully" });
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
-  //Verify the OTP and reset password verifyOtpAndResetDoctorPassword
-  verifyAndResetPassword: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  // Verify OTP and reset password
+  verifyAndResetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { email, newPassword, otp } = req.body;
 
     try {
-      await verifyOtpAndResetDoctorPassword.execute({
+      await this.verifyOtpAndResetDoctorPassword.execute({
         email,
         newPassword,
         otp,
@@ -164,19 +142,15 @@ export const doctorController = {
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
-  //Update Doctor profile
-  updateDoctorProfile: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  // Update Doctor profile
+  updateDoctorProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
       const updatedData = req.body;
 
-      const updatedDocProfile = await updateDocProfile.execute(id, updatedData);
+      const updatedDocProfile = await this.updateDocProfile.execute(id, updatedData);
 
       res.status(HttpStatusCode.OK).json({
         message: "User Profile Updated Successfully..!",
@@ -185,17 +159,14 @@ export const doctorController = {
     } catch (error: any) {
       next(error);
     }
-  },
+  };
 
-  getDashboardData: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  // Get Dashboard Stats
+  getDashboardData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { doctorId, startDate, endDate } = req.body;
 
     try {
-      const stats = await getDashboardStatsUseCase.execute(
+      const stats = await this.getDashboardStatsUseCase.execute(
         doctorId,
         new Date(startDate),
         new Date(endDate)
@@ -204,5 +175,5 @@ export const doctorController = {
     } catch (error) {
       next(error);
     }
-  },
-};
+  };
+}
